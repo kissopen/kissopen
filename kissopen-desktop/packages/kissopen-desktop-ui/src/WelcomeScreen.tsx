@@ -1,0 +1,193 @@
+import { t } from "kissopen-desktop-state";
+import { partitionComponentProps } from "./componentProps";
+import { type CSSProperties } from "react";
+import { Button } from "./Button";
+import { Icon } from "./Icon";
+import { NightSkyShader, type NightSkyShaderMotion } from "./NightSkyShader";
+import { OnboardingSky } from "./OnboardingSky";
+import { WelcomeDeck, type WelcomeSlide } from "./WelcomeDeck";
+/*
+ * The same triple the settings surface offers, deliberately reused rather than
+ * respelled here: an appearance chosen on this screen and one chosen in Settings
+ * are the same window setting, and two declarations of it would eventually
+ * disagree about what the third option is called.
+ */
+import type { KissopenAgentAppearanceChoice } from "./pages/settings/KissopenAgentGeneralSettings";
+import { ScrollArea } from "./Scrollbar";
+import { WindowDragRegion } from "./TitleBar";
+import { Ionicon } from "./vectorIcons/VectorIcon";
+
+export type WelcomeScreenBackdrop =
+    | {
+          readonly kind: "night-sky";
+          /** `still` is the deterministic Blueprint and reduced-motion presentation. */
+          readonly motion?: NightSkyShaderMotion;
+      }
+    /** Paired light/dark paintings, selected by appearance and scrimmed behind the words. */
+    | { readonly kind: "sky" };
+
+export interface WelcomeScreenProps {
+    readonly className?: string;
+    readonly "data-testid"?: string;
+    readonly style?: CSSProperties;
+    /** At least one. The first is shown first. */
+    readonly slides: readonly WelcomeSlide[];
+    /** Primary action label. Defaults to "Go KISSOPEN". */
+    readonly actionLabel?: string;
+    /** Optional decorative scenery behind the welcome deck. */
+    readonly backdrop?: WelcomeScreenBackdrop;
+    onAction(): void;
+    /** Which appearance this window is on. */
+    readonly appearance: KissopenAgentAppearanceChoice;
+    onAppearanceChange(appearance: KissopenAgentAppearanceChoice): void;
+}
+
+/**
+ * The appearance cycle, and what the one button that drives it is called.
+ *
+ * A single control has to say two things a segmented group says by showing
+ * them: which appearance the window is on, and which one pressing it produces.
+ * A reader who cannot see the glyph gets both from the name; a reader who can
+ * still gets the promise of what happens next, which "Theme" never gave them.
+ */
+const APPEARANCE_CYCLE: Record<
+    KissopenAgentAppearanceChoice,
+    { readonly next: KissopenAgentAppearanceChoice; readonly label: string }
+> = {
+    system: { next: "light", label: t("Appearance follows the system. Switch to light.") },
+    light: { next: "dark", label: t("Appearance is light. Switch to dark.") },
+    dark: { next: "system", label: t("Appearance is dark. Switch to following the system.") },
+};
+
+/**
+ * C-250 WelcomeScreen — the first thing a new reader sees: one centred column of
+ * big art, a title, a slogan, a row of dots, and the single button that leaves.
+ *
+ * The deck itself is C-276 WelcomeDeck, which owns the slides, their timing, and
+ * the promise that nothing under the reader's pointer moves while it advances.
+ * This screen is what that deck is standing in: the window it fills, the scenery
+ * behind it, and the one button that leaves.
+ *
+ * It fills the window of an Electron app that draws no native title bar, so it
+ * owns the drag lane across its own top 56px the way every other full-window
+ * state does. The lane is an absolutely positioned overlay outside the flex
+ * flow: the centred column is laid out as if it were not there, and it stays
+ * pinned to the window's top edge rather than scrolling away with the content
+ * at the minimum window height.
+ *
+ * The optional backdrop is also outside that flow: either one full-window
+ * decorative WebGL canvas or the appearance-matched still sky, below every
+ * control. Both are quietest behind the central copy, so the chosen light or
+ * dark appearance remains authoritative.
+ *
+ * The appearance switcher in the opposite corner is out of that flow for the
+ * same reason and one more: it exists on a screen whose whole argument is that
+ * nothing moves under the pointer, so it must not be able to take a pixel from
+ * the column no matter which of the three glyphs it is showing. It is the
+ * bottom-right corner precisely because the drag lane owns the top, and the two
+ * can never contend for the same 56px.
+ *
+ * Props only: the words are the app's, the layout and the timing are ours.
+ */
+export function WelcomeScreen(props: WelcomeScreenProps) {
+    const [local] = partitionComponentProps(props, [
+        "className",
+        "data-testid",
+        "style",
+        "slides",
+        "actionLabel",
+        "backdrop",
+        "onAction",
+        "appearance",
+        "onAppearanceChange",
+    ]);
+    return (
+        <div
+            className={["kissopen-welcome-screen", local.className].filter(Boolean).join(" ")}
+            data-kissopen-desktop-ui="welcome-screen"
+            data-appearance={local.appearance}
+            data-backdrop={local.backdrop?.kind}
+            data-testid={local["data-testid"]}
+            style={local.style}
+        >
+            {/* The window has no native title bar behind this screen, so the
+                screen itself has to provide somewhere to pick the window up.
+                It is rendered here rather than beside the screen because this
+                root is what establishes its positioning context. */}
+            <WindowDragRegion />
+            {local.backdrop?.kind === "night-sky" ? (
+                <NightSkyShader
+                    className="kissopen-welcome-screen__backdrop"
+                    motion={local.backdrop.motion}
+                />
+            ) : null}
+            {/* Scenery, so it is never announced and never named: the words in
+                front of it are what this screen says. The scrim above it is a
+                sibling rather than a filter on the picture, because it is tinted
+                with the surface token and has to follow the appearance the
+                window is on. */}
+            {local.backdrop?.kind === "sky" ? (
+                <OnboardingSky
+                    appearance={local.appearance}
+                    className="kissopen-welcome-screen__backdrop"
+                />
+            ) : null}
+            <ScrollArea
+                className="kissopen-welcome-screen__view"
+                data-kissopen-desktop-ui="welcome-view"
+                viewportClassName="kissopen-welcome-screen__view-viewport"
+            >
+                <div
+                    className="kissopen-welcome-screen__body"
+                    data-kissopen-desktop-ui="welcome-body"
+                >
+                    <WelcomeDeck
+                        label={t("Welcome slides")}
+                        slides={local.slides}
+                        tint={local.backdrop?.kind === "sky" ? "sky" : "surface"}
+                    />
+
+                    <Button
+                        className="kissopen-welcome-screen__action"
+                        onClick={local.onAction}
+                        size="large"
+                    >
+                        {local.actionLabel ?? t("Go KissOpen")}
+                    </Button>
+                </div>
+            </ScrollArea>
+
+            {/* Outside the scrollport as well as outside the flex flow: it is a
+                corner of the window rather than the last item of a column, and
+                it has to stay in that corner while a short window scrolls. */}
+            <Button
+                aria-label={APPEARANCE_CYCLE[local.appearance].label}
+                className="kissopen-welcome-screen__appearance"
+                data-appearance={local.appearance}
+                iconOnly
+                onClick={() => local.onAppearanceChange(APPEARANCE_CYCLE[local.appearance].next)}
+                size="small"
+                variant="ghost"
+            >
+                {appearanceGlyph(local.appearance)}
+            </Button>
+        </div>
+    );
+}
+
+/**
+ * The glyph for the appearance the window is on now — the state, not the
+ * destination: the button's own name already says where pressing it goes, and a
+ * glyph showing the next state would contradict the name beside it.
+ *
+ * `sun` and `moon` are the curated house names. Following the system has no
+ * curated equivalent, so it addresses the upstream Ionicon directly, which is
+ * what `Ionicon` is for: a half-filled disc is the conventional "whichever one
+ * this machine is on" mark, and it cannot be mistaken for either of the two
+ * states it sits between.
+ */
+function appearanceGlyph(appearance: KissopenAgentAppearanceChoice) {
+    if (appearance === "light") return <Icon name="sun" size={16} />;
+    if (appearance === "dark") return <Icon name="moon" size={16} />;
+    return <Ionicon name="contrast-outline" size={16} />;
+}

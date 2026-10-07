@@ -1,0 +1,214 @@
+/*
+ * C-285 PlanCatalog — the plans side by side, as a page of its own.
+ *
+ * Cards sit in one row and scroll sideways when they cannot all fit, which is
+ * how a comparison stays a comparison: stacking them turns it into a list you
+ * read in order. Every card is the same height so the eye compares rows, not
+ * ragged blocks.
+ */
+
+.kissopen-plans,
+.kissopen-plans__card {
+    box-sizing: border-box;
+}
+
+.kissopen-plans {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    background: var(--home-bg);
+}
+
+.kissopen-plans__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    padding: 36px 40px 24px;
+}
+
+/* The back glyph is the forward arrow turned around; the icon vocabulary has
+   one arrow and this is what "back" means with it. */
+.kissopen-plans__back {
+    transform: rotate(180deg);
+}
+
+.kissopen-plans__title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.01em;
+    text-align: center;
+}
+
+/* Keeps the centred title actually centred against the back button. */
+.kissopen-plans__header .kissopen-plans__back + .kissopen-plans__title {
+    margin-right: 28px;
+}
+
+.kissopen-plans__scroll {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.kissopen-plans__viewport {
+    display: flex;
+    flex-direction: column;
+}
+
+.kissopen-plans__summary {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 40px 16px;
+}
+.kissopen-plans__list {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 16px;
+    padding: 8px 40px 32px;
+}
+
+.kissopen-plans__card {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 220px;
+    padding: 24px;
+    border: 1px solid var(--home-border);
+    border-radius: 20px;
+    background: var(--home-card);
+}
+
+/* The plan being led with carries the accent; the others stay quiet so the
+   page has one recommendation rather than four shouts. */
+.kissopen-plans__card[data-featured] {
+    border-color: var(--button-primary-background);
+}
+
+.kissopen-plans__card[data-current] {
+    border-color: var(--divider);
+    background: var(--surface);
+}
+
+.kissopen-plans__name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.01em;
+}
+
+.kissopen-plans__price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 16px 0 0;
+}
+
+.kissopen-plans__amount {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 36px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+
+.kissopen-plans__period {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.kissopen-plans__tagline {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.kissopen-plans__features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.kissopen-plans__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-plans__notice {
+    margin: 0;
+    padding: 0 32px 24px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 18px;
+}
+
+/* Points sold on their own sit under the plans: a top-up, not a plan. */
+.kissopen-plans__packs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 32px 24px;
+}
+
+.kissopen-plans__packs-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.kissopen-plans__packs-note {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.kissopen-plans__pack-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.kissopen-plans__pack {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-shell);
+    background: var(--surface-high);
+}
+
+.kissopen-plans__pack-name {
+    font-weight: 600;
+}
+
+.kissopen-plans__pack-points {
+    color: var(--text-secondary);
+}
+.kissopen-plans__action-note {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 20px;
+}

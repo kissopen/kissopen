@@ -1,0 +1,13 @@
+.git
+.context
+.kissopen
+**/node_modules
+**/dist
+**/coverage
+**/.vitest-attachments
+**/__screenshots__
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*

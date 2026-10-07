@@ -1,0 +1,10 @@
+ZCOOLXiaoWei-yiqijuan.woff2 — a three-glyph subset (一 起 卷) of 站酷小薇 / ZCOOL XiaoWei,
+used only for the 一起卷 wordmark.
+
+Copyright 2018 The ZCOOL XiaoWei Project Authors (https://www.github.com/googlefonts/zcool-xiaowei)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+The full license text is available with a FAQ at: https://openfontlicense.org
+
+The subset is a Modified Version under the OFL. It is bundled with, not sold
+separately from, this software, and does not use the Reserved Font Name.

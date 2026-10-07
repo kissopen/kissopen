@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "lib": ["es2020", "es2022", "dom"],
+        "types": ["node"],
+        "rootDir": "sources",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noImplicitReturns": true,
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "noEmit": true
+    },
+    "exclude": ["node_modules"],
+    "include": ["sources/**/*.ts"]
+}

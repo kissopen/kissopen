@@ -1,0 +1,62 @@
+/*
+ * C-268 AgentInstallScreen — a restart that runs itself, inside a frame that
+ * holds still while it does.
+ *
+ * The sequence advances on its own in front of someone who is only watching, so
+ * every box that can be empty is reserved at the height it has when it is full:
+ * the copy line keeps two lines, the chip area keeps its two rows, and the
+ * action row keeps a button's height whether or not a button is in it. Only the
+ * words change between steps.
+ *
+ * The bar under the sentence is the sequence, not a duration: three segments
+ * for the three things that happen to somebody's work, with only the drain
+ * carrying a position because only the drain has counts behind it.
+ *
+ * The chips are a centred wrap of quiet pills rather than a table. The number of
+ * them is the information — a reader is being told "these are still working,
+ * nobody is being cut off" — and the component caps the list so the wrap stays
+ * inside the two rows reserved for it.
+ */
+
+/* Two lines held from the start: the sentence changes with the daemon's counts,
+   and a line appearing or leaving would move everything under it. */
+.kissopen-agent-install .kissopen-setup-page__copy {
+    min-height: 48px;
+}
+
+/* The copy's own measure: the bar is read with the sentence above it, and one
+   run out to the full body width would read as a rule across the page. */
+.kissopen-agent-install__progress {
+    max-width: 400px;
+    align-self: center;
+}
+
+.kissopen-agent-install__waiting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 56px;
+    max-width: 420px;
+    align-self: center;
+}
+
+.kissopen-agent-install__agent {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--surface-high);
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+/* One large button's height, reserved for the two states that have one. */
+.kissopen-agent-install__action {
+    display: flex;
+    flex: none;
+    align-items: stretch;
+    width: 100%;
+    height: 44px;
+}

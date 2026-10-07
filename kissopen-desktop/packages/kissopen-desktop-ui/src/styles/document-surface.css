@@ -1,0 +1,116 @@
+.kissopen-document-surface {
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+}
+
+.kissopen-document-surface__header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-document-surface__title {
+    box-sizing: border-box;
+    width: min(56vw, 640px);
+    min-width: 120px;
+    padding: 4px 6px;
+    border: 1px solid transparent;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text);
+    font: 600 15px/1.4 var(--kissopen-font-ui);
+    outline: none;
+    text-overflow: ellipsis;
+}
+
+.kissopen-document-surface__title:not(:read-only):hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-document-surface__title:not(:read-only):focus {
+    border-color: var(--radio-active);
+    background: var(--surface);
+}
+
+.kissopen-document-surface__save {
+    flex: 0 0 auto;
+    max-width: 240px;
+    color: var(--text-secondary);
+    font: 400 12px/1.4 var(--kissopen-font-ui);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-document-surface__save[data-state="error"] {
+    color: var(--text-destructive);
+}
+
+.kissopen-document-surface__participant {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    color: var(--fab-icon);
+    font: 600 11px/1 var(--kissopen-font-ui);
+}
+
+.kissopen-document-surface__body {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.kissopen-document-surface__body-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.kissopen-document-surface__status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-height: 100%;
+    padding: 24px;
+    color: var(--text-secondary);
+    font: 400 13px/1.5 var(--kissopen-font-ui);
+}
+
+.kissopen-document-surface__status[data-kissopen-tone="danger"] {
+    color: var(--text-destructive);
+}
+
+.kissopen-document-editor {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+}
+
+.kissopen-document-editor > .bn-container {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-document-editor .bn-editor {
+    box-sizing: border-box;
+    width: min(100%, 880px);
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 32px 48px 96px;
+}

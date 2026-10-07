@@ -1,0 +1,266 @@
+/*
+ * Rail — the compact 64px feature rail on the far left of the window.
+ *
+ * Contract: 64px wide, fills its parent's height, transparent over the window
+ * chrome. Column: 32px brand mark (replaceable via the brand slot),
+ * 52×48 icon+label item buttons, footer slot pinned with equal 16px
+ * left/right/bottom clearance.
+ */
+
+.kissopen-rail,
+.kissopen-rail * {
+    box-sizing: border-box;
+}
+
+.kissopen-rail {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    width: 64px;
+    height: 100%;
+    padding: 12px 0 16px;
+    /* Seamless chrome: transparent over the window backdrop, no right hairline —
+       the rail and title bar read as one frame. The compact lane centers its
+       52px-wide items on integer coordinates. */
+    background: transparent;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* ---- Brand ----------------------------------------------------------- */
+
+/* The 卷 mark at 32px wide is 32 × 27.4 (its small, back-less drawing), so
+   the row keeps the 32px height the square mark used to fill and centres it. */
+.kissopen-rail__brand {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    margin-bottom: 8px;
+}
+
+/* ---- Items ------------------------------------------------------------ */
+
+.kissopen-rail__items {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.kissopen-rail__item {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 52px;
+    height: 48px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    appearance: none;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-rail__item:hover {
+    background: var(--surface-ripple);
+    color: var(--text-secondary);
+}
+
+.kissopen-rail__item:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* The selected fill already says which destination is open; tinting the glyph
+   on top of it said the same thing a second time, in a colour that read weaker
+   against that fill than the label beside it. */
+.kissopen-rail__item[data-active] {
+    background: var(--surface-selected);
+    color: var(--text);
+}
+
+.kissopen-rail__item-icon {
+    position: relative;
+    display: block;
+    flex: none;
+    width: 20px;
+    height: 20px;
+}
+
+.kissopen-rail__item-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: block;
+}
+
+.kissopen-rail__item-badge > .kissopen-count-badge {
+    border-radius: 4px;
+}
+
+.kissopen-rail__item-unread {
+    /* The notification intentionally overlaps the icon's top-right corner. */
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--status-error);
+    box-shadow: 0 0 0 2px var(--surface);
+}
+
+.kissopen-rail__item-label {
+    display: block;
+    max-width: 48px;
+    overflow: hidden;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 12px;
+    letter-spacing: 0.02em;
+    /* Letter-spacing trails the last glyph, widening the box 0.02em to the
+     * right of the ink; cancel the bias structurally (no translate nudges)
+     * so flex centering centers the ink run itself. */
+    margin-right: -0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-rail__item[data-active] .kissopen-rail__item-label {
+    color: var(--text);
+}
+
+/* ---- Footer ------------------------------------------------------------ */
+
+.kissopen-rail__footer {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+/* Appearance is a compact independent action pinned immediately above the
+ * footer action group, preserving the profile's bottom clearance. */
+.kissopen-rail__appearance {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+.kissopen-rail__appearance-toggle {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-pill);
+    background: transparent;
+    color: var(--text-secondary);
+    appearance: none;
+    cursor: pointer;
+}
+
+.kissopen-rail__appearance-toggle:hover {
+    background: var(--surface-ripple);
+    color: var(--text-secondary);
+}
+
+.kissopen-rail__appearance-toggle:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* Primary create action — avatar-sized, pinned above the profile. */
+.kissopen-rail__primary-wrap {
+    position: relative;
+    display: flex;
+    flex: none;
+}
+
+.kissopen-rail__primary {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    background: var(--button-primary-background);
+    border: 0;
+    border-radius: var(--kissopen-radius-pill);
+    color: var(--button-primary-tint);
+    appearance: none;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        transform 120ms ease;
+}
+
+.kissopen-rail__primary:hover {
+    background: var(--button-primary-background);
+}
+
+.kissopen-rail__primary:active {
+    transform: scale(0.94);
+}
+
+.kissopen-rail__primary:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-rail__primary-popover {
+    position: absolute;
+    bottom: 0;
+    left: calc(100% + 8px);
+    z-index: 40;
+    display: flex;
+    filter: drop-shadow(0 12px 24px var(--shadow-rail));
+}
+
+.kissopen-rail__footer-action {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--kissopen-radius-pill);
+    appearance: none;
+    cursor: pointer;
+}
+
+.kissopen-rail__footer-action:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}

@@ -1,0 +1,18 @@
+/*
+ * WaitRing: a determinate arc that stands in a spinner's box. It brings no type
+ * and no color of its own beyond the theme roles for its two strokes — the row
+ * it sits in owns the font, the size, and the spacing around it.
+ */
+
+.kissopen-wait-ring {
+    display: block;
+    flex: none;
+}
+
+.kissopen-wait-ring__track {
+    stroke: var(--divider);
+}
+
+.kissopen-wait-ring__fill {
+    stroke: currentcolor;
+}

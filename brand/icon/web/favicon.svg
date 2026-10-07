@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64.0 64.0" width="64.0" height="64.0" role="img" aria-label="KISSOPEN">
+  <title>KISSOPEN</title>
+  <rect width="64.0" height="64.0" rx="14.72" fill="#262A60"/>
+  <g transform="translate(32.0 32.0) scale(1.1416216216216217) translate(-32 -32)" fill="#F3F5FE" stroke="#F3F5FE" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M16 17 L26 29 L26 35 L16 47 Z"/>
+    <path d="M48 17 L38 29 L38 35 L48 47 Z"/>
+  </g>
+</svg>

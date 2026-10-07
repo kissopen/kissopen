@@ -1,0 +1,131 @@
+/*
+ * C-179 Tooltip — secondary detail revealed on hover or focus, in the same
+ * popover language as Menu: the plain surface, a 1px modal hairline, and a
+ * short faint drop, because it floats over arbitrary content.
+ *
+ * Contract: a 24px-tall bubble (12/16 Figtree in 3px/8px padding inside a 1px
+ * border) at the 6px control radius, held 4px clear of the trigger and centered
+ * on it, capped at 320px before the text wraps. The wrapper is a bare anchor
+ * and contributes no box beyond the trigger it holds.
+ *
+ * Hover, focus, and dwell live here rather than in the component, on the model
+ * of the floating shortcut hint in badge.css, so a Tooltip owns no state and no
+ * timer.
+ */
+
+.kissopen-tooltip,
+.kissopen-tooltip * {
+    box-sizing: border-box;
+}
+
+/* The wrapper exists to be the bubble's containing block, so it must add
+   nothing to the row it sits in: it takes the trigger's own size and passes the
+   trigger's shrink behaviour through. */
+.kissopen-tooltip {
+    position: relative;
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    min-width: 0;
+}
+
+/*
+ * How long the pointer must rest on a trigger before its bubble appears.
+ *
+ * The browser's own `title` waits around a second — long enough that detail put
+ * behind it reads as absent rather than deferred. This is short enough that the
+ * detail feels like part of the thing already being looked at, and still long
+ * enough that a pointer crossing a row on its way elsewhere opens nothing. The
+ * 500ms shortcut hint answers a different question ("what is this bound to?")
+ * asked while already deciding to press, so it may wait longer.
+ *
+ * Closing has no dwell: once the pointer has left, the bubble is in the way.
+ */
+.kissopen-tooltip__bubble {
+    --kissopen-tooltip-delay: 180ms;
+    --kissopen-tooltip-fade: 90ms;
+    --kissopen-tooltip-rise: 3px;
+}
+
+/* The bubble is an overlay that intentionally leaves the flow: the trigger's
+   row must measure exactly as it does with no tooltip at all. It is also
+   centered on the trigger rather than on any sibling, which is a translation by
+   half its own content width — a distance no flex parent can express, since the
+   bubble is not one of that parent's items while it is out of flow.
+
+   It holds its placement whether it is shown or hidden. Parking it somewhere
+   else while invisible is what made it jump: `top` and `bottom` cannot animate
+   to or from `auto`, so the two edges swapped discretely, and the return trip
+   was visible as a drop the moment the fade left any opacity behind. Only
+   `opacity` and `transform` change here, and both are continuous. */
+.kissopen-tooltip__bubble {
+    position: absolute;
+    left: 50%;
+    z-index: var(--kissopen-z-overlay);
+    display: flex;
+    align-items: center;
+    width: max-content;
+    max-width: 320px;
+    /* 3px vertical padding, not 4px, so the whole bubble lands on 24px: the
+       16px line box plus 6px of padding plus both 1px borders. */
+    padding: 3px 8px;
+    background: var(--surface);
+    border: 1px solid var(--modal-border);
+    border-radius: var(--kissopen-radius-sm);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    font-synthesis: none;
+    font-variant-numeric: lining-nums tabular-nums;
+    text-align: left;
+    opacity: 0;
+    /* Hidden by opacity alone. `visibility: hidden` would drop the bubble out
+       of the accessibility tree and silence the aria-describedby that gives a
+       screen reader this detail without a pointer. */
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+    transition:
+        opacity var(--kissopen-tooltip-fade) ease,
+        transform var(--kissopen-tooltip-fade) ease;
+}
+
+/* Hidden, the bubble sits a few pixels back toward its trigger and rises into
+   place as it fades in — so it reads as coming from the thing it explains. The
+   sign follows the placement: a bubble above starts low, one below starts high. */
+.kissopen-tooltip__bubble[data-placement="top"] {
+    bottom: calc(100% + 4px);
+    transform: translate(-50%, var(--kissopen-tooltip-rise));
+}
+
+.kissopen-tooltip__bubble[data-placement="bottom"] {
+    top: calc(100% + 4px);
+    transform: translate(-50%, calc(-1 * var(--kissopen-tooltip-rise)));
+}
+
+/* Opening waits out the dwell. Closing inherits the base delay of zero, so the
+   bubble starts fading the moment the pointer leaves. */
+.kissopen-tooltip:hover > .kissopen-tooltip__bubble {
+    opacity: 1;
+    transform: translateX(-50%);
+    transition-delay: var(--kissopen-tooltip-delay);
+}
+
+/* A keyboard focus and a forced-open specimen are both deliberate: neither
+   waits, and a specimen must not depend on a transition to be measurable. */
+.kissopen-tooltip:has(:focus-visible) > .kissopen-tooltip__bubble,
+.kissopen-tooltip[data-open] > .kissopen-tooltip__bubble {
+    opacity: 1;
+    transform: translateX(-50%);
+    transition-delay: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-tooltip__bubble {
+        --kissopen-tooltip-fade: 0s;
+        --kissopen-tooltip-rise: 0px;
+    }
+}

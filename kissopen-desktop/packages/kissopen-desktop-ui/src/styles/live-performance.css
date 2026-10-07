@@ -1,0 +1,36 @@
+/* Live renderer diagnostics: visible only in an explicitly debug-launched app. */
+
+.kissopen-live-performance {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- fixed metric/value tracks keep every changing number in one stable right-aligned column */
+    display: grid;
+    flex: none;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 2px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 2px 0;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    font-synthesis: none;
+    line-height: 15px;
+}
+
+.kissopen-live-performance__metric,
+.kissopen-live-performance__value {
+    min-width: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-live-performance__value {
+    text-align: right;
+}
+
+.kissopen-live-performance__value[data-dropped="true"] {
+    color: var(--warning-critical);
+}

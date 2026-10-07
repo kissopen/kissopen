@@ -1,0 +1,11 @@
+.kissopen-qr-code {
+    box-sizing: border-box;
+    display: block;
+    flex: none;
+    max-width: 100%;
+    border-radius: var(--kissopen-radius-shell);
+    background: var(--page-canvas);
+    box-shadow: 0 12px 36px var(--shadow-floating);
+    color: var(--button-primary-background);
+    image-rendering: pixelated;
+}

@@ -1,0 +1,127 @@
+/*
+ * C-022 SegmentedControl — inline exclusive choice group.
+ *
+ * Equal 1fr columns keep every segment as wide as the widest label. There is
+ * deliberately no outer track: inactive choices sit directly on the owning
+ * surface and the active choice alone uses the same fill as a selected row.
+ */
+
+.kissopen-segmented-control {
+    box-sizing: border-box;
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- equal 1fr segment tracks must each be as wide as the widest label; flexbox cannot size auto-width columns equally */
+    display: inline-grid;
+    grid-auto-rows: 1fr;
+    align-items: stretch;
+    gap: 2px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-segmented-control[data-full-width] {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- keeps the same equal 1fr segment-track model as the auto-width control, now stretched to full width */
+    display: grid;
+    width: 100%;
+}
+
+.kissopen-segmented-control[data-size="compact"] {
+    height: var(--kissopen-subheader-control-height);
+}
+
+.kissopen-segmented-control[data-size="small"] {
+    height: 28px;
+}
+
+.kissopen-segmented-control[data-size="medium"] {
+    height: 36px;
+}
+
+.kissopen-segmented-control[data-size="large"] {
+    height: 44px;
+}
+
+/* Each segment keeps a transparent border so selection never changes geometry. */
+.kissopen-segmented-control__segment {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-segmented-control[data-size="compact"] .kissopen-segmented-control__segment,
+.kissopen-segmented-control[data-size="small"] .kissopen-segmented-control__segment {
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-segmented-control[data-size="compact"] .kissopen-segmented-control__segment {
+    padding: 0 6px;
+}
+
+.kissopen-segmented-control[data-size="medium"] .kissopen-segmented-control__segment {
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-segmented-control[data-size="large"] .kissopen-segmented-control__segment {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.kissopen-segmented-control__segment[data-active] {
+    border-color: var(--surface-selected);
+    background: var(--surface-selected);
+    color: var(--text);
+}
+
+.kissopen-segmented-control__segment:not([data-active]):hover:not(:disabled) {
+    color: var(--text);
+}
+
+.kissopen-segmented-control__segment:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+.kissopen-segmented-control__segment:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -1px;
+}
+
+.kissopen-segmented-control__icon {
+    display: flex;
+    flex: none;
+}
+
+.kissopen-segmented-control__label {
+    display: block;
+    flex: none;
+}
+
+.kissopen-segmented-control[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+.kissopen-segmented-control[data-disabled] .kissopen-segmented-control__segment {
+    cursor: not-allowed;
+    opacity: 1;
+}

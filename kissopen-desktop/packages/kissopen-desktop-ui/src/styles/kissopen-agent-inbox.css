@@ -1,0 +1,300 @@
+/*
+ * The KissopenAgent inbox: the queue of questions agents are waiting on, read down one
+ * column under a surface header.
+ *
+ * A waiting question is one outlined block — the session that asked heads it,
+ * the question fills it — because reading the two as separate objects is what
+ * made the queue hard to scan. An answered question drops the outline: it is a
+ * record rather than work, so it is a line with what was decided under it and a
+ * rule between it and the next. The column, its measure, the header height, and
+ * the section labels match the provider-usage surface, so the two KissopenAgent reading
+ * screens are the same object with different content.
+ *
+ * Layout is flexbox throughout; colors and type come only from theme roles.
+ */
+
+.kissopen-agent-inbox {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-height: 0;
+    width: 100%;
+    background: var(--surface);
+    font-family: var(--kissopen-font-ui);
+}
+
+/* The header shares the column the questions are read in, so the title sits
+ * directly above them. */
+.kissopen-agent-inbox__header {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 720px;
+    /* The toolbar insets its own title by 16px, so the strip carries the
+       remaining 8px that puts that title over the column below it. */
+    padding: 0 8px;
+}
+
+/* The scrollport is flush; spacing belongs to the content wrapper inside it. */
+.kissopen-agent-inbox__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.kissopen-agent-inbox__scroll-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/*
+ * A question is read, so the column is held to a comfortable measure rather
+ * than stretched across the whole window. It stays anchored to the surface's
+ * leading edge, like every other page in the product: a column centred in the
+ * window drifts away from the sidebar on a wide display and puts this page's
+ * content somewhere else than the page the reader just came from.
+ */
+.kissopen-agent-inbox__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px 24px 48px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 720px;
+}
+
+/* ---- Section label ---------------------------------------------------- */
+
+/* Names a run of items and says how many are in it, since the two groups are
+   reached at different points in a long queue. The extra space above it comes
+   from its own padding so it stays one child in the column's flow. */
+.kissopen-agent-inbox__section {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+    padding-top: 8px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-inbox__section-count {
+    color: var(--text);
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---- Caught up -------------------------------------------------------- */
+
+/* Said on one line in the reading column rather than as a centred block: the
+   record it introduces is right underneath and shares this left edge. */
+.kissopen-agent-inbox__caught-up {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-inbox__caught-up-mark {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    color: var(--success);
+}
+
+.kissopen-agent-inbox__caught-up-title {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.kissopen-agent-inbox__caught-up-detail {
+    min-width: 0;
+}
+
+/* ---- Item ------------------------------------------------------------- */
+
+.kissopen-agent-inbox__item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* A waiting question is an outline rather than a fill: it groups the session
+   line with the form under it without turning the queue into stacked slabs. */
+.kissopen-agent-inbox__item[data-status="pending"] {
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+}
+
+/* The run of records is its own flex parent and owns the space between them, so
+   the rule below is a fixed edge every record carries rather than spacing
+   conjured between particular siblings. */
+.kissopen-agent-inbox__records {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Records are told apart by a rule above each, not by a box around each; the
+   first one's rule closes the section label the same way. */
+.kissopen-agent-inbox__item[data-status="answered"] {
+    gap: 4px;
+    padding-top: 16px;
+    border-top: 1px solid var(--divider);
+}
+
+/*
+ * The written reply sits under the options as the last thing in the card, and
+ * is separated from them by more than the card's own rhythm: it is the other
+ * way to answer, not another option.
+ */
+.kissopen-agent-inbox__reply {
+    width: 100%;
+    padding-top: 4px;
+}
+
+.kissopen-agent-inbox__item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 28px;
+}
+
+.kissopen-agent-inbox__item-identity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-agent-inbox__item-avatar {
+    flex: 0 0 auto;
+}
+
+.kissopen-agent-inbox__item-title {
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-inbox__item-location {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-inbox__item-meta {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+}
+
+/* An answer already on its way says so where the question is being watched,
+   rather than only by greying the options out. It is progress, not a state
+   worth an alarm colour, so it is secondary ink set in the weight of a label. */
+.kissopen-agent-inbox__item-status {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-inbox__item-time {
+    font-size: 12px;
+    line-height: 20px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Answered record -------------------------------------------------- */
+
+/*
+ * A record keeps the session title's left edge: the check hangs back in the
+ * 20px column the avatar occupies above it, so the question and the decision
+ * under it both start where the title starts and the whole item reads as one
+ * left-aligned block.
+ */
+.kissopen-agent-inbox__answers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.kissopen-agent-inbox__answer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+}
+
+.kissopen-agent-inbox__answer-question {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text-secondary);
+}
+
+/* The one place this screen is coloured: a settled decision, said once per
+   answer instead of repeating the word "answered" on every row. */
+.kissopen-agent-inbox__answer-mark {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    color: var(--success);
+}
+
+.kissopen-agent-inbox__answer-text {
+    min-width: 0;
+}
+
+.kissopen-agent-inbox__answer-value {
+    margin: 0;
+    padding-left: 28px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--text);
+}
+
+.kissopen-agent-inbox__answer-empty {
+    font-weight: 400;
+    color: var(--text-secondary);
+}

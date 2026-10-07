@@ -1,0 +1,725 @@
+/*
+ * C-017 Composer + ContextChips + MentionPicker.
+ *
+ * Composer: solid inset card with no resting hairline (a 1px transparent
+ * border keeps the box model stable while focus/agents paint the frame), 16px
+ * radius, 16px visual text inset, auto-growing 14px/22px textarea (1–8 lines).
+ * A 32px action lane (32px ghost actions + primary send on an 8px rhythm) sits
+ * within a roomier 24px text-to-toolbar inset and a 16px bottom action inset.
+ * Geometry mirrors the original app's unified input panel (borderless solid
+ * fill, 16px corners, 32px controls, roomy text
+ * field). ContextChips: 24px inset chips. MentionPicker: a popover flush with
+ * the composer's own side edges, with 24px section headings over 32px one-line rows —
+ * the command picker's geometry, so both popovers read as one surface.
+ */
+
+.kissopen-composer,
+.kissopen-composer *,
+.kissopen-context-chips,
+.kissopen-context-chips *,
+.kissopen-mention-picker,
+.kissopen-mention-picker * {
+    box-sizing: border-box;
+}
+
+/* ---- Composer --------------------------------------------------------- */
+
+.kissopen-composer {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-composer__surface {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--input-background);
+    /* The whole card is the input: every point that is not a control presses
+     * into the draft (see focusTextareaFromSurface), so the pointer says so
+     * across the padding and the action lane instead of only over the text.
+     * Controls declare their own pointer/not-allowed cursor. */
+    cursor: text;
+    /* No resting hairline (matches the original unified panel). The 1px border
+     * stays in the box model — layout is unchanged — but is transparent until
+     * focus/agents paint it. overflow is intentionally NOT hidden: the mention
+     * and emoji popovers are Composer children anchored above it (bottom:100%),
+     * so clipping the overflow would hide them. */
+    border: 1px solid transparent;
+    border-radius: 16px;
+    /* 8px shell below the action lane (1px transparent border + 7px pad). */
+    padding-bottom: 7px;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
+}
+
+.kissopen-composer:focus-within .kissopen-composer__surface {
+    border-color: var(--divider);
+}
+
+/*
+ * Agents mode addresses the chat's agent with the whole input, so the card
+ * itself carries the signal: a quiet accent-tinted hairline at rest that
+ * resolves to the full accent while typing. No chips, labels, or extra rows —
+ * the mode reads from the frame and the recipient-named placeholder.
+ */
+.kissopen-composer[data-agents] .kissopen-composer__surface {
+    border-color: var(--surface-selected);
+}
+
+.kissopen-composer[data-agents]:focus-within .kissopen-composer__surface {
+    border-color: var(--radio-active);
+}
+
+/*
+ * A file drag the composer will take. It reads from the frame, like agents mode
+ * and focus above it: the card takes the accent line and lifts its fill, so the
+ * destination is unmistakable while the pointer is still holding the file. The
+ * fill is a state, not a surface of its own, so it uses the same selected role
+ * the rest of the system uses to say "this one".
+ */
+.kissopen-composer[data-dropping] .kissopen-composer__surface {
+    background: var(--surface-selected);
+    border-color: var(--radio-active);
+}
+
+/* The edge fades carry the card's fill over the scrollport's cut edges, so they
+ * follow it into this state instead of leaving two bands of the resting fill
+ * across a lifted card. */
+.kissopen-composer[data-dropping] .kissopen-composer__fade {
+    background: var(--surface-selected);
+}
+
+/* Chips sit clear of the card's 16px corner field (inset ≥ radius) and align
+ * with the textarea's 20px left edge; a chip cannot nest concentrically inside
+ * the larger card corner (see the nested-corner contract in testing). */
+.kissopen-composer__context {
+    display: flex;
+    padding: 8px 20px 0;
+}
+
+.kissopen-composer__attachments {
+    display: flex;
+    padding: 12px 16px 0;
+}
+
+.kissopen-composer[data-disabled] .kissopen-composer__surface {
+    cursor: not-allowed;
+}
+
+.kissopen-composer[data-pending] .kissopen-composer__surface {
+    cursor: wait;
+}
+
+/* A popover is chrome to choose from, not text to write in; it keeps the
+ * ordinary pointer instead of inheriting the card's caret. */
+.kissopen-composer__popover {
+    cursor: default;
+}
+
+/* The textarea owns the vertical hit area instead of leaving its surrounding
+ * inset as inert wrapper space. The insets are named because the draft's edge
+ * fades are placed against the text box they produce. */
+.kissopen-composer__input {
+    /* Measured from the scrolled draft by the component; zero whenever that end
+     * of the scrollport cuts nothing. */
+    --kissopen-composer-fade-top: 0px;
+    --kissopen-composer-fade-bottom: 0px;
+    --kissopen-composer-input-top: 20px;
+    --kissopen-composer-input-side: 19px;
+    /*
+     * Keep the roomier draft-to-toolbar inset while the dock gives back the
+     * same 16px below the complete composer stack, preserving its total height.
+     */
+    --kissopen-composer-input-bottom: 24px;
+    position: relative;
+    box-sizing: border-box;
+    padding: var(--kissopen-composer-input-top) var(--kissopen-composer-input-side)
+        var(--kissopen-composer-input-bottom);
+}
+
+/*
+ * Edge fades. A draft longer than the eight visible lines otherwise ends on the
+ * hard edge of the scrollport, with a half line sliced through the middle of its
+ * glyphs. These carry the card's own fill over that boundary so the clipped line
+ * dissolves into it instead.
+ *
+ * Absolutely positioned because they are overlays over the scrolling text rather
+ * than boxes in the flow. They cover exactly the text column — no wider, so the
+ * card's 16px corners stay untouched.
+ *
+ * Their height is not a fixed band: the component measures the fragment of a
+ * line each end is cutting and never gives a fade more than that, so a whole
+ * line — its ink, its selection highlight, the caret sitting in it — is never
+ * painted over, and a draft resting on a line boundary shows no fade at all.
+ * A 14px fixed band was tried first and visibly washed out the last complete
+ * line at 2× in both schemes.
+ */
+.kissopen-composer__fade {
+    position: absolute;
+    left: var(--kissopen-composer-input-side);
+    right: var(--kissopen-composer-input-side);
+    background: var(--input-background);
+    pointer-events: none;
+}
+
+.kissopen-composer__fade--top {
+    top: var(--kissopen-composer-input-top);
+    height: var(--kissopen-composer-fade-top);
+    /* Eased alpha stencil, solid on the cut edge and gone within the band; a
+     * linear ramp reads as a grey bar with a visible end. */
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        black 0,
+        color-mix(in srgb, black 62%, transparent) 30%,
+        color-mix(in srgb, black 22%, transparent) 58%,
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        black 0,
+        color-mix(in srgb, black 62%, transparent) 30%,
+        color-mix(in srgb, black 22%, transparent) 58%,
+        transparent 100%
+    );
+}
+
+.kissopen-composer__fade--bottom {
+    bottom: var(--kissopen-composer-input-bottom);
+    height: var(--kissopen-composer-fade-bottom);
+    -webkit-mask-image: linear-gradient(
+        to top,
+        black 0,
+        color-mix(in srgb, black 62%, transparent) 30%,
+        color-mix(in srgb, black 22%, transparent) 58%,
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to top,
+        black 0,
+        color-mix(in srgb, black 62%, transparent) 30%,
+        color-mix(in srgb, black 22%, transparent) 58%,
+        transparent 100%
+    );
+}
+
+/*
+ * The draft grows itself. `field-sizing: content` is the platform's own answer
+ * to an auto-growing textarea: the control takes its height from the text it
+ * holds, wrapped in its own column, as ordinary layout — no measuring twin, no
+ * scrollHeight read, no height written from script, and correct on a window
+ * resize because it is the same layout pass everything else uses.
+ *
+ * Kissopen is a desktop app before it is a web page. It ships in Electron, so the
+ * engine is Chromium, where this is supported; WebKit has it too. Gecko has not
+ * shipped it, and we are not holding the composer's mechanism back to the worst
+ * engine we do not ship on — there it degrades to the `rows` default, a static
+ * one-line box, which is a rendering difference and not a broken product.
+ */
+/* The voice as it is heard, standing where the draft was while a recording
+   runs, and the wait for its words after. */
+.kissopen-composer__wave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 100%;
+    min-height: 32px;
+    padding: 4px 8px;
+    box-sizing: border-box;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+.kissopen-composer__wave--wait {
+    gap: 8px;
+}
+.kissopen-composer__wave-time {
+    flex: 0 0 auto;
+    margin-left: 8px;
+    color: var(--danger, #c2410c);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+.kissopen-composer__wave-bar {
+    flex: 0 0 3px;
+    border-radius: 2px;
+    background: var(--accent, var(--text));
+    transition: height 80ms linear;
+}
+
+.kissopen-composer__textarea-scroll {
+    width: 100%;
+}
+
+.kissopen-composer__textarea {
+    display: block;
+    field-sizing: content;
+    width: 100%;
+    min-block-size: 22px;
+    max-block-size: 176px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--input-text);
+    caret-color: var(--radio-active);
+    font-family: var(--kissopen-font-ui);
+    font-size: var(--kissopen-chat-font-size);
+    font-weight: 400;
+    line-height: var(--kissopen-chat-line-height);
+    font-synthesis: none;
+    resize: none;
+    overflow-y: auto;
+    outline: none;
+    /* Engine-scoped optical correction (see the corrections block below).
+     * transform keeps layout — card height and auto-grow math — untouched. */
+    transform: translateY(var(--kissopen-composer-textarea-y, 0px));
+}
+
+.kissopen-composer__textarea::placeholder {
+    color: var(--input-placeholder);
+    opacity: 1;
+}
+
+.kissopen-composer__textarea:disabled {
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+.kissopen-composer[data-pending] .kissopen-composer__textarea {
+    color: var(--text-secondary);
+    opacity: 0.64;
+    cursor: wait;
+}
+
+/* 32px action lane. The attachment, model selector, and circular send button
+ * share a 16px card inset on their outer/bottom edges. */
+.kissopen-composer__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 15px 8px;
+}
+
+.kissopen-composer__footer {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+    padding: 0 16px;
+}
+
+.kissopen-composer__leading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* Why the last recording gave no words, said in the leading lane. */
+.kissopen-composer__dictation-error {
+    overflow: hidden;
+    max-width: 320px;
+    color: var(--danger, #c2410c);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-composer__model {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+/* Composer-local action geometry: the shared Button ships a 28px "small", but
+ * the composer's unified panel uses 32px controls (matches the original app).
+ * Overridden here, not in the Button API, so other Button call sites are
+ * unaffected. */
+.kissopen-composer__send.kissopen-button[data-size="small"] {
+    height: 32px;
+}
+
+.kissopen-composer__leading .kissopen-button[data-size="small"] {
+    height: 32px;
+}
+
+.kissopen-composer__send.kissopen-button[data-icon-only][data-size="small"] {
+    width: 32px;
+}
+
+.kissopen-composer__leading .kissopen-button[data-icon-only][data-size="small"] {
+    width: 32px;
+    border-radius: 50%;
+}
+
+/* Native plugin composer contribution triggers sit beside the attachment
+ * affordance on the left side of the toolbar. */
+.kissopen-composer__contributions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Composer ghost controls share one subtle hover treatment. */
+.kissopen-composer__contributions .kissopen-button[data-variant="ghost"]:hover:not(:disabled),
+.kissopen-composer__leading .kissopen-button[data-variant="ghost"]:hover:not(:disabled),
+.kissopen-composer__trailing .kissopen-button[data-variant="ghost"]:hover:not(:disabled) {
+    background: var(--surface-ripple);
+    color: var(--text);
+}
+
+.kissopen-composer__trailing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.kissopen-composer__send.kissopen-button {
+    border-radius: 50%;
+    /* Availability fades this one stable light control in and out. Its black
+     * arrow never swaps color as the draft becomes sendable. */
+    background: var(--button-primary-disabled);
+    color: var(--button-primary-background);
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        opacity 120ms ease;
+}
+
+/* The toolbar uses a 16px upward arrow in its 32px circular send control. The
+ * slightly larger ink matches adjacent 14px line icons while retaining equal
+ * transparent space on every edge of the directional glyph's bounds. */
+.kissopen-composer__send .kissopen-button__icon .kissopen-icon {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+}
+
+/* The stop square is solid ink, not an outline, so the same 16px box would read
+ * far heavier than the send arrow it replaces in that one circle. 11px keeps the
+ * two states equal in weight and leaves the control's geometry untouched. */
+.kissopen-composer__stop .kissopen-button__icon .kissopen-icon {
+    width: 11px !important;
+    height: 11px !important;
+    font-size: 11px !important;
+}
+
+.kissopen-composer__trailing > .kissopen-button:not(.kissopen-composer__send) .kissopen-icon {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+}
+
+/* The attachment plus needs a fuller 20px stroke presence in its 32px target;
+ * the directional send glyph remains 16px for its lighter arrow silhouette. */
+.kissopen-composer__leading > .kissopen-button[aria-label="Attach file"] .kissopen-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 20px !important;
+}
+
+.kissopen-composer__popover {
+    position: absolute;
+    /* Offsets resolve against the padding box, which is inset by the card's 1px
+     * border: -1px puts the popover's own edges exactly on the composer's
+     * border-box edges, so the two cards share one vertical line down each
+     * side. The bottom offset leaves an 8px visual gap above that same edge. */
+    bottom: calc(100% + 9px);
+    left: -1px;
+    right: -1px;
+    z-index: 20;
+}
+
+/* The emoji picker is a fixed-size grid, not a list that follows the composer
+   width, so it keeps its own leading anchor. */
+.kissopen-composer__popover--emoji {
+    left: 11px;
+    right: auto;
+}
+
+.kissopen-composer__file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ---- ContextChips ------------------------------------------------------ */
+
+.kissopen-context-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-context-chips__label {
+    margin-top: var(--kissopen-chips-label-y, 0px);
+    margin-right: 2px;
+    margin-bottom: calc(-1 * var(--kissopen-chips-label-y, 0px));
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.kissopen-context-chips__chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 8px;
+    background: var(--input-background);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+}
+
+.kissopen-context-chips__icon {
+    display: flex;
+    flex: none;
+    color: var(--text-secondary);
+}
+
+.kissopen-context-chips__text {
+    margin-top: var(--kissopen-chip-text-y, 0px);
+    margin-bottom: calc(-1 * var(--kissopen-chip-text-y, 0px));
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 22px;
+    white-space: nowrap;
+}
+
+.kissopen-context-chips__detail {
+    margin-top: var(--kissopen-chip-detail-y, 0px);
+    margin-bottom: calc(-1 * var(--kissopen-chip-detail-y, 0px));
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 22px;
+    white-space: nowrap;
+}
+
+.kissopen-context-chips__remove {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    margin: 0 -2px 0 -1px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    appearance: none;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-context-chips__remove:hover {
+    background: var(--surface-ripple);
+    color: var(--text);
+}
+
+.kissopen-context-chips__remove:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+/* ---- MentionPicker ----------------------------------------------------- */
+
+/*
+ * The mention popover is the command picker in another key: same card on the
+ * composer's own surface with no drop, same 6px pad, same 24px section headings
+ * and 32px one-line rows. Its leading lane uses the same xs agent avatar as the
+ * rest of the composer.
+ */
+
+.kissopen-mention-picker {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: 16px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    overflow: hidden;
+}
+
+.kissopen-mention-picker__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.kissopen-mention-picker__row {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 32px;
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    /* The card's 16px corner minus the 7px border-box inset (1px border + 6px
+       pad) is the 9px arc a row inside that corner field is allowed. */
+    border-radius: 9px;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    appearance: none;
+    transition: background-color 120ms ease;
+}
+
+.kissopen-mention-picker__row:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-mention-picker__row[data-active] {
+    background: var(--surface-selected);
+}
+
+.kissopen-mention-picker__row:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-mention-picker__meta {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.kissopen-mention-picker__name {
+    /* No correction: Blink paints this 13px/16px lane 0.5px above the
+     * Gecko/WebKit consensus, but Blink snaps half-pixel paint offsets (via
+     * margins or position: relative) to whole pixels, so a +0.5px nudge
+     * paints as +1px and overshoots. The 0.5px residual is accepted and
+     * pinned by Composer.test.tsx. */
+    flex: none;
+    max-width: 100%;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kissopen-mention-picker__description {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kissopen-mention-picker__status {
+    flex: none;
+}
+
+.kissopen-mention-picker__empty {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 10px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 16px;
+}
+
+/* ---- Optical corrections ------------------------------------------------ */
+
+/*
+ * Measured per engine at true 2× with alpha-weighted visible-pixel centroids
+ * on zeroed vars, using x-height-only probe strings so the softened baseline
+ * (ink bottom) is directly comparable across engines (see Composer.test.tsx).
+ *
+ * Text nudges use paired margins (margin-top: Y with margin-bottom: -Y) in
+ * center-aligned flex rows: the border box moves down by exactly Y as real
+ * layout while the margin box — and row height — stays fixed. The textarea is
+ * not flex-centered, so it uses a transform, which leaves the card height and
+ * the auto-grow scrollHeight math untouched.
+ *
+ * Raw baselines ("xxxx" ink bottom): textarea 15px/22px — Blink 16 / WebKit 16
+ * / Gecko 16.5 (Gecko rounds the half-leading down, placing the line 0.5px
+ * low). Chip label 12px/22px — Blink 16 / WebKit 16 / Gecko 16.5 (same 0.5px).
+ * Chip detail 11px/22px — Blink 15 (a full pixel above the neighbouring
+ * label's baseline) / WebKit 16 / Gecko 16. Chips label 10px mono uppercase in
+ * the 24px lane — cap-block centroid Blink -0.75 / WebKit -0.25 / Gecko +0.25.
+ * Each correction pins every engine to the shared consensus placement.
+ */
+.kissopen-context-chips {
+    --kissopen-chip-text-y: 0px;
+    --kissopen-chip-detail-y: 1px;
+    --kissopen-chips-label-y: 0.75px;
+}
+
+/*
+ * Firefox — only Gecko parses -moz-appearance. (@-moz-document is stripped by
+ * the CSS pipeline, and @supports (font: -apple-system-body) also matches
+ * Blink on macOS, so neither is a usable engine scope.)
+ */
+@supports (-moz-appearance: none) {
+    .kissopen-composer {
+        --kissopen-composer-textarea-y: -0.5px;
+    }
+
+    .kissopen-context-chips {
+        --kissopen-chip-text-y: -0.5px;
+        --kissopen-chip-detail-y: 0px;
+        --kissopen-chips-label-y: -0.25px;
+    }
+}
+
+/* WebKit — Blink and Gecko do not parse -webkit-named-image(). */
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-context-chips {
+        --kissopen-chip-detail-y: 0px;
+        --kissopen-chips-label-y: 0.25px;
+    }
+}

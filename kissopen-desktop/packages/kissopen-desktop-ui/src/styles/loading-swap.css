@@ -1,0 +1,62 @@
+/*
+ * LoadingSwap — a fixed square holding a Spinner and its resting content on
+ * top of each other, cross-fading on `data-loading`.
+ *
+ * The fade is a transition, not an animation, and that is the whole
+ * first-mount contract: a transition needs a previous computed value to run
+ * from, so the layer that is visible on the first render is simply painted at
+ * full strength. Only a later change of `loading` fades.
+ *
+ * `visibility` is transitioned alongside opacity with a zero duration: it
+ * flips to `visible` immediately when a layer starts appearing, and is held
+ * until the fade-out finishes when it leaves. That keeps the hidden layer out
+ * of hit-testing and out of the accessibility tree without cutting the fade.
+ */
+
+.kissopen-loading-swap {
+    --kissopen-loading-swap-size: 20px;
+    --kissopen-loading-swap-duration: 160ms;
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    box-sizing: border-box;
+    width: var(--kissopen-loading-swap-size);
+    height: var(--kissopen-loading-swap-size);
+    vertical-align: middle;
+}
+
+/*
+ * Both layers occupy the same square, so they are stacked out of flow rather
+ * than laid out beside each other; each layer is itself a centring flex box.
+ */
+.kissopen-loading-swap__layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity var(--kissopen-loading-swap-duration) ease,
+        visibility 0s linear var(--kissopen-loading-swap-duration);
+}
+
+.kissopen-loading-swap[data-loading] .kissopen-loading-swap__layer[data-layer="spinner"],
+.kissopen-loading-swap:not([data-loading]) .kissopen-loading-swap__layer[data-layer="content"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+        opacity var(--kissopen-loading-swap-duration) ease,
+        visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-loading-swap__layer {
+        --kissopen-loading-swap-duration: 1ms;
+    }
+}

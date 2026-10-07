@@ -1,0 +1,238 @@
+/*
+ * C-168 FileBrowser — the file listing of a workspace panel.
+ *
+ * A 32px control row over a full-bleed scrollport. The row holds the one-layer
+ * Changes / All Files choice, diff or selection facts, and the flat layout
+ * switch. No rule separates it from the file rows.
+ */
+
+.kissopen-file-browser,
+.kissopen-file-browser * {
+    box-sizing: border-box;
+}
+
+.kissopen-file-browser {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    color: var(--text);
+}
+
+/* ---- Control row ------------------------------------------------------ */
+
+/* The control row is inset like the listing beneath it, so its leading control
+   starts on the same edge the file rows start on. */
+.kissopen-file-browser__controls {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: var(--kissopen-subheader-height);
+    padding: 0 var(--kissopen-panel-inset);
+}
+
+.kissopen-file-browser__scopes {
+    flex: none;
+}
+
+.kissopen-file-browser__layouts {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 2px;
+}
+
+.kissopen-file-browser__layout {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: var(--kissopen-subheader-control-height);
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.kissopen-file-browser__layout:hover {
+    color: var(--text);
+}
+
+.kissopen-file-browser__layout[data-active] {
+    border-color: var(--surface-selected);
+    background: var(--surface-selected);
+    color: var(--text);
+}
+
+/* Takes the slack before the layout switch. The cluster is clipped as a unit
+   if a very narrow panel cannot state the whole selection or diff total. */
+.kissopen-file-browser__summary {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 6px;
+    min-width: 0;
+    height: 16px;
+    overflow: hidden;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+    font-feature-settings: "tnum" 1;
+}
+
+.kissopen-file-browser__count {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+}
+
+/* The two totals travel together: half a diff stat is worse than none. */
+.kissopen-file-browser__lines {
+    display: flex;
+    flex: none;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.kissopen-file-browser__added {
+    display: block;
+    flex: none;
+    color: var(--git-added-text);
+}
+
+.kissopen-file-browser__deleted {
+    display: block;
+    flex: none;
+    color: var(--git-removed-text);
+}
+
+.kissopen-file-browser__note {
+    display: flex;
+    flex: none;
+    align-items: center;
+    padding: 0 12px 6px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+/* ---- Upload ----------------------------------------------------------- */
+
+/* Pushed to the end of the row, where the row's facts end in Changes. */
+.kissopen-file-browser__upload {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: var(--kissopen-subheader-control-height);
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.kissopen-file-browser__summary + .kissopen-file-browser__layouts + .kissopen-file-browser__upload {
+    margin-left: 0;
+}
+
+.kissopen-file-browser__upload:hover:not(:disabled) {
+    color: var(--text);
+    background: var(--surface-selected);
+}
+
+.kissopen-file-browser__upload:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.kissopen-file-browser__notice {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 0 var(--kissopen-panel-inset) 6px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.kissopen-file-browser__notice[data-tone="error"] {
+    color: var(--text-destructive);
+}
+
+.kissopen-file-browser__notice-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.kissopen-file-browser__notice-dismiss {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* The whole listing is the target while files are dragged over it. */
+.kissopen-file-browser {
+    position: relative;
+}
+
+.kissopen-file-browser__drop {
+    position: absolute;
+    inset: 4px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px dashed var(--text-secondary);
+    border-radius: var(--kissopen-radius-md, 10px);
+    background: color-mix(in srgb, var(--surface-selected) 80%, transparent);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+/* ---- Body ------------------------------------------------------------- */
+
+/* The region the listing fills. The tree inside it owns the scrolling and the
+   inset, so this is only the box that says how much room it has. */
+.kissopen-file-browser__body {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-height: 0;
+}

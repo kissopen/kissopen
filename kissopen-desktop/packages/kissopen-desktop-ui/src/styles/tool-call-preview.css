@@ -1,0 +1,200 @@
+/*
+ * ToolCallPreview — the right-panel body for a selected tool call.
+ *
+ * The heading is fixed; one edge-to-edge scrollport owns the rest. Its inner
+ * column carries the 12px reading inset and keeps terminal output, diffs, and
+ * generic JSON in the same restrained inspector vocabulary.
+ */
+
+.kissopen-tool-call-preview {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-tool-call-preview__heading {
+    box-sizing: border-box;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-tool-call-preview__icon {
+    display: flex;
+    flex: none;
+    color: var(--text-secondary);
+}
+
+.kissopen-tool-call-preview__heading-copy {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.kissopen-tool-call-preview__heading-copy strong,
+.kissopen-tool-call-preview__heading-copy span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-tool-call-preview__heading-copy strong {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 16px;
+}
+
+.kissopen-tool-call-preview__heading-copy span {
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 14px;
+}
+
+.kissopen-tool-call-preview__status {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+.kissopen-tool-call-preview__status[data-failed] {
+    color: var(--status-error);
+}
+
+/* Full-bleed scrollport; the child owns the readable inset. */
+.kissopen-tool-call-preview__scroll {
+    flex: 1 1 0%;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-tool-call-preview__scroll-viewport {
+    display: flex;
+    overflow: auto;
+}
+
+.kissopen-tool-call-preview__content {
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+}
+
+/*
+ * Terminal previews own the remaining panel height so their transcript is the
+ * scrollport. Other preview kinds remain content-sized and use the outer
+ * full-bleed scrollport for the whole document.
+ */
+.kissopen-tool-call-preview[data-kind="execCommand"] .kissopen-tool-call-preview__content,
+.kissopen-tool-call-preview[data-kind="backgroundTerminalInteraction"]
+    .kissopen-tool-call-preview__content {
+    flex: 1 1 0%;
+    min-height: 100%;
+}
+
+/*
+ * Every block keeps its own height. As shrinkable flex items they were squeezed
+ * to fit the panel instead of overflowing it, so a long diff was silently cut
+ * off and the column that should have scrolled had nothing to scroll.
+ */
+.kissopen-tool-call-preview__content > * {
+    flex: none;
+}
+
+.kissopen-tool-call-preview__section,
+.kissopen-tool-call-preview__operations {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.kissopen-tool-call-preview__label {
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    text-transform: uppercase;
+}
+
+.kissopen-tool-call-preview__command,
+.kissopen-tool-call-preview__terminal-content,
+.kissopen-tool-call-preview__arguments,
+.kissopen-tool-call-preview__result {
+    box-sizing: border-box;
+    min-width: 0;
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--diff-context-bg);
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 18px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.kissopen-tool-call-preview__terminal {
+    flex: 1 1 0%;
+    min-width: 0;
+    min-height: 160px;
+}
+
+.kissopen-tool-call-preview__terminal-viewport {
+    display: flex;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.kissopen-tool-call-preview__terminal-content {
+    flex: 1 1 auto;
+    width: 100%;
+    background: var(--surface);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.kissopen-tool-call-preview__result[data-failed] {
+    color: var(--status-error);
+}
+
+.kissopen-tool-call-preview__operation {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 8px 10px;
+    border-left: 2px solid var(--divider);
+}
+
+.kissopen-tool-call-preview__operation span {
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 14px;
+}
+
+.kissopen-tool-call-preview__operation code {
+    overflow-wrap: anywhere;
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 18px;
+}

@@ -1,0 +1,56 @@
+/* C-301 ProjectCreateDialog ------------------------------------------------ */
+
+.kissopen-project-create__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 4px 0 8px;
+}
+
+.kissopen-project-create__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kissopen-project-create__label {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.kissopen-project-create__folder {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 6px 8px 6px 14px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    color: var(--text-secondary);
+}
+
+.kissopen-project-create__path {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-project-create__error {
+    margin-right: auto;
+    color: var(--warning-critical);
+    font-size: 13px;
+}
+
+.kissopen-project-create__field > .kissopen-text-field {
+    width: 100%;
+}
+
+.kissopen-project-create__hint {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}

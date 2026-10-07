@@ -1,0 +1,603 @@
+/*
+ * KissopenAgent settings window: the permanent category column's body, its section blocks,
+ * and the provider cards inside the Providers category.
+ */
+
+.kissopen-agent-settings__heading {
+    display: flex;
+    align-items: baseline;
+    flex: 1 1 0%;
+    gap: 8px;
+    min-width: 0;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-settings__heading-title {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.kissopen-agent-settings__heading-description {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Full-bleed scrollport: it owns the whole region below the header band and
+   carries no spacing of its own. */
+.kissopen-agent-settings__body {
+    box-sizing: border-box;
+    flex: 1 1 0%;
+    min-height: 0;
+    width: 100%;
+    background: var(--home-bg);
+}
+
+.kissopen-agent-settings__body-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Held to a comfortable measure but anchored to the surface's leading edge,
+   like every other page: a column centred in the window drifts away from the
+   category list beside it on a wide display. */
+.kissopen-agent-settings__content {
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    max-width: 960px;
+    padding: 8px 40px 48px;
+}
+
+.kissopen-agent-settings__section {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid var(--home-border);
+    background: var(--home-card);
+}
+
+@media (max-width: 1000px) {
+    .kissopen-agent-settings__content {
+        padding: 8px 24px 32px;
+    }
+    .kissopen-agent-settings__section {
+        padding: 20px;
+    }
+}
+
+.kissopen-agent-settings__section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.kissopen-agent-settings__section-title {
+    margin: 0;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 20px;
+}
+
+.kissopen-agent-settings__section-description {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-agent-settings__section-rows {
+    display: flex;
+    flex-direction: column;
+}
+
+.kissopen-agent-settings__section-rows[data-rows="cards"] {
+    gap: 12px;
+}
+
+.kissopen-agent-settings__pending {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-agent-settings__agent-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kissopen-agent-settings__agent-version {
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    font-synthesis: none;
+    line-height: 20px;
+}
+
+.kissopen-agent-settings__agent-runtime {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-agent-mobile-settings__pairing {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    background: var(--surface-high);
+    border: 1px solid var(--divider);
+    border-radius: 14px;
+}
+
+.kissopen-agent-mobile-settings__waiting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+/*
+ * The editor a whole document is edited in, inside a category that is otherwise
+ * rows. It is given a height rather than left to grow: the settings body is one
+ * scrollport, and an editor that grew with its text would push everything under
+ * it away and scroll in two places at once.
+ */
+.kissopen-agent-settings__editor {
+    display: flex;
+    height: 520px;
+    overflow: hidden;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+}
+
+.kissopen-agent-provider {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface-high);
+    border: 1px solid var(--divider);
+    border-radius: 14px;
+}
+
+/* C-706: bounded, scrollable model selection inside the standard dialog. */
+.kissopen-custom-provider,
+.kissopen-custom-provider__models {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+.kissopen-custom-provider p {
+    margin: 0;
+}
+.kissopen-custom-provider__hint {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+.kissopen-custom-provider__toolbar {
+    display: flex;
+    justify-content: flex-end;
+}
+.kissopen-custom-provider__model-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.kissopen-custom-provider__model-row .kissopen-checkbox {
+    flex: 1;
+    min-width: 0;
+}
+.kissopen-custom-provider__model-row .kissopen-button {
+    flex-shrink: 0;
+}
+.kissopen-custom-reasoning__name {
+    overflow-wrap: anywhere;
+}
+.kissopen-custom-reasoning__levels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+}
+.kissopen-custom-provider__status,
+.kissopen-custom-provider__selection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.kissopen-custom-provider__selection {
+    justify-content: space-between;
+}
+.kissopen-custom-provider__models {
+    max-height: 280px;
+    overflow-y: auto;
+}
+.kissopen-custom-provider__models .kissopen-checkbox {
+    overflow-wrap: anywhere;
+}
+
+.kissopen-agent-provider__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.kissopen-agent-provider__identity {
+    display: flex;
+    align-items: center;
+    flex: 1 1 0%;
+    gap: 12px;
+    min-width: min(180px, 100%);
+}
+
+.kissopen-agent-provider__glyph {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    /* The card is 10px and the glyph tile is inset 0px from nothing: it is an
+       independent rounded shape, not a nested corner. */
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-provider[data-status="ready"] .kissopen-agent-provider__glyph {
+    color: var(--text);
+}
+
+/* A provider that cannot be used yet still lists what it would offer, muted so
+   the models read as unavailable rather than as switched off by the reader. */
+.kissopen-agent-provider:not([data-status="ready"]) .kissopen-agent-provider__models {
+    opacity: 0.55;
+}
+
+.kissopen-agent-provider__hint {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-agent-provider__naming {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-agent-provider__name {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-provider__meta {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-agent-provider__models {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    background: var(--surface);
+    /* 16px card padding inset from a 10px outer corner leaves no curve to
+       parallel, so this list is an independent 8px shape. */
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+}
+
+.kissopen-agent-provider__model {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 52px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--divider);
+}
+
+.kissopen-agent-provider__model:first-child {
+    border-top: 0;
+}
+
+.kissopen-agent-provider__model-text {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-agent-provider__model-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-agent-provider__model-name {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-provider__model-meta {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-provider__models-empty {
+    box-sizing: border-box;
+    padding: 12px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+/* ---- Nodes ------------------------------------------------------------- */
+
+/* One node reads as the same kind of card a provider does: they are both a
+   thing this KissopenAgent is connected to, listed with what it currently reports. */
+.kissopen-agent-node {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface-high);
+    border: 1px solid var(--divider);
+    border-radius: 14px;
+}
+
+.kissopen-agent-node__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kissopen-agent-node__identity {
+    display: flex;
+    align-items: center;
+    flex: 1 1 0%;
+    gap: 12px;
+    min-width: 0;
+}
+
+.kissopen-agent-node__glyph {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    /* An independent rounded tile inside the 16px card padding, so it parallels
+       no outer curve and carries its own 8px radius. */
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-node[data-state="connected"] .kissopen-agent-node__glyph {
+    color: var(--text);
+}
+
+.kissopen-agent-node__naming {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-agent-node__name {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-node__meta {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-node__message {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+/* What this window actually holds from the machine, as distinct from the state
+   of the link above it. Accent ink because it is the good case, and the only
+   line on the card that is about this window rather than about the host. */
+.kissopen-agent-node__work {
+    display: block;
+    color: var(--text-link);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+/* The host's own identity is a fact about this machine rather than a card of
+   its own, so it sits above the transports as one labelled line. */
+.kissopen-agent-node__host {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-agent-node__host-label {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-agent-node__host-value {
+    overflow: hidden;
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * No card. The profile is a category of settings like every other one in this
+ * window, so its fields are hairline-separated rows and the block carries no
+ * border, fill, or radius of its own — a frame here read as an object placed
+ * inside settings rather than a part of them. The rows tile themselves, so the
+ * only gap is the one under the identity summary above them.
+ */
+.kissopen-agent-profile {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.kissopen-agent-profile__identity {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 12px;
+    padding-bottom: 16px;
+}
+
+/* Trailing, and never squeezed: the naming column absorbs a narrow window. */
+.kissopen-agent-profile__keys.kissopen-button {
+    flex: none;
+    margin-left: auto;
+}
+
+/* The name and the handle are one identity on one line: the handle sits beside
+   the name rather than under it, and gives way first when the line is short. */
+.kissopen-agent-profile__line {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+    gap: 8px;
+}
+
+.kissopen-agent-profile__naming {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.kissopen-agent-profile__name {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-profile__status {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Wide enough for an email address, which is the longest thing either field
+   holds, and fixed so the two rows' controls line up with each other. */
+.kissopen-agent-profile__field {
+    width: 260px;
+}
+
+/* The revealed secret key. It is the one piece of text on this screen that must
+   be transcribed exactly, so it is set in the mono face and given a frame of its
+   own rather than sitting inline in a row's description. */
+.kissopen-agent-profile__secret {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px 8px 10px 12px;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    background: var(--surface-high);
+}
+
+.kissopen-agent-profile__secret > code {
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
+    user-select: text;
+}
+
+.kissopen-agent-profile__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 16px;
+}

@@ -1,0 +1,34 @@
+{
+    "name": "@kissopen/kissopen-sync",
+    "version": "0.1.0",
+    "description": "The relay data core shared by every Kissopen client: wire types, message reduction and end-to-end encryption",
+    "license": "MIT",
+    "type": "module",
+    "main": "./sources/index.ts",
+    "types": "./sources/index.ts",
+    "exports": {
+        ".": "./sources/index.ts",
+        "./platform": "./sources/platform.ts",
+        "./node": "./sources/platformNode.ts",
+        "./*": "./sources/*.ts"
+    },
+    "files": [
+        "sources"
+    ],
+    "scripts": {
+        "test": "vitest run",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@kissopen/kissopen-wire": "workspace:*",
+        "@paralleldrive/cuid2": "^2.3.1",
+        "@stablelib/hex": "^2.0.1",
+        "zod": "^4.0.0",
+        "libsodium-wrappers": "^0.7.15"
+    },
+    "devDependencies": {
+        "typescript": "5.9.3",
+        "vitest": "^3.2.4",
+        "@types/libsodium-wrappers": "^0.7.14"
+    }
+}

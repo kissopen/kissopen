@@ -1,0 +1,18 @@
+/* Document-level rules for the standalone Blueprint page. They stay out of
+   `workbench.css` so the same workbench can be mounted inside the application
+   without repainting the document around it. The explicit heights give the
+   shell's `min-height: 100%` a resolved containing block. */
+
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+}
+
+/* Only ever seen behind overscroll: the shell paints the canvas itself. It
+   follows the system appearance rather than the header's override, which scopes
+   its theme to the shell. */
+body {
+    background: var(--groupped-background);
+}

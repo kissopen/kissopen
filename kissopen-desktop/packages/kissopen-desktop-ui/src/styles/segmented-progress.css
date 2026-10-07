@@ -1,0 +1,181 @@
+/*
+ * C-271 SegmentedProgress — one track per step, laid side by side.
+ *
+ * The tracks are the same width and the same 4px height as every other bar in
+ * the system, so the only things that differ between steps are how much ink is
+ * in each one and which label is lit. Nothing here resizes between states: a
+ * step becoming live must change the drawing, not the layout, because these are
+ * watched while they advance on their own.
+ */
+.kissopen-segmented-progress {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+}
+
+.kissopen-segmented-progress__segment {
+    display: flex;
+    /* Equal tracks: the steps take wildly different times and are not
+       comparable, so a bar weighted by any of them would be a schedule. */
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-segmented-progress__track {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    height: 4px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-selected);
+}
+
+/* Where the sequence stopped. The track itself carries the mark rather than the
+   fill, because a filled bar says the step completed. */
+.kissopen-segmented-progress__segment[data-state="failed"] .kissopen-segmented-progress__track {
+    background: var(--text-destructive);
+}
+
+/*
+ * The empty sweep, on the track rather than on the fill, so a step that starts
+ * counting part-way through leaves zero exactly once and only ever travels
+ * forwards.
+ *
+ * It runs whenever a live step has nothing in it yet, whether or not the step
+ * can count itself. A measured step still at zero has the same amount to show
+ * as an unmeasured one — nothing — and an empty bar holding still is read as a
+ * bar that has died, which is precisely the wrong thing to say at the moment
+ * the work has only just started. The sweep asserts no position; it says the
+ * step is alive, which is the one thing actually known.
+ */
+.kissopen-segmented-progress__segment[data-empty="true"][data-state="running"]
+    .kissopen-segmented-progress__track::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: 40%;
+    border-radius: inherit;
+    background: var(--text);
+    animation: kissopen-segmented-progress-sweep 1.15s ease-in-out infinite;
+}
+
+@keyframes kissopen-segmented-progress-sweep {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(250%);
+    }
+}
+
+/* Nothing to animate, and nothing to imply: the segment keeps its empty track,
+   which is the same thing the sweep was saying without the movement. */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-segmented-progress__segment[data-empty="true"][data-state="running"]
+        .kissopen-segmented-progress__track::after {
+        animation: none;
+    }
+}
+
+/*
+ * The fill is the page's full ink rather than an accent: this is usually the
+ * only thing moving on the surface it sits on, and it means what the primary
+ * action beside it means. The width is eased because the counts behind it
+ * arrive in bursts; the ease never shows a position the step has not reached.
+ */
+.kissopen-segmented-progress__fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--text);
+    transition: width 260ms ease-out;
+}
+
+/* Grows from empty even when its first paint already carries a number: a bar
+   that appears part full reads as one that lost its beginning. */
+@starting-style {
+    .kissopen-segmented-progress__fill {
+        width: 0;
+    }
+}
+
+.kissopen-segmented-progress__label {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A step that has not begun is legible but plainly not the subject; the live
+   step is. Weight stays put in every state so no label reflows as it lights. */
+.kissopen-segmented-progress__segment[data-state="pending"] .kissopen-segmented-progress__label {
+    opacity: 0.5;
+}
+
+.kissopen-segmented-progress__segment[data-state="running"] .kissopen-segmented-progress__label {
+    color: var(--text);
+}
+
+.kissopen-segmented-progress__segment[data-state="failed"] .kissopen-segmented-progress__label {
+    color: var(--text-destructive);
+}
+
+/* The same restart tracks, presented as a user-paced step indicator. */
+.kissopen-segmented-progress[data-mode="steps"] .kissopen-segmented-progress__segment {
+    gap: 4px;
+}
+
+.kissopen-segmented-progress[data-mode="steps"] .kissopen-segmented-progress__track::after {
+    display: none;
+}
+
+.kissopen-segmented-progress[data-mode="steps"]
+    .kissopen-segmented-progress__segment[data-state="running"]
+    .kissopen-segmented-progress__track {
+    outline: 1px solid var(--text);
+    outline-offset: 2px;
+}
+
+.kissopen-segmented-progress[data-tone="inverse"] .kissopen-segmented-progress__track {
+    background: color-mix(in srgb, var(--button-primary-tint) 20%, transparent);
+}
+
+.kissopen-segmented-progress[data-tone="inverse"] .kissopen-segmented-progress__fill {
+    background: var(--button-primary-tint);
+}
+
+.kissopen-segmented-progress[data-tone="inverse"] .kissopen-segmented-progress__track::after {
+    background: var(--button-primary-tint);
+}
+
+.kissopen-segmented-progress[data-tone="inverse"] .kissopen-segmented-progress__label {
+    color: var(--button-primary-tint);
+}
+
+.kissopen-segmented-progress[data-tone="inverse"][data-mode="steps"]
+    .kissopen-segmented-progress__segment[data-state="running"]
+    .kissopen-segmented-progress__track {
+    outline-color: var(--button-primary-tint);
+}
+
+.kissopen-segmented-progress[data-tone="inverse"]
+    .kissopen-segmented-progress__segment[data-state="failed"]
+    .kissopen-segmented-progress__track {
+    background: var(--text-destructive);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-segmented-progress[data-mode="steps"] .kissopen-segmented-progress__fill {
+        transition: none;
+    }
+}

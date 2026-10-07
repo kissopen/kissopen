@@ -1,0 +1,11 @@
+[workspace]
+setup_commands = ["pnpm install --frozen-lockfile"]
+
+[network]
+allowed_domains = ["registry.npmjs.org", "nodejs.org"]
+allowed_ports = [443]
+# The kissopen-desktop-ui rendering suite is a real browser suite: Vitest starts a
+# loopback server on an ephemeral port and Chromium, Firefox, and WebKit
+# connect back to it. Without this the suite dies on EPERM before a single
+# test runs.
+allow_local_binding = true

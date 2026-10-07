@@ -1,0 +1,98 @@
+/*
+ * C-054 FileEditor — single-file text editor surface.
+ *
+ * A column that fills its container: a compact diff-style path header, an
+ * optional alert banner, and a monospace code body that fills and scrolls.
+ * Saving is Command-S and unsaved state belongs to the owning tab.
+ */
+
+.kissopen-file-editor,
+.kissopen-file-editor * {
+    box-sizing: border-box;
+}
+
+.kissopen-file-editor {
+    display: flex;
+    /* The editor fills whichever region it was given — a main-content tab or
+       the panel column beside a conversation — so it takes the remaining space
+       of a flex parent rather than only the height of what is in it. */
+    flex: 1 1 0%;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* ---- Header ----------------------------------------------------------- */
+
+.kissopen-file-editor__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 10px;
+    height: var(--kissopen-subheader-height);
+    padding: 0 16px;
+    background: var(--surface);
+    box-shadow: inset 0 -1px var(--divider);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.kissopen-file-editor__glyph {
+    width: 16px;
+    height: 16px;
+}
+
+.kissopen-file-editor__heading {
+    min-width: 0;
+}
+
+.kissopen-file-editor__heading .kissopen-file-path-label__directory {
+    color: var(--text);
+}
+
+.kissopen-file-editor__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+}
+
+.kissopen-file-editor__status {
+    display: block;
+    max-width: 240px;
+    overflow: hidden;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- Banner slot ------------------------------------------------------ */
+
+.kissopen-file-editor__banner {
+    flex: none;
+    padding: 8px 12px 0;
+}
+
+/* ---- Code body -------------------------------------------------------- */
+
+/*
+ * The code body is a native <textarea> — an atomic scroll control that scrolls
+ * its own value by the UA default (scrollbars appear at the control's border
+ * edge on overflow). There is no child element to host an inner wrapper, so the
+ * 12px inset stays as the control's own text padding; the scroll behavior is the
+ * UA default rather than an explicit `overflow` on this box.
+ */
+/* The body is `CodeEditor`, which owns the code type, the gutter, and its own
+   scrollport; the editor surface only says how much of the pane it takes. */
+.kissopen-file-editor__area {
+    flex: 1 1 0%;
+    width: 100%;
+    min-height: 0;
+}

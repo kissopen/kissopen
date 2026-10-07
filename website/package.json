@@ -1,0 +1,7 @@
+{
+  "name": "kissopen-website",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "node scripts/serve.mjs", "build": "node scripts/build.mjs", "preview": "node scripts/serve.mjs --built" },
+  "engines": { "node": ">=22" }
+}

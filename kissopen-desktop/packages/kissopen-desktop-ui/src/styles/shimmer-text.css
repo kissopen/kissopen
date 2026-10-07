@@ -1,0 +1,158 @@
+/*
+ * C-254 ShimmerText — a band of light travelling through a line of text.
+ *
+ * The text is painted by a gradient rather than by a colour: the element's
+ * background is a ramp — resting colour, highlight, resting colour — clipped to
+ * the glyphs, and the animation slides that ramp across them. Only the
+ * background moves, so the letters never shift, never reflow, and stay fully
+ * readable at every moment of the loop.
+ *
+ * The ramp is three times the text's own width and slides by two widths per
+ * cycle, so the highlight enters from beyond one end and leaves beyond the other
+ * instead of appearing mid-word. One sweep therefore crosses the whole line
+ * whatever its length: a label of two words and a label of ten are read at the
+ * same speed.
+ *
+ * That extra width is what keeps the text on screen. The ramp is the only thing
+ * painting the glyphs, so any part of the line the ramp does not cover is not
+ * dimmed — it is invisible. Travelling a ramp of width `N` across the run by
+ * `background-position` uncovers the line as soon as the position leaves the
+ * `0%`–`100%` range, whatever `N` is; the range is what must be respected, and
+ * the width is then chosen to put the band off both ends within it. At `100%`
+ * the ramp's right edge sits on the run's right edge and two widths hang off to
+ * the left; at `0%` it is the mirror image. The line is fully covered
+ * throughout.
+ *
+ * Both stops are mixed against `--surface` rather than toward transparency, so
+ * every colour this paints is solid and a rendering test can assert an exact
+ * `rgb()` in every engine. Tone picks the one text role the whole ramp is built
+ * from, and sweep decides which end of that role the letters rest at.
+ */
+
+.kissopen-shimmer-text {
+    --kissopen-shimmer-duration: 1600ms;
+    --kissopen-shimmer-offset: 0;
+    /* The text role this whole effect is built from. It is always the element's
+       own colour; tone is what decides that colour, and `inherit` is simply the
+       tone that leaves it to the surface around it. */
+    --kissopen-shimmer-color: currentColor;
+    /* How far the resting letters sit below the passing highlight. */
+    --kissopen-shimmer-rest: color-mix(in srgb, var(--kissopen-shimmer-color) 38%, var(--surface));
+    --kissopen-shimmer-highlight: var(--kissopen-shimmer-color);
+
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- one text run whose own glyphs clip a painted gradient: the sweep must cross the whole run, and as a flex box each word would become an anonymous item with a background box of its own, restarting the sweep per word */
+    display: inline-block;
+    background-image: linear-gradient(
+        90deg,
+        var(--kissopen-shimmer-rest) 0%,
+        var(--kissopen-shimmer-rest) 40%,
+        var(--kissopen-shimmer-highlight) 50%,
+        var(--kissopen-shimmer-rest) 60%,
+        var(--kissopen-shimmer-rest) 100%
+    );
+    background-repeat: no-repeat;
+    /* Three times the run's width: the band sits in the middle third, so at
+       either end of the travel it is a full run-width clear of the line. */
+    background-size: 300% 100%;
+    background-clip: text;
+    /*
+     * The glyph fill is hidden through `text-fill-color` rather than by setting
+     * `color: transparent`, so that `color` keeps its real value and every tone
+     * can be expressed as one. That is what lets the ramp be built from
+     * `currentColor`: with the colour zeroed instead, `currentColor` on this
+     * element would resolve to `transparent` and the gradient would be painted
+     * out of nothing.
+     */
+    -webkit-text-fill-color: transparent;
+    animation-name: kissopen-shimmer-text-sweep;
+    animation-duration: var(--kissopen-shimmer-duration);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    /* Parks the sweep at the requested fraction of one cycle. */
+    animation-delay: calc(-1 * var(--kissopen-shimmer-offset) * var(--kissopen-shimmer-duration));
+}
+
+.kissopen-shimmer-text[data-paused] {
+    animation-play-state: paused;
+}
+
+/*
+ * Tone names the text role, and the ramp follows from it through
+ * `currentColor`. Setting the real `color` is safe now that the glyph fill is
+ * hidden separately, and it is also what keeps the reduced-motion text and any
+ * inherited decoration on the same colour as the sweep.
+ *
+ * `inherit` is the absence of a rule here: no tone claims the colour, so the
+ * element keeps whatever the surface around it decided. Paired with `sheen` the
+ * shimmer then costs the text nothing when the band is elsewhere — a sidebar row
+ * that is secondary at rest and full strength when unread stays exactly that,
+ * and the only difference from its neighbours is the band crossing it.
+ */
+.kissopen-shimmer-text[data-tone="default"] {
+    color: var(--text);
+}
+
+.kissopen-shimmer-text[data-tone="muted"] {
+    color: var(--text-secondary);
+}
+
+.kissopen-shimmer-text[data-tone="accent"] {
+    color: var(--text-link);
+}
+
+/*
+ * `sheen` is the other way round: the letters rest at full strength and the band
+ * is the pale one, a light wipe passing over text that is already at its normal
+ * colour. On a light theme that band is whiteish; on a dark one it is the dark
+ * surface, since both are the same move — briefly toward the page and back.
+ *
+ * Use it wherever the text is load-bearing and has to stay exactly as legible as
+ * its unshimmering neighbours, and `lift` where the dimmed resting state is
+ * itself the message that something is not finished.
+ */
+.kissopen-shimmer-text[data-sweep="sheen"] {
+    --kissopen-shimmer-rest: var(--kissopen-shimmer-color);
+    /* Nearly the page itself. The band has to be read against text that is
+       already secondary grey, and a half-strength wipe on grey is the one thing
+       this must not be: it reads as a smudge rather than as light moving. */
+    --kissopen-shimmer-highlight: color-mix(
+        in srgb,
+        var(--kissopen-shimmer-color) 15%,
+        var(--surface)
+    );
+}
+
+/*
+ * The whole travel, end to end. Both ends of it are positions that still cover
+ * the run, which is why the sweep may not be widened by pushing this past `100%`
+ * or below `0%`: that does not move the band further out, it slides the ramp off
+ * the line and the text disappears.
+ */
+@keyframes kissopen-shimmer-text-sweep {
+    from {
+        background-position: 100% 0;
+    }
+
+    to {
+        background-position: 0% 0;
+    }
+}
+
+/*
+ * The sweep is decoration over text that is already legible, so a reader who
+ * asked for less motion simply gets the text. The gradient is dropped entirely
+ * rather than slowed or stopped: a clipped background with no animation would
+ * leave one arbitrary frame of the ramp painted across the line, dimming part
+ * of a label for no reason.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-shimmer-text {
+        background-image: none;
+        /* Every tone already carries its own real `color`, so restoring the
+           glyph fill is the whole of it: each one lands on exactly the colour
+           its sweep was built out of, and `inherit` on the colour it would have
+           had if the shimmer had never been swapped in. */
+        -webkit-text-fill-color: currentColor;
+        animation: none;
+    }
+}

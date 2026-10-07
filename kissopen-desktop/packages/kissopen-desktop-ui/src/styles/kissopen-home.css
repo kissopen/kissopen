@@ -1,0 +1,1352 @@
+/*
+ * The home page and the first-run questions.
+ *
+ * Airy and soft rather than dense: a pale ground, white cards with a wide
+ * radius and a faint shadow, one violet accent with a green and a peach beside
+ * it for progress and good news. The pictures are drawn, and the landscape in
+ * the focus card is the page's one decorative moment.
+ */
+.kissopen-home,
+.kissopen-home *,
+.kissopen-persona,
+.kissopen-persona * {
+    box-sizing: border-box;
+}
+
+/* Page ------------------------------------------------------------------- */
+.kissopen-home {
+    container: kissopen-home / inline-size;
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    isolation: isolate;
+    background: var(--home-bg);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-home__scroll {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.kissopen-home__viewport {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.kissopen-home__page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 1320px;
+    margin-inline: auto;
+    padding: 28px 36px;
+}
+
+.kissopen-home__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 8px;
+}
+
+.kissopen-home__hello {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-home__title {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.kissopen-home__subtitle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    color: var(--home-muted);
+    font-size: 15px;
+    line-height: 22px;
+}
+
+.kissopen-home__demo-chip {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 12px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent-strong);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kissopen-home__demo-note {
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.kissopen-home__header-side {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+}
+
+.kissopen-home__date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--home-muted);
+    font-size: 14px;
+}
+
+.kissopen-home__date .kissopen-vector-icon {
+    color: var(--home-sun);
+}
+
+.kissopen-home__connect {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 12px;
+    background: var(--home-accent);
+    color: var(--home-on-accent);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--home-shadow-accent);
+}
+
+.kissopen-home__connect:hover {
+    background: var(--home-accent-strong);
+}
+
+/* Rows and cards --------------------------------------------------------- */
+.kissopen-home__row {
+    display: flex;
+    gap: 20px;
+}
+
+.kissopen-home__row > * {
+    flex: 1 1 0;
+}
+
+.kissopen-home__row--top > :first-child {
+    flex-grow: 1.75;
+}
+
+.kissopen-home__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    padding: 22px 24px;
+    border: 1px solid var(--home-border);
+    border-radius: 20px;
+    background: var(--home-card);
+    box-shadow: var(--home-shadow);
+}
+
+.kissopen-home__card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.kissopen-home__card-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.kissopen-home__card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.kissopen-home__card-subtitle {
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+.kissopen-home__real-chip {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 10px;
+    background: var(--home-green-soft);
+    color: var(--home-green);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.kissopen-home__link {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 0;
+    border: none;
+    background: transparent;
+    color: var(--home-accent);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.kissopen-home__link:hover {
+    color: var(--home-accent-strong);
+}
+
+/* Focus ------------------------------------------------------------------ */
+.kissopen-home__focus {
+    flex-direction: row;
+    min-height: 330px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.kissopen-home__focus-copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1 1 58%;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 0 28px 30px;
+}
+
+.kissopen-home__focus-title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 34px;
+}
+
+.kissopen-home__focus-summary {
+    margin: 0 0 12px;
+    color: var(--home-muted);
+    font-size: 15px;
+    line-height: 24px;
+}
+
+.kissopen-home__focus-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 460px;
+}
+
+.kissopen-home__focus-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 68px;
+    padding: 12px 14px;
+    border: 1px solid var(--home-border);
+    border-radius: 14px;
+    background: var(--home-card);
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: var(--home-shadow-raised);
+    transition:
+        transform 140ms ease,
+        box-shadow 140ms ease;
+}
+
+.kissopen-home__focus-item:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--home-shadow-hover);
+}
+
+.kissopen-home__focus-icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+
+.kissopen-home__focus-label {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* On the board-made home each thing to do names the project it came from. */
+.kissopen-home__focus-project {
+    display: block;
+    margin-top: 2px;
+    overflow: hidden;
+    color: var(--home-muted);
+    font-size: 12px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-home__focus-go {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--home-peach-soft);
+    color: var(--home-peach);
+}
+
+.kissopen-home__landscape {
+    position: relative;
+    flex: 1 1 42%;
+    min-width: 0;
+    align-self: stretch;
+    margin-left: -60px;
+}
+
+.kissopen-home__landscape svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, var(--text) 22%);
+    mask-image: linear-gradient(to right, transparent 0, var(--text) 22%);
+}
+
+.kissopen-home__motto {
+    position: absolute;
+    top: 38px;
+    right: 34px;
+    color: var(--home-muted);
+    font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
+    font-size: 20px;
+    line-height: 34px;
+    letter-spacing: 0.18em;
+    text-align: right;
+    transform: rotate(-6deg);
+    opacity: 0.85;
+}
+
+/* Team ------------------------------------------------------------------- */
+.kissopen-home__avatars {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- ten faces wrap into rows whose columns must line up */
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    justify-items: center;
+}
+
+.kissopen-home__avatar {
+    display: flex;
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--home-card);
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: var(--home-shadow-avatar);
+}
+
+.kissopen-home__avatar svg {
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-home__groups {
+    display: flex;
+    gap: 14px;
+    padding-top: 4px;
+}
+
+.kissopen-home__group {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-home__group-name {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.kissopen-home__group-count {
+    color: var(--home-muted);
+    font-weight: 400;
+}
+
+.kissopen-home__bar {
+    display: block;
+    flex: 1 1 0;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--home-accent-soft);
+    overflow: hidden;
+}
+
+.kissopen-home__bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+}
+
+.kissopen-home__support {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--home-peach-soft);
+    color: var(--home-peach-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.kissopen-home__support-text {
+    flex: 1 1 0;
+}
+
+/* Projects --------------------------------------------------------------- */
+.kissopen-home__projects {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.kissopen-home__project {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+}
+
+.kissopen-home__project--real {
+    padding: 6px;
+    margin: -6px;
+    border-radius: 14px;
+    cursor: pointer;
+}
+
+.kissopen-home__project--real:hover {
+    background: var(--home-card-soft);
+}
+
+.kissopen-home__picture {
+    display: flex;
+    flex: none;
+    width: 96px;
+    height: 72px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.kissopen-home__picture svg {
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-home__project-copy {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.kissopen-home__project-name {
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kissopen-home__project-tag,
+.kissopen-home__project-meta {
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.kissopen-home__progress-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 6px;
+}
+
+.kissopen-home__percent {
+    flex: none;
+    min-width: 34px;
+    color: var(--home-muted);
+    font-size: 12px;
+    text-align: right;
+}
+
+.kissopen-home__status {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    padding: 2px 10px;
+    border-radius: 10px;
+    background: var(--home-peach-soft);
+    color: var(--home-peach-text);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kissopen-home__status[data-status="at_risk"] {
+    background: var(--home-danger-soft);
+    color: var(--home-danger-text);
+}
+
+/* Forecast --------------------------------------------------------------- */
+.kissopen-home__range {
+    color: var(--home-accent);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 36px;
+    letter-spacing: -0.01em;
+}
+
+.kissopen-home__chart {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.kissopen-home__grid {
+    stroke: var(--divider);
+    stroke-width: 1;
+}
+
+.kissopen-home__axis {
+    fill: var(--home-muted);
+    font-family: var(--kissopen-font-ui);
+    font-size: 11px;
+}
+
+.kissopen-home__band {
+    fill: var(--home-accent);
+    opacity: 0.12;
+}
+
+.kissopen-home__line {
+    fill: none;
+    stroke: var(--home-accent);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.kissopen-home__line--predicted {
+    stroke-dasharray: 3 6;
+}
+
+.kissopen-home__dot {
+    fill: var(--home-accent);
+}
+
+.kissopen-home__dot--predicted {
+    fill: var(--home-card);
+    stroke: var(--home-accent);
+    stroke-width: 2;
+}
+
+.kissopen-home__legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    margin-top: auto;
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.kissopen-home__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-home__legend-solid,
+.kissopen-home__legend-dotted {
+    width: 18px;
+    height: 0;
+    border-top: 2.5px solid var(--home-accent);
+}
+
+.kissopen-home__legend-dotted {
+    border-top-style: dotted;
+}
+
+.kissopen-home__legend-note {
+    margin-left: auto;
+}
+
+/* Wins ------------------------------------------------------------------- */
+.kissopen-home__wins-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.kissopen-home__wins-value {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 40px;
+    letter-spacing: -0.02em;
+}
+
+.kissopen-home__delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 14px;
+    background: var(--home-green-soft);
+    color: var(--home-green);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.kissopen-home__delta[data-direction="down"] {
+    background: var(--home-peach-soft);
+    color: var(--home-peach-text);
+}
+
+.kissopen-home__delta[data-direction="down"] .kissopen-vector-icon {
+    transform: rotate(180deg);
+}
+
+.kissopen-home__wins-label {
+    margin-top: -8px;
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+.kissopen-home__metrics {
+    display: flex;
+    gap: 0;
+}
+
+.kissopen-home__metric {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 16px;
+}
+
+.kissopen-home__metric + .kissopen-home__metric {
+    padding-left: 20px;
+    border-left: 1px solid var(--divider);
+}
+
+.kissopen-home__metric-label {
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.kissopen-home__metric-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.kissopen-home__bars {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    height: 96px;
+}
+
+.kissopen-home__bar-column {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.kissopen-home__bar-block {
+    width: 100%;
+    max-width: 30px;
+    border-radius: 6px 6px 3px 3px;
+    background: var(--home-accent-soft);
+}
+
+.kissopen-home__bar-block[data-last] {
+    background: var(--home-accent);
+    opacity: 0.8;
+}
+
+.kissopen-home__bar-label {
+    color: var(--home-muted);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.kissopen-home__note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--home-green-soft);
+    color: var(--home-green);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.kissopen-home__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Waiting and failing ---------------------------------------------------- */
+.kissopen-home__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.kissopen-home__ghost {
+    min-height: 300px;
+    background: linear-gradient(
+        100deg,
+        var(--home-card) 30%,
+        var(--home-card-soft) 50%,
+        var(--home-card) 70%
+    );
+    background-size: 300% 100%;
+    animation: kissopen-home-shimmer 1.6s ease-in-out infinite;
+}
+
+.kissopen-home__ghost--tall {
+    min-height: 330px;
+}
+
+@keyframes kissopen-home-shimmer {
+    from {
+        background-position: 100% 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-home__ghost {
+        animation: none;
+    }
+}
+
+.kissopen-home__problem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-radius: 16px;
+    background: var(--home-card);
+    color: var(--home-muted);
+    font-size: 14px;
+}
+
+/* A narrow window stacks the rows instead of squeezing them. */
+@container kissopen-home (max-width: 900px) {
+    .kissopen-home__row {
+        flex-direction: column;
+    }
+}
+
+/* First-run questions ---------------------------------------------------- */
+.kissopen-persona {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background:
+        radial-gradient(circle at 18% 12%, var(--home-accent-soft), transparent 42%),
+        radial-gradient(circle at 86% 88%, var(--home-peach-soft), transparent 40%), var(--home-bg);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+}
+
+.kissopen-persona__scroll {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.kissopen-persona__viewport {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Centred while the panel fits; from the top, scrolling, once it does not. */
+.kissopen-persona__center {
+    display: flex;
+    flex: 1 0 auto;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px 32px;
+}
+
+.kissopen-persona__drag {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 48px;
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+.kissopen-persona__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: min(760px, 100%);
+    padding: 30px 36px;
+    border: 1px solid var(--home-border);
+    border-radius: 24px;
+    background: var(--home-card);
+    box-shadow: var(--home-shadow);
+}
+
+.kissopen-persona__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.kissopen-persona__steps {
+    display: flex;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.kissopen-persona__step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+.kissopen-persona__step[aria-current="step"] {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.kissopen-persona__step-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--home-card-soft);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.kissopen-persona__step[aria-current="step"] .kissopen-persona__step-dot,
+.kissopen-persona__step[data-done] .kissopen-persona__step-dot {
+    background: var(--home-accent);
+    color: var(--home-on-accent);
+}
+
+.kissopen-persona__skip {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--home-muted);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.kissopen-persona__skip:hover {
+    background: var(--home-card-soft);
+    color: var(--text);
+}
+
+.kissopen-persona__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kissopen-persona__title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 34px;
+}
+
+.kissopen-persona__lead {
+    margin: -6px 0 4px;
+    color: var(--home-muted);
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.kissopen-persona__group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.kissopen-persona__group-label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.kissopen-persona__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.kissopen-persona__chip {
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--divider);
+    border-radius: 18px;
+    background: var(--home-card);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
+}
+
+.kissopen-persona__chip:hover:not(:disabled) {
+    border-color: var(--home-accent);
+}
+
+.kissopen-persona__chip[aria-checked="true"],
+.kissopen-persona__chip[aria-pressed="true"] {
+    border-color: var(--home-accent);
+    background: var(--home-accent-soft);
+    color: var(--home-accent-strong);
+    font-weight: 600;
+}
+
+.kissopen-persona__chip:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.kissopen-persona__input {
+    width: 100%;
+    max-width: 320px;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--divider);
+    border-radius: 12px;
+    background: var(--home-card);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.kissopen-persona__input:focus {
+    border-color: var(--home-accent);
+}
+
+.kissopen-persona__roles {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- four cards become a two-by-two grid on a narrow window */
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.kissopen-persona__role {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 18px 10px 16px;
+    border: 1px solid var(--divider);
+    border-radius: 16px;
+    background: var(--home-card);
+    color: var(--text);
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+}
+
+.kissopen-persona__role:hover {
+    border-color: var(--home-accent);
+}
+
+.kissopen-persona__role[aria-checked="true"] {
+    border-color: var(--home-accent);
+    background: var(--home-accent-soft);
+}
+
+.kissopen-persona__role-art {
+    display: flex;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 4px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.kissopen-persona__role-art svg {
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-persona__role-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.kissopen-persona__role-detail {
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.kissopen-persona__error {
+    margin: 0;
+    color: var(--text-destructive);
+    font-size: 13px;
+}
+
+.kissopen-persona__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.kissopen-persona__back,
+.kissopen-persona__next {
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.kissopen-persona__back {
+    background: var(--home-card-soft);
+    color: var(--text);
+}
+
+.kissopen-persona__next {
+    background: var(--home-accent);
+    color: var(--home-on-accent);
+    box-shadow: var(--home-shadow-accent);
+}
+
+.kissopen-persona__next:hover:not(:disabled) {
+    background: var(--home-accent-strong);
+}
+
+.kissopen-persona__next:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+@container kissopen-home (max-width: 760px) {
+    .kissopen-persona__roles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Board-made home ---------------------------------------------------------- */
+
+.kissopen-home__milestones {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Cards waiting on the person, above today's focus ----------------------- */
+.kissopen-home__decision-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.kissopen-home__decision {
+    display: flex;
+    flex: 1 1 320px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    min-width: min(100%, 280px);
+    min-height: 200px;
+    padding: 16px;
+    border: 1px solid var(--home-border);
+    border-radius: 14px;
+    background: var(--home-card-soft);
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.kissopen-home__decision:hover {
+    background: var(--home-hover);
+}
+
+.kissopen-home__decision:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
+}
+
+.kissopen-home__decision-copy {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-home__decision-question {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 22px;
+}
+
+.kissopen-home__decision-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    color: var(--home-muted);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-home__decision-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.kissopen-home__decision-detail {
+    overflow: hidden;
+    color: var(--home-muted);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-home__milestone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--home-border);
+    border-radius: 12px;
+    background: var(--home-card-soft);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.kissopen-home__milestone:hover {
+    background: var(--home-hover);
+}
+
+.kissopen-home__milestone-dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--home-muted);
+    border-radius: 50%;
+}
+
+.kissopen-home__milestone[data-state="current"] .kissopen-home__milestone-dot {
+    border-color: var(--home-accent);
+    background: var(--home-accent);
+}
+
+.kissopen-home__milestone-copy {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-home__milestone-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.kissopen-home__milestone-detail {
+    overflow: hidden;
+    color: var(--home-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-home__milestone-state {
+    flex: none;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+    font-size: 11px;
+}
+
+.kissopen-home__milestone[data-state="todo"] .kissopen-home__milestone-state {
+    background: var(--home-hover);
+    color: var(--home-muted);
+}
+
+.kissopen-home__empty-line {
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+.kissopen-home__metrics--wrap {
+    flex-wrap: wrap;
+    row-gap: 16px;
+}
+
+.kissopen-home__metrics--wrap .kissopen-home__metric {
+    flex: 1 1 40%;
+}
+
+/* What the operator wants everyone to know now, above the rest of the page. */
+.kissopen-home__notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+.kissopen-home__notice[data-level="warning"] {
+    background: var(--home-peach-soft);
+    color: var(--home-peach-text);
+}
+.kissopen-home__notice strong {
+    display: block;
+    color: var(--text);
+    font-weight: 600;
+}
+.kissopen-home__notice p {
+    margin: 2px 0 0;
+    color: var(--home-muted);
+    white-space: pre-wrap;
+}
+
+/* A custom theme's background picture, blurred as the theme says, under a veil of the canvas colour. */
+.kissopen-home::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--kissopen-wallpaper) center / cover no-repeat;
+    filter: blur(var(--kissopen-wallpaper-blur));
+    content: "";
+    pointer-events: none;
+}
+
+.kissopen-home::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--kissopen-wallpaper-veil);
+    content: "";
+    pointer-events: none;
+}

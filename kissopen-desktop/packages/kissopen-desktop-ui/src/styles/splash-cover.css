@@ -1,0 +1,60 @@
+/*
+ * C-253 SplashCover — the boot mark above the app, and its one dissolve.
+ *
+ * The veil is positioned over the app rather than beside it, so the app is
+ * already laid out and painted underneath before the fade starts and nothing
+ * reflows when the veil is removed. Only opacity animates: both layers draw the
+ * same `--surface`, so the surface itself never changes and the mark appears to
+ * dissolve off a window that was always there.
+ */
+
+.kissopen-splash-cover {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.kissopen-splash-cover > *:not(.kissopen-splash-cover__veil) {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.kissopen-splash-cover__veil {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: var(--surface);
+}
+
+/*
+ * Nothing under a veil that is on its way out may be pressed through it by
+ * accident, and nothing under it may be reached by the keyboard either while the
+ * window still reads as loading.
+ */
+.kissopen-splash-cover__veil[data-leaving] {
+    pointer-events: none;
+    animation: kissopen-splash-cover-leave 260ms ease-out forwards;
+}
+
+@keyframes kissopen-splash-cover-leave {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/*
+ * Reduced motion removes the dissolve, not the step: the animation still runs
+ * and still ends, so `animationend` fires and the cover is removed on exactly
+ * the same path rather than being left on screen forever.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-splash-cover__veil[data-leaving] {
+        animation-duration: 1ms;
+    }
+}

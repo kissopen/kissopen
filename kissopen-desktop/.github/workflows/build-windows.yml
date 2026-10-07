@@ -1,0 +1,75 @@
+name: Build and install unsigned Windows Desktop
+
+on:
+    workflow_call:
+        inputs:
+            verify_agent_release:
+                type: boolean
+                default: false
+
+permissions:
+    contents: read
+
+jobs:
+    windows:
+        runs-on: windows-2025
+        timeout-minutes: 60
+        strategy:
+            fail-fast: false
+            matrix:
+                flavor: [standard, local-web]
+        defaults:
+            run:
+                shell: bash
+        # Deliberately unsigned until Kissopen has a Windows signing identity.
+        # Keep Electron's icon/version editing and HTTPS/checksum verification.
+        env:
+            CSC_IDENTITY_AUTO_DISCOVERY: "false"
+            CSC_LINK: ""
+            WIN_CSC_LINK: ""
+        steps:
+            - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+            - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+            - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: "24"
+                  cache: pnpm
+            - name: Use Git Bash for package scripts
+              run: pnpm config set script-shell "C:\Program Files\Git\bin\bash.exe"
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+            - name: Typecheck desktop and gym
+              run: |
+                  pnpm --dir packages/kissopen-desktop-electron typecheck
+                  pnpm --dir packages/kissopen-desktop-app typecheck
+                  pnpm --dir packages/kissopen-desktop-gym typecheck
+            - name: Test application
+              run: pnpm test
+            - name: Download and boot the published Windows Agent through Desktop's installer
+              if: inputs.verify_agent_release && matrix.flavor == 'standard'
+              run: pnpm exec tsx scripts/verify-released-windows-agent.ts
+            - name: Build unsigned NSIS installer and update metadata
+              run: pnpm desktop:win:release ${{ matrix.flavor }}
+            - name: Install the actual release package
+              shell: pwsh
+              run: ./scripts/verify-windows-installer.ps1 -Flavor '${{ matrix.flavor }}'
+            - name: Launch the installed application and verify its renderer
+              env:
+                  KISSOPEN_DESKTOP_GYM_PACKAGED: "1"
+                  KISSOPEN_DESKTOP_GYM_SCREENSHOT: ${{ runner.temp }}/kissopen-installed.png
+              run: pnpm --dir packages/kissopen-desktop-gym gym:electron smoke
+            - name: Upload Windows release files
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-windows-${{ matrix.flavor }}-unsigned
+                  path: |
+                      packages/kissopen-desktop-electron/release/${{ matrix.flavor }}/*.exe
+                      packages/kissopen-desktop-electron/release/${{ matrix.flavor }}/*.blockmap
+                      packages/kissopen-desktop-electron/release/${{ matrix.flavor }}/*.yml
+                  if-no-files-found: error
+            - name: Upload installed-app screenshot
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-windows-${{ matrix.flavor }}-launch
+                  path: ${{ runner.temp }}/kissopen-installed.png
+                  if-no-files-found: error

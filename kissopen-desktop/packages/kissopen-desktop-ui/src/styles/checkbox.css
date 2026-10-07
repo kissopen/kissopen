@@ -1,0 +1,94 @@
+/*
+ * C-021 Checkbox — 18px control box on the 4px grid (crisp at 2× DPR), reused
+ * Icon check glyph, symmetric indeterminate bar, accent fill when active. The
+ * native input is visually hidden but focusable and overlays the box; the ring
+ * is driven by :focus-within so it survives keyboard and programmatic focus.
+ */
+
+.kissopen-checkbox {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    cursor: pointer;
+}
+
+.kissopen-checkbox[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+/*
+ * The real control: sized to the box and stacked over it so a direct box click
+ * hits the input, but painted away. It stays in the focus order (opacity, not
+ * display/visibility) so :focus-within lights the ring.
+ */
+.kissopen-checkbox__control {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: inherit;
+}
+
+.kissopen-checkbox__box {
+    display: flex;
+    flex: none;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--radio-inactive);
+    border-radius: var(--kissopen-radius-sm);
+    background-color: var(--input-background);
+    color: var(--button-primary-tint);
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
+}
+
+.kissopen-checkbox:not([data-checked]):not([data-indeterminate]):hover:not([data-disabled])
+    .kissopen-checkbox__box {
+    border-color: var(--radio-inactive);
+}
+
+.kissopen-checkbox[data-checked] .kissopen-checkbox__box,
+.kissopen-checkbox[data-indeterminate] .kissopen-checkbox__box {
+    border-color: var(--radio-active);
+    background-color: var(--radio-active);
+}
+
+.kissopen-checkbox:focus-within .kissopen-checkbox__box {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* Indeterminate bar: bilaterally symmetric, so its centroid is trivially the
+ * box center. Pill caps echo the round-capped check stroke. */
+.kissopen-checkbox__dash {
+    display: block;
+    flex: none;
+    width: 8px;
+    height: 2px;
+    border-radius: var(--kissopen-radius-pill);
+    background-color: currentColor;
+}
+
+.kissopen-checkbox__label {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
+    user-select: none;
+}

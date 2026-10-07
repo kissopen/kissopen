@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": ["ES2024", "DOM", "DOM.Iterable", "ESNext.Disposable"],
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "types": ["node", "vite/client", "vitest/globals"],
+        "noEmit": true
+    },
+    "include": ["sources", "tests/playwright", "vitest.playwright.config.ts"]
+}

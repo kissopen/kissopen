@@ -1,0 +1,295 @@
+/*
+ * C-171 MarkdownDocument — a Markdown file read as a document.
+ *
+ * A full-bleed scrollport with no spacing of its own; the inner article carries
+ * the reading measure, the gutters, and the block rhythm. The type ramp is the
+ * document one — larger than a chat body, with headings that separate sections
+ * by size and space rather than by rules. Every color and radius is a token.
+ */
+
+.kissopen-markdown-document,
+.kissopen-markdown-document * {
+    box-sizing: border-box;
+}
+
+.kissopen-markdown-document {
+    flex: 1 1 0%;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    color: var(--text);
+}
+
+.kissopen-markdown-document__viewport {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.kissopen-markdown-document__body {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 100%;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 24px 32px 64px;
+    font-size: 15px;
+    line-height: 24px;
+}
+
+/* Block children stack on one rhythm rather than on their intrinsic margins,
+   so a document made of paragraphs and one made of lists read the same. */
+.kissopen-markdown-document__body > * {
+    margin: 0;
+    min-width: 0;
+}
+
+.kissopen-markdown-document__body > * + * {
+    margin-top: 16px;
+}
+
+/* ---- Headings --------------------------------------------------------- */
+
+.kissopen-markdown-document__body h1,
+.kissopen-markdown-document__body h2,
+.kissopen-markdown-document__body h3,
+.kissopen-markdown-document__body h4,
+.kissopen-markdown-document__body h5,
+.kissopen-markdown-document__body h6 {
+    color: var(--text);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* A heading opens a section, so it takes more air above it than the rhythm
+   between siblings gives. The first block in the document is not opening
+   anything and keeps the article's own top gutter. */
+.kissopen-markdown-document__body > h1 + *,
+.kissopen-markdown-document__body > h2 + *,
+.kissopen-markdown-document__body > h3 + *,
+.kissopen-markdown-document__body > h4 + *,
+.kissopen-markdown-document__body > h5 + *,
+.kissopen-markdown-document__body > h6 + * {
+    margin-top: 8px;
+}
+
+.kissopen-markdown-document__body > * + h1,
+.kissopen-markdown-document__body > * + h2 {
+    margin-top: 32px;
+}
+
+.kissopen-markdown-document__body > * + h3,
+.kissopen-markdown-document__body > * + h4,
+.kissopen-markdown-document__body > * + h5,
+.kissopen-markdown-document__body > * + h6 {
+    margin-top: 24px;
+}
+
+.kissopen-markdown-document__body h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 36px;
+}
+
+.kissopen-markdown-document__body h2 {
+    font-size: 21px;
+    line-height: 28px;
+}
+
+.kissopen-markdown-document__body h3 {
+    font-size: 17px;
+    line-height: 24px;
+}
+
+.kissopen-markdown-document__body h4,
+.kissopen-markdown-document__body h5,
+.kissopen-markdown-document__body h6 {
+    font-size: 15px;
+    line-height: 24px;
+}
+
+.kissopen-markdown-document__body h5,
+.kissopen-markdown-document__body h6 {
+    color: var(--text-secondary);
+}
+
+/* ---- Inline ----------------------------------------------------------- */
+
+.kissopen-markdown-document__body strong {
+    font-weight: 700;
+}
+
+.kissopen-markdown-document__body em {
+    font-style: italic;
+}
+
+.kissopen-markdown-document__body del {
+    color: var(--text-secondary);
+}
+
+.kissopen-markdown-document__link {
+    color: var(--text-link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+}
+
+.kissopen-markdown-document__link--file {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.kissopen-markdown-document__link:hover {
+    opacity: 0.8;
+}
+
+.kissopen-markdown-document__image {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* ---- Lists ------------------------------------------------------------ */
+
+.kissopen-markdown-document__body ul,
+.kissopen-markdown-document__body ol {
+    padding-left: 24px;
+}
+
+.kissopen-markdown-document__body ul {
+    list-style: disc outside;
+}
+
+.kissopen-markdown-document__body ol {
+    list-style: decimal outside;
+}
+
+.kissopen-markdown-document__body li::marker {
+    color: var(--text-secondary);
+}
+
+.kissopen-markdown-document__body li + li {
+    margin-top: 4px;
+}
+
+.kissopen-markdown-document__body li > ul,
+.kissopen-markdown-document__body li > ol {
+    margin-top: 4px;
+}
+
+/* A task list carries its own checkbox in place of a marker. */
+.kissopen-markdown-document__body li:has(> input[type="checkbox"]) {
+    list-style: none;
+    margin-left: -20px;
+}
+
+.kissopen-markdown-document__body input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    margin: 0 7px 0 0;
+    accent-color: var(--radio-active);
+    vertical-align: baseline;
+}
+
+/* ---- Code ------------------------------------------------------------- */
+
+.kissopen-markdown-document__body code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--surface-pressed);
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+}
+
+.kissopen-markdown-document__plain-code {
+    max-width: 100%;
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--surface-pressed);
+}
+
+.kissopen-markdown-document__plain-code-viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.kissopen-markdown-document__body pre {
+    max-width: 100%;
+    margin: 0;
+}
+
+/* A fenced block is the shared code renderer, sunk into the page on the same
+   inset material the plain <pre> fallback above uses. It scrolls itself, so a
+   long line moves inside the block rather than widening the document. */
+.kissopen-markdown-document__code .kissopen-code-block {
+    overflow: hidden;
+    border-radius: var(--kissopen-radius-sm);
+    --diffs-light-bg: var(--surface-pressed);
+    --diffs-dark-bg: var(--surface-pressed);
+    --diffs-font-size: 12.5px;
+    --diffs-gap-inline: 16px;
+}
+
+/* The <pre> is the scrollport, so the inset lives on the <code> inside it and
+   survives horizontal scrolling instead of being clipped at the right edge. */
+.kissopen-markdown-document__body pre code {
+    display: block;
+    padding: 14px 16px;
+    border-radius: 0;
+    background: transparent;
+    font-size: 12.5px;
+    line-height: 20px;
+    tab-size: 4;
+    white-space: pre;
+}
+
+/* ---- Tables, quotes, rules -------------------------------------------- */
+
+.kissopen-markdown-document__body table {
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.kissopen-markdown-document__table-scroll {
+    max-width: 100%;
+}
+
+.kissopen-markdown-document__table-scroll-viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.kissopen-markdown-document__body th,
+.kissopen-markdown-document__body td {
+    padding: 7px 12px;
+    border: 1px solid var(--divider);
+    text-align: left;
+    vertical-align: top;
+}
+
+.kissopen-markdown-document__body th {
+    background: var(--input-background);
+    color: var(--text);
+    font-weight: 600;
+}
+
+.kissopen-markdown-document__body blockquote {
+    padding-left: 14px;
+    border-left: 2px solid var(--divider);
+    color: var(--text-secondary);
+}
+
+.kissopen-markdown-document__body hr {
+    height: 1px;
+    border: 0;
+    background: var(--divider);
+}

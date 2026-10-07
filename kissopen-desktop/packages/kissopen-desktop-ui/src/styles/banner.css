@@ -1,0 +1,160 @@
+/*
+ * C-023 Banner — inline alert.
+ *
+ * One vertically centered row: a fixed 18px leading-icon slot, a flex-column
+ * text block (title + message), then a right-pinned actions group (optional
+ * action Button + dismiss). Tone is carried by a soft fill, a hairline border,
+ * and the leading-icon color — every value is a theme token, no raw color.
+ *
+ * Geometry is integer and grid-aligned: 13px/18px text, 12px vertical padding
+ * and a 1px border give a natural 44px single-line height (the declared
+ * min-height floor); a title+message block grows the row to 66px. Text flows in
+ * its own line boxes (no forced control-centering), so no engine translateY
+ * corrections are needed — only the leading icon and dismiss glyph are
+ * optically centered, and that centering lives in the Icon path data itself.
+ */
+
+.kissopen-banner,
+.kissopen-banner * {
+    box-sizing: border-box;
+}
+
+.kissopen-banner {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background-color: var(--surface-high);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+}
+
+/* ---- Tone identity: soft fill, hairline border, leading-icon color -------- */
+
+.kissopen-banner[data-tone="info"] {
+    border-color: var(--radio-active);
+    background-color: var(--surface-high);
+}
+
+.kissopen-banner[data-tone="info"] .kissopen-banner__icon {
+    color: var(--radio-active);
+}
+
+.kissopen-banner[data-tone="success"] {
+    border-color: var(--success);
+    background-color: var(--surface-high);
+}
+
+.kissopen-banner[data-tone="success"] .kissopen-banner__icon {
+    color: var(--success);
+}
+
+.kissopen-banner[data-tone="warning"] {
+    border-color: var(--box-warning-border);
+    background-color: var(--box-warning-background);
+}
+
+.kissopen-banner[data-tone="warning"] .kissopen-banner__icon {
+    color: var(--box-warning-text);
+}
+
+.kissopen-banner[data-tone="danger"] {
+    border-color: var(--box-error-border);
+    background-color: var(--box-error-background);
+}
+
+.kissopen-banner[data-tone="danger"] .kissopen-banner__icon {
+    color: var(--box-error-text);
+}
+
+.kissopen-banner[data-tone="neutral"] {
+    border-color: var(--divider);
+    background-color: var(--surface-high);
+}
+
+.kissopen-banner[data-tone="neutral"] .kissopen-banner__icon {
+    color: var(--text-secondary);
+}
+
+/* ---- Leading icon slot ---------------------------------------------------- */
+
+.kissopen-banner__icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+}
+
+/* ---- Text block ----------------------------------------------------------- */
+
+.kissopen-banner__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.kissopen-banner__title {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
+.kissopen-banner__message {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+}
+
+/* ---- Trailing actions ----------------------------------------------------- */
+
+.kissopen-banner__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.kissopen-banner__dismiss {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-banner__dismiss:hover {
+    background: var(--surface-ripple);
+    color: var(--text);
+}
+
+.kissopen-banner__dismiss:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}

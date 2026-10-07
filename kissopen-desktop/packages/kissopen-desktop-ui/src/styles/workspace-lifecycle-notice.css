@@ -1,0 +1,196 @@
+/*
+ * C-241 WorkspaceLifecycleNotice — one workspace's own phase, stated in full.
+ *
+ * Two sizes of the same row: a media slot on the left, then a flex column of
+ * title, body, optional host reason, and optional path. `panel` fills its host
+ * region and centres the block, with a 40px medallion and 15/20 title; `compact`
+ * is a content-sized bordered strip with a 20px slot and 13/18 title, sized to
+ * sit above a composer without changing the height of the lane it is in.
+ *
+ * Panel rhythm (top → bottom inside the block): title 20 · 6 · body 18 · 8 ·
+ * detail 18 · 4 · path 16. Compact drops the leading gaps to 4 throughout.
+ *
+ * Tone is carried by the media slot and the border only: the words stay in the
+ * ordinary text roles, because a failed checkout is news about a place rather
+ * than an error in the reader's own sentence. Every value is a theme token.
+ */
+
+.kissopen-workspace-lifecycle,
+.kissopen-workspace-lifecycle * {
+    box-sizing: border-box;
+}
+
+.kissopen-workspace-lifecycle {
+    display: flex;
+    margin: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+}
+
+/* ---- Panel: fills the content region it is given ------------------------- */
+
+.kissopen-workspace-lifecycle[data-size="panel"] {
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+    padding: 40px 32px;
+}
+
+.kissopen-workspace-lifecycle[data-size="panel"] .kissopen-workspace-lifecycle__media {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--input-background);
+}
+
+.kissopen-workspace-lifecycle[data-size="panel"] .kissopen-workspace-lifecycle__content {
+    max-width: 420px;
+}
+
+.kissopen-workspace-lifecycle[data-size="panel"] .kissopen-workspace-lifecycle__title {
+    font-size: 15px;
+    line-height: 20px;
+}
+
+/* ---- Compact: one content-sized strip ------------------------------------ */
+
+.kissopen-workspace-lifecycle[data-size="compact"] {
+    flex: none;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface-high);
+}
+
+.kissopen-workspace-lifecycle[data-size="compact"] .kissopen-workspace-lifecycle__media {
+    width: 18px;
+    height: 18px;
+}
+
+.kissopen-workspace-lifecycle[data-size="compact"] .kissopen-workspace-lifecycle__title {
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-workspace-lifecycle[data-size="compact"] .kissopen-workspace-lifecycle__content {
+    gap: 4px;
+}
+
+/* ---- Tone ---------------------------------------------------------------- */
+
+.kissopen-workspace-lifecycle[data-tone="progress"] .kissopen-workspace-lifecycle__media {
+    color: var(--text-secondary);
+}
+
+.kissopen-workspace-lifecycle[data-tone="danger"] .kissopen-workspace-lifecycle__media {
+    color: var(--box-error-text);
+}
+
+.kissopen-workspace-lifecycle[data-tone="warning"] .kissopen-workspace-lifecycle__media {
+    color: var(--box-warning-text);
+}
+
+.kissopen-workspace-lifecycle[data-size="compact"][data-tone="danger"] {
+    border-color: var(--box-error-border);
+    background: var(--box-error-background);
+}
+
+.kissopen-workspace-lifecycle[data-size="compact"][data-tone="warning"] {
+    border-color: var(--box-warning-border);
+    background: var(--box-warning-background);
+}
+
+/* ---- Parts --------------------------------------------------------------- */
+
+.kissopen-workspace-lifecycle__media {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.kissopen-workspace-lifecycle__content {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.kissopen-workspace-lifecycle__title {
+    display: block;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.kissopen-workspace-lifecycle__body {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+}
+
+/*
+ * The host's own sentence, set apart from our description of the phase so the
+ * reader can tell which words came from the machine. It wraps and keeps its
+ * line breaks: a git failure is often two lines and reads as neither without
+ * them.
+ */
+.kissopen-workspace-lifecycle__detail {
+    display: block;
+    overflow-wrap: anywhere;
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    white-space: pre-wrap;
+}
+
+.kissopen-workspace-lifecycle__path {
+    display: block;
+    overflow-wrap: anywhere;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+/* ---- C-242 WorkspaceLifecycleLane ---------------------------------------- */
+
+/*
+ * The row the notice sits in, above the work it is about. It is in the document
+ * in every phase — including the ready one, where it holds nothing — because a
+ * row that came and went would move everything below it and rebuild the tab
+ * strip, transcript, and composer at the exact moment the reader needs them to
+ * stay where they were. Empty, it takes no space and shows nothing.
+ */
+.kissopen-workspace-lifecycle-lane {
+    display: flex;
+    flex: none;
+    padding: 8px 12px 0;
+}
+
+.kissopen-workspace-lifecycle-lane[data-empty] {
+    display: none;
+}
+
+/*
+ * The strip is content-sized on its own, which in a lane as wide as a window
+ * would let a long host reason run off the right edge instead of wrapping. Here
+ * it takes the lane's width and wraps inside it.
+ */
+.kissopen-workspace-lifecycle-lane .kissopen-workspace-lifecycle {
+    flex: 1 1 auto;
+    min-width: 0;
+}

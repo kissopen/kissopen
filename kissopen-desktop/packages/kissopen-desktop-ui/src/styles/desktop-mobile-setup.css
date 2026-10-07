@@ -1,0 +1,69 @@
+.kissopen-desktop-mobile-setup .kissopen-setup-page__body {
+    gap: 8px;
+    max-width: 640px;
+    padding: 32px 24px 16px;
+}
+
+.kissopen-desktop-mobile-setup .kissopen-setup-page__copy {
+    max-width: 560px;
+    text-wrap: balance;
+}
+
+/* Keep the progress header and QR actions visible in short desktop windows. */
+.kissopen-desktop-mobile-setup[data-steps] .kissopen-setup-page__body {
+    padding: 8px 24px;
+}
+
+.kissopen-desktop-mobile-setup[data-steps] .kissopen-setup-page__heading {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+}
+
+.kissopen-desktop-mobile-setup__body,
+.kissopen-desktop-mobile-setup__preparation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-desktop-mobile-setup__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.kissopen-desktop-mobile-setup__note {
+    margin: 0;
+    color: var(--onboarding-backdrop-ink);
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.kissopen-desktop-mobile-setup__download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.kissopen-desktop-mobile-setup__platform {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 104px;
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 4px;
+}
+
+.kissopen-desktop-mobile-setup__preparation {
+    min-height: 36px;
+}

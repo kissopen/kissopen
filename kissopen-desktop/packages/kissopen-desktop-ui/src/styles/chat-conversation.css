@@ -1,0 +1,75 @@
+/*
+ * The transcript's turn layout. A turn is one block: the line that names
+ * the agent, the steps it took, the text it wrote, and the reply that closes it.
+ * These rules give that block a consistent rhythm within its surrounding chrome.
+ */
+
+/*
+ * Agent replies arrive as a run of short blocks interleaved with activity rows,
+ * so they carry half the vertical padding of a human turn: the run reads as one
+ * answer while the identity row (author, View traces, time) stays above the body.
+ */
+.kissopen-chat-conversation .kissopen-message[data-agent] {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/*
+ * The dock is seamless with the transcript, so the clearance beneath the newest
+ * message is what keeps it from reading as part of the composer. The working
+ * turn's live status line lives in the message list footer after that last
+ * message and scrolls with the transcript, aligned with the step rows above it.
+ */
+.kissopen-chat-conversation .kissopen-message-list__content:not([data-virtualized]) {
+    padding-bottom: 24px;
+}
+
+/* The dangling avatar is positioned from the row's top edge, so it follows that
+   halved padding up by exactly as much: keep it centred on the author line. */
+.kissopen-chat-conversation
+    .kissopen-message[data-agent]:not([data-own])
+    .kissopen-message__gutter {
+    top: 8px;
+}
+
+.kissopen-chat-conversation
+    .kissopen-message[data-agent][data-grouped]:not([data-own])
+    .kissopen-message__gutter {
+    top: 2px;
+}
+
+/*
+ * The line that opens a turn carries no text of its own — it names the agent,
+ * and the steps and blocks below it are what the turn did and said — so it holds
+ * its meta row and nothing else.
+ */
+.kissopen-chat-conversation .kissopen-message--turn-header {
+    padding-bottom: 0;
+}
+
+.kissopen-chat-conversation .kissopen-message--turn-header .kissopen-message__body {
+    display: none;
+}
+
+/* Prose resuming under a run of tool steps opens the same gap that separates the
+   prose above from the first of those steps, so the run reads as belonging to
+   the text it followed rather than the text below it. */
+.kissopen-chat-conversation .kissopen-message[data-grouped].kissopen-message--after-trace-steps {
+    padding-top: 8px;
+}
+
+/*
+ * An attached document, read inside the chat rather than downloaded. It takes
+ * the large modal width and a bounded height so a long document scrolls inside
+ * the card instead of growing the overlay past the window.
+ */
+.kissopen-chat-document-modal {
+    display: flex;
+    width: 640px;
+    max-width: 100%;
+    height: min(720px, 100cqh - 48px);
+    overflow: hidden;
+    border-radius: var(--kissopen-radius-shell);
+    background: var(--surface);
+    box-shadow: 0 24px 64px var(--shadow-elevated);
+}

@@ -1,0 +1,137 @@
+/*
+ * PdfDocumentViewer, WordDocumentViewer, SpreadsheetViewer, SlidesViewer —
+ * documents drawn inside the file preview.
+ *
+ * Each fills the preview's body as one flex column: a scrolling stage, and for a
+ * workbook a sheet strip under it. Pages and slides sit on a quiet backdrop with
+ * 16px between them, like paper on a desk; a table sits flush on the surface.
+ */
+
+.kissopen-document-viewer {
+    position: relative;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+}
+
+.kissopen-document-viewer__notice {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: var(--surface);
+}
+
+.kissopen-document-viewer__scroll {
+    flex: 1 1 0%;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+}
+
+.kissopen-document-viewer__scroll--pages,
+.kissopen-document-viewer__scroll--slides {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface-high);
+}
+
+.kissopen-document-viewer__page {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 16%);
+}
+
+.kissopen-document-viewer__scroll--slides > .pptx-preview-wrapper {
+    flex: none;
+}
+
+.kissopen-document-viewer__canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* docx-preview draws its own grey desk and white pages; only its padding is ours. */
+.kissopen-document-viewer__scroll--word .kissopen-docx-wrapper {
+    padding: 16px;
+}
+
+.kissopen-document-viewer__scroll--word .kissopen-docx-wrapper > section.kissopen-docx {
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 16%);
+}
+
+.kissopen-document-viewer__scroll--sheet table {
+    border-collapse: collapse;
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text);
+}
+
+.kissopen-document-viewer__scroll--sheet td {
+    min-width: 48px;
+    max-width: 320px;
+    padding: 4px 8px;
+    overflow: hidden;
+    border: 1px solid var(--divider);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.kissopen-document-viewer__scroll--sheet tr:first-child td {
+    position: sticky;
+    top: 0;
+    background: var(--surface-high);
+    font-weight: 600;
+}
+
+.kissopen-document-viewer__more {
+    margin: 0;
+    padding: 4px 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-document-viewer__sheets {
+    display: flex;
+    flex: none;
+    gap: 4px;
+    padding: 4px 8px;
+    overflow-x: auto;
+    border-top: 1px solid var(--divider);
+}
+
+.kissopen-document-viewer__sheet {
+    flex: none;
+    height: 28px;
+    padding: 0 12px;
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.kissopen-document-viewer__sheet:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-document-viewer__sheet[aria-selected="true"] {
+    background: var(--surface-selected);
+    color: var(--text);
+    font-weight: 600;
+}

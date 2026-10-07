@@ -1,0 +1,199 @@
+/*
+ * C-049 FileAttachment — a non-image file card for a chat message.
+ *
+ * A single inline-flex element (a real <button> when clickable) with compact
+ * and chat-list variants.
+ */
+
+.kissopen-file-attachment,
+.kissopen-file-attachment__icon,
+.kissopen-file-attachment__thumbnail,
+.kissopen-file-attachment__copy,
+.kissopen-file-attachment__name,
+.kissopen-file-attachment__size,
+.kissopen-file-attachment__meta,
+.kissopen-file-attachment__action {
+    box-sizing: border-box;
+}
+
+.kissopen-file-attachment {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 8px 12px;
+    background: var(--groupped-background);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+    text-decoration: none;
+    appearance: none;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
+}
+
+button.kissopen-file-attachment {
+    cursor: pointer;
+}
+
+.kissopen-file-attachment:hover {
+    background: var(--surface-high);
+    border-color: var(--divider);
+}
+
+.kissopen-file-attachment:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-file-attachment__icon {
+    display: flex;
+    flex: none;
+    color: var(--text-secondary);
+}
+
+.kissopen-file-attachment__thumbnail {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: inherit;
+    background-position: center;
+    background-size: cover;
+    object-fit: cover;
+}
+
+.kissopen-file-attachment[data-variant="chat"] .kissopen-file-attachment__thumbnail {
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-file-attachment__name {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-file-attachment__size {
+    flex: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+/* Chat-list treatment: a bounded attachment card with a Slack-like file tile
+ * and a single hover affordance. It stays intrinsic to the message rather than
+ * stretching across the conversation column. */
+.kissopen-file-attachment[data-variant="chat"] {
+    width: min(420px, 100%);
+    height: 64px;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border-color: var(--divider);
+    border-radius: var(--kissopen-radius-window);
+}
+
+.kissopen-file-attachment[data-variant="chat"][data-actions-visible] {
+    background: var(--surface-high);
+}
+
+/* One tint for every kind of file, so the hue said nothing about the file and
+   nothing about the chip being clickable — it is the same neutral icon chip as
+   every other leading glyph. */
+.kissopen-file-attachment[data-variant="chat"] .kissopen-file-attachment__icon {
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-selected);
+    border-radius: var(--kissopen-radius-sm);
+    color: var(--text-secondary);
+}
+
+.kissopen-file-attachment[data-variant="chat"] .kissopen-file-attachment__copy {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.kissopen-file-attachment[data-variant="chat"] .kissopen-file-attachment__name {
+    display: block;
+    flex: none;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.kissopen-file-attachment__meta {
+    display: block;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 450;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-file-attachment__meta-hover {
+    display: none;
+}
+
+.kissopen-file-attachment__action {
+    display: flex;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-high);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    color: var(--text-secondary);
+    opacity: 0;
+    transform: translateX(4px);
+    transition:
+        color 120ms ease,
+        opacity 120ms ease,
+        transform 120ms ease;
+}
+
+.kissopen-file-attachment[data-variant="chat"]:hover .kissopen-file-attachment__meta-default,
+.kissopen-file-attachment[data-variant="chat"]:focus-visible
+    .kissopen-file-attachment__meta-default,
+.kissopen-file-attachment[data-variant="chat"][data-actions-visible]
+    .kissopen-file-attachment__meta-default {
+    display: none;
+}
+
+.kissopen-file-attachment[data-variant="chat"]:hover .kissopen-file-attachment__meta-hover,
+.kissopen-file-attachment[data-variant="chat"]:focus-visible .kissopen-file-attachment__meta-hover,
+.kissopen-file-attachment[data-variant="chat"][data-actions-visible]
+    .kissopen-file-attachment__meta-hover {
+    display: inline;
+}
+
+.kissopen-file-attachment[data-variant="chat"]:hover .kissopen-file-attachment__action,
+.kissopen-file-attachment[data-variant="chat"]:focus-visible .kissopen-file-attachment__action,
+.kissopen-file-attachment[data-variant="chat"][data-actions-visible]
+    .kissopen-file-attachment__action {
+    color: var(--text);
+    opacity: 1;
+    transform: none;
+}

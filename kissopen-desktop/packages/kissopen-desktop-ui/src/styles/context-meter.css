@@ -1,0 +1,138 @@
+/*
+ * ContextMeter — the spent share of the context window, at the end of the
+ * composer's control row. At rest it is only the bar: the row beside it is full
+ * of controls the reader uses constantly, and a running token count sitting
+ * there permanently is noise. Pointing at it is the question being asked, so the
+ * numbers appear then, sliding out to the left of the bar.
+ */
+.kissopen-context-meter {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    font-family: var(--kissopen-font-ui);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--text-secondary);
+}
+
+.kissopen-context-meter__readout {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    margin-inline-end: 0;
+    transition:
+        max-width 140ms ease-out,
+        margin-inline-end 140ms ease-out,
+        opacity 140ms ease-out;
+}
+
+.kissopen-context-meter:hover .kissopen-context-meter__readout {
+    max-width: 140px;
+    margin-inline-end: 6px;
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-context-meter__readout {
+        transition: none;
+    }
+}
+
+/* The counts are the same fact as the percentage, spelled out; they sit a shade
+   back so the percentage is what is read first. */
+.kissopen-context-meter__tokens {
+    opacity: 0.72;
+}
+
+.kissopen-context-meter__track {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    width: 64px;
+    height: 4px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--divider);
+    overflow: hidden;
+    transform-origin: center;
+    transition:
+        height 140ms ease-out,
+        transform 140ms ease-out;
+}
+
+.kissopen-context-meter:hover .kissopen-context-meter__track {
+    height: 6px;
+    transform: scaleX(1.0625);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-context-meter__track {
+        transition: none;
+    }
+}
+
+.kissopen-context-meter__fill {
+    flex: none;
+    height: 100%;
+    border-radius: var(--kissopen-radius-pill);
+    background: currentColor;
+    /* The window only ever moves by a report at a time; the ease keeps a jump
+       from reading as a glitch without animating anything on its own. */
+    transition: width 240ms ease-out;
+}
+
+/*
+ * A narrow specular streak crosses the whole track only when the occupied
+ * fraction grows. Its movement is started by the component's ref callback so
+ * repeated reports can replay it without remounting any meter element.
+ */
+.kissopen-context-meter__shine {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 32%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--surface) 88%, transparent),
+        transparent
+    );
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* The compaction mark: a notch in the track, not a line over the fill, so the
+   fill passing it covers it rather than being cut by it. Three pixels, because
+   a one-pixel gap in a four-pixel track was invisible at a glance, and the whole
+   point of the notch is to be seen before the colour changes. */
+.kissopen-context-meter__threshold {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--surface);
+    opacity: 0.9;
+}
+
+/* Plenty of room left is unremarkable and stays in the row's own voice; the two
+   states that ask for something earn their colour. */
+.kissopen-context-meter[data-tone="ample"] {
+    color: var(--text-secondary);
+    opacity: 0.72;
+}
+
+.kissopen-context-meter[data-tone="ample"] .kissopen-context-meter__fill {
+    background: var(--text-secondary);
+}
+
+.kissopen-context-meter[data-tone="compact"] {
+    color: var(--box-warning-text);
+}
+
+.kissopen-context-meter[data-tone="critical"] {
+    color: var(--status-error);
+}

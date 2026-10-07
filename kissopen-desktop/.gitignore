@@ -1,0 +1,25 @@
+node_modules
+# pnpm falls back to a store inside the repo when the home one is unwritable.
+.pnpm-store
+.context
+.kissopen
+# throwaway HOME for scripts/dev-desktop-sandbox.mjs
+.kissopen-sandbox
+.worktrees/
+dist
+coverage
+.vitest-attachments
+__screenshots__
+.DS_Store
+.env
+.env.*
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+packages/kissopen-desktop-electron/release
+
+# local drafts, 3d party repos we pull in for research etc
+.local/
+.context/
+.d/

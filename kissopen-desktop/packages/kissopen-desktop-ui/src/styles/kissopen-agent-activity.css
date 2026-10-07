@@ -1,0 +1,189 @@
+/*
+ * KissopenAgent session activity monitor (`/goal`, `/tasks`, `/agents`): unframed
+ * content for an inline reading or the side panel's Activity tab. Sections use
+ * aligned status lanes on one surface instead of nesting cards or fills.
+ */
+
+.kissopen-agent-activity-panel-scroll {
+    container-type: inline-size;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+}
+
+.kissopen-agent-activity-panel-scroll__viewport {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.kissopen-agent-activity-panel-scroll__content {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+    padding: 12px 8px;
+    box-sizing: border-box;
+}
+
+.kissopen-agent-activity {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-agent-activity__empty {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-agent-activity__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kissopen-agent-activity__group,
+.kissopen-agent-activity__group-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.kissopen-agent-activity__group {
+    gap: 8px;
+}
+
+.kissopen-agent-activity__group-content,
+.kissopen-agent-activity__completed-content {
+    gap: 12px;
+}
+
+.kissopen-agent-activity__group-heading,
+.kissopen-agent-activity__completed-summary {
+    height: 24px;
+    margin: 0;
+    padding: 0 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 24px;
+}
+
+.kissopen-agent-activity__completed-summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: var(--kissopen-radius-sm);
+    cursor: pointer;
+    list-style: none;
+}
+
+.kissopen-agent-activity__completed-summary::-webkit-details-marker {
+    display: none;
+}
+
+.kissopen-agent-activity__completed-summary::marker {
+    content: "";
+}
+
+.kissopen-agent-activity__completed-heading {
+    margin: 0;
+    font: inherit;
+    line-height: inherit;
+}
+
+.kissopen-agent-activity__completed-summary:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-agent-activity__completed-summary:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-agent-activity__completed-chevron {
+    flex: none;
+    transition: transform 120ms ease;
+}
+
+.kissopen-agent-activity__completed[open] .kissopen-agent-activity__completed-chevron {
+    transform: rotate(90deg);
+}
+
+.kissopen-agent-activity__completed-content {
+    display: none;
+    flex-direction: column;
+    padding-top: 8px;
+}
+
+.kissopen-agent-activity__completed[open] > .kissopen-agent-activity__completed-content {
+    display: flex;
+}
+
+.kissopen-agent-activity__heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 20px;
+    margin: 0;
+    padding: 0 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 16px;
+}
+
+.kissopen-agent-activity__count {
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.kissopen-agent-activity__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    list-style: none;
+}
+
+@container (max-width: 300px) {
+    .kissopen-agent-activity[data-placement="panel"] .kissopen-agent-activity__empty {
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+    .kissopen-agent-activity[data-placement="panel"] .kissopen-agent-activity__section {
+        gap: 4px;
+    }
+
+    .kissopen-agent-activity[data-placement="panel"] .kissopen-agent-activity__group-content,
+    .kissopen-agent-activity[data-placement="panel"] .kissopen-agent-activity__completed-content {
+        gap: 8px;
+    }
+
+    .kissopen-agent-activity[data-placement="panel"] .kissopen-agent-activity__list {
+        gap: 4px;
+    }
+}

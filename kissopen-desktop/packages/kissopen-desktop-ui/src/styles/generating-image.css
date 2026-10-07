@@ -1,0 +1,42 @@
+/*
+ * GeneratingImage: a halftone field standing in for a picture on its way,
+ * with a progress badge in the corner. The field is a canvas sized by its
+ * props; the badge is the one thing positioned over it, which is what
+ * absolute positioning is for.
+ */
+
+.kissopen-generating-image {
+    position: relative;
+    display: flex;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--surface);
+    /* The dots take their colour from here, like text would: a quiet grey, so the
+       field reads as a placeholder rather than a highlight. */
+    color: var(--text-secondary);
+}
+
+.kissopen-generating-image__field {
+    display: block;
+    flex: 0 0 auto;
+}
+
+.kissopen-generating-image__badge {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- A badge over the field's bottom-right corner, outside the field's own flow. */
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}

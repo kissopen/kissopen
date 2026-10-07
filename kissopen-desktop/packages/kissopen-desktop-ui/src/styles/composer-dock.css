@@ -1,0 +1,25 @@
+/*
+ * ComposerDock — the grounded chat input bar. A solid full-width surface bar
+ * whose boundary with the transcript is intentionally seamless, as in Kissopen.
+ * Its inner compose column centers at the same measure as the message column so
+ * the input starts flush with the transcript and retains 24px desktop breathing
+ * room below. A working turn reports itself on the transcript's last line, so
+ * nothing stacks above the Composer here.
+ */
+
+.kissopen-composer-dock {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    background: var(--surface);
+}
+
+.kissopen-composer-dock__compose {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: var(--kissopen-chat-measure);
+    margin: 0 auto;
+    padding: 0 20px 24px 12px;
+}

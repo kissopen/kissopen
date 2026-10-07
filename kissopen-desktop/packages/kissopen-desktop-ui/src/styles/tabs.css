@@ -1,0 +1,348 @@
+/* C-025 Tabs — quiet capsule tabs. Bar heights stay 32/40/48px so
+ * file viewers and side panels retain their shared chrome rhythm. The bar
+ * owns a 4px inset; the selected tab uses one neutral fill, never an underline. */
+
+.kissopen-tabs {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border-bottom: 0;
+    font-family: var(--kissopen-font-ui);
+}
+
+/* The context menu rides the viewport, not the strip: the bar clips and
+   scrolls horizontally, and a popover inside that scrollport would be cut off
+   at its edge. */
+.kissopen-tabs__menu {
+    position: fixed;
+    z-index: 40;
+}
+
+.kissopen-tabs__tab {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    box-sizing: border-box;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    appearance: none;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-weight: 500;
+    font-synthesis: none;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: 12px;
+    transition:
+        color 120ms ease,
+        background-color 120ms ease;
+}
+
+.kissopen-tabs__tab:hover:not([data-active]) {
+    background: var(--surface-high);
+    color: var(--text);
+}
+
+.kissopen-tabs__tab[data-active] {
+    background: var(--surface-pressed);
+    color: var(--text);
+}
+
+.kissopen-tabs__tab:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/* Per-size geometry — height, label typography, padding, and inter-slot gap. */
+.kissopen-tabs[data-size="small"] .kissopen-tabs__tab {
+    height: calc(var(--kissopen-subheader-height) - 8px);
+    padding: 0 12px;
+    gap: 6px;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-tabs[data-size="medium"] .kissopen-tabs__tab {
+    height: 32px;
+    padding: 0 14px;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-tabs[data-size="large"] .kissopen-tabs__tab {
+    height: 40px;
+    padding: 0 16px;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+/*
+ * One leading lane, one width. A glyph, a spinner, an unread dot, and a lane
+ * held open with nothing in it all measure the same, so a tab that starts
+ * working, finishes, and is then read never slides its own label sideways.
+ */
+.kissopen-tabs__tab-icon {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+.kissopen-tabs[data-size="small"] .kissopen-tabs__tab-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.kissopen-tabs[data-size="large"] .kissopen-tabs__tab-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/*
+ * A scheduled wait's clock. Highlighted with the link/accent color so a tab
+ * deliberately doing nothing still stands apart from an idle one, without
+ * borrowing the spinner's claim that work is happening.
+ */
+.kissopen-tabs__tab-waiting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-link);
+}
+
+.kissopen-tabs__tab-dirty {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--text);
+}
+
+.kissopen-tabs__tab-unread {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--status-error);
+}
+
+/*
+ * When the lane already holds a mark, unread rides its corner instead of
+ * replacing it: the tab keeps the face the reader aims at, and the news is a
+ * dot on top of it. The ring separates the dot from whatever it overlaps.
+ */
+.kissopen-tabs__tab-unread--corner {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    box-shadow: 0 0 0 1.5px var(--surface);
+}
+
+.kissopen-tabs__tab-label {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Preview documents are intentionally provisional: italic title text
+   distinguishes the one tab the next preview may replace. */
+.kissopen-tabs__tab[data-preview] .kissopen-tabs__tab-label {
+    font-style: italic;
+}
+
+.kissopen-tabs__tab-badge {
+    flex: none;
+}
+
+/*
+ * The trailing lane, holding what the tab is doing and the control that closes
+ * it. One fixed 16px box whichever of them is showing, so a tab starting work,
+ * finishing it, or being hovered never reflows the bar or shifts its own label.
+ *
+ * The close control is the lane's one flex item. The activity mark overlays it
+ * instead of sitting beside it: the reader only ever wants one of the two, and
+ * laying them out in a line would leave a permanent second box on every tab that
+ * is merely closable.
+ */
+.kissopen-tabs__tab-trailing {
+    display: flex;
+    position: relative;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+/* The trailing lane already holds the close glyph's own space; 8px after it
+ * keeps the capsule balanced without crowding the click target. */
+.kissopen-tabs__tab:has(.kissopen-tabs__tab-trailing) {
+    padding-right: 8px;
+}
+
+/*
+ * Not interactive and not reachable by tab: it reports, and the control stacked
+ * over it is the thing that can be used. It is out of flow so that a tab which
+ * is both busy and closable keeps one 16px lane rather than two.
+ */
+.kissopen-tabs__tab-activity {
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    inset: 0;
+    color: var(--text-secondary);
+    pointer-events: none;
+    transition: opacity 120ms ease;
+}
+
+/* Idle tabs always expose close, as in a document strip. A working tab
+ * keeps its activity mark until hover/focus reveals close in the same lane. */
+.kissopen-tabs__tab-close {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--kissopen-radius-sm);
+    color: var(--text-secondary);
+    opacity: 1;
+    cursor: pointer;
+    transition: opacity 120ms ease;
+}
+
+.kissopen-tabs__tab-trailing:has(.kissopen-tabs__tab-activity) .kissopen-tabs__tab-close {
+    opacity: 0;
+}
+
+.kissopen-tabs__tab:hover .kissopen-tabs__tab-close,
+.kissopen-tabs__tab-close:focus-visible {
+    opacity: 1;
+}
+
+/*
+ * Whenever the close control is up it owns the lane outright. The activity mark
+ * is hidden rather than left underneath: the close glyph paints no background of
+ * its own until it is hovered, so a spinner behind it would otherwise turn every
+ * revealed close control into two overlapping marks.
+ *
+ * This tracks the close control exactly, so it is keyed off the lane actually
+ * containing one: a busy tab that cannot be closed keeps reporting its work
+ * while the pointer is over it, and every tab reports again as soon as the
+ * pointer leaves.
+ */
+.kissopen-tabs__tab:hover .kissopen-tabs__tab-trailing:has(.kissopen-tabs__tab-close),
+.kissopen-tabs__tab-trailing:has(.kissopen-tabs__tab-close:focus-visible) {
+    /* Consumed by the activity mark below; the close control sets its own. */
+    --kissopen-tabs-activity-opacity: 0;
+}
+
+.kissopen-tabs__tab-activity {
+    opacity: var(--kissopen-tabs-activity-opacity, 1);
+}
+
+.kissopen-tabs__tab-close:hover {
+    background: var(--surface-selected);
+    color: var(--text);
+}
+
+.kissopen-tabs__tab-close:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/*
+ * Dragging. A reorderable tab still points while it is only being aimed at and
+ * switches to the closed grabbing hand after the gesture crosses its threshold.
+ * Its neighbours ease into their new places while the dragged tab tracks the
+ * pointer exactly. Transitions are suppressed while no drag is running so an
+ * ordinary re-render never animates.
+ */
+.kissopen-tabs__tab[data-reorderable] {
+    touch-action: none;
+}
+
+.kissopen-tabs[data-dragging] .kissopen-tabs__tab {
+    transition: transform 140ms ease;
+}
+
+.kissopen-tabs[data-dragging] .kissopen-tabs__tab[data-dragged] {
+    z-index: 1;
+    transition: none;
+    cursor: grabbing;
+    opacity: 0.9;
+}
+
+/* Carried out of the strip, the tab leaves a gap where it was: it is being
+   drawn at the pointer instead, and a tab in two places at once would read as
+   two tabs. */
+.kissopen-tabs[data-dragging] .kissopen-tabs__tab[data-carried] {
+    opacity: 0.3;
+    transform: none !important;
+}
+
+/* The carried tab follows the pointer across the whole window, so it is fixed
+   to the viewport and centred on the pointer rather than laid out anywhere. */
+.kissopen-tabs__carried {
+    position: fixed;
+    z-index: 60;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    transform: translate(-50%, -50%);
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--surface);
+    box-shadow: 0 4px 16px var(--shadow-elevated);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    font-synthesis: none;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.kissopen-tabs__carried[data-over] {
+    box-shadow:
+        0 0 0 2px var(--radio-active),
+        0 4px 16px var(--shadow-elevated);
+}
+
+/* Said out loud, never drawn: a move made with the keyboard has to be reported
+   to a screen reader without taking a pixel of the strip to do it. */
+.kissopen-tabs__announcement {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* The pointer owns the drag; hover paint on the tabs it passes over would read
+   as a second, competing selection. */
+.kissopen-tabs[data-dragging] .kissopen-tabs__tab:hover:not([data-active]) {
+    color: var(--text-secondary);
+}
+
+.kissopen-tabs[data-dragging] .kissopen-tabs__tab-close {
+    opacity: 0;
+}

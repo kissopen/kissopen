@@ -1,0 +1,99 @@
+/*
+ * Compact path used by file preview and editor headers. The directory gives
+ * way from its middle before the file name does, preserving the useful tail.
+ */
+
+.kissopen-file-path-label {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: baseline;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.kissopen-file-path-label__directory {
+    display: flex;
+    flex: 0 1000 auto;
+    align-items: baseline;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+}
+
+.kissopen-file-path-label__directory-head {
+    display: block;
+    flex: 0 1000 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kissopen-file-path-label__directory-tail {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kissopen-file-path-label__name {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    text-overflow: ellipsis;
+}
+
+/* A file-kind glyph uses the same family palette wherever a compact file path
+   appears. The component supplies the glyph; this class supplies its meaning. */
+.kissopen-file-family-glyph {
+    display: flex;
+    flex: none;
+    align-items: center;
+    color: var(--text-secondary);
+}
+
+.kissopen-file-family-glyph[data-family="archive"] {
+    color: var(--file-archive);
+}
+
+.kissopen-file-family-glyph[data-family="audio"] {
+    color: var(--file-audio);
+}
+
+.kissopen-file-family-glyph[data-family="code"] {
+    color: var(--file-code);
+}
+
+.kissopen-file-family-glyph[data-family="config"] {
+    color: var(--file-config);
+}
+
+.kissopen-file-family-glyph[data-family="data"] {
+    color: var(--file-data);
+}
+
+.kissopen-file-family-glyph[data-family="image"] {
+    color: var(--file-image);
+}
+
+.kissopen-file-family-glyph[data-family="prose"] {
+    color: var(--file-prose);
+}
+
+.kissopen-file-family-glyph[data-family="secret"] {
+    color: var(--file-secret);
+}
+
+.kissopen-file-family-glyph[data-family="shell"] {
+    color: var(--file-shell);
+}
+
+.kissopen-file-family-glyph[data-family="style"] {
+    color: var(--file-style);
+}
+
+.kissopen-file-family-glyph[data-family="video"] {
+    color: var(--file-video);
+}

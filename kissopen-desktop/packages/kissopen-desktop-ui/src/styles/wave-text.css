@@ -1,0 +1,65 @@
+/*
+ * C-306 WaveText — a light sweep through a label, one character at a time,
+ * after the product owner's "Juan Thinking" design.
+ *
+ * Each character runs the same loop over x = t − i/(n+2):
+ *
+ *   w       = 0.5 − 0.5·cos(2πx), i.e. easeInOutSine up over the first half of
+ *             the lap and back down over the second
+ *   opacity = 0.4 + 0.6·w                      (0.4 → 1 → 0.4)
+ *
+ * One colour — full text, so the crest is as bright as the design's — in the
+ * row's own type: only the brightness moves, so the label reads
+ * as one clean word with light passing through it. The lag is the character's
+ * own start, applied as a negative delay so every character is mid-loop from
+ * the first frame; `--kissopen-wave-phase` parks the whole label at one point
+ * of the lap for a still fixture.
+ */
+
+.kissopen-wave-text {
+    --kissopen-wave-duration: 2400ms;
+    --kissopen-wave-phase: 0;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.kissopen-wave-text__character {
+    --kissopen-wave-lag: 0;
+    opacity: 0.4;
+    animation: kissopen-wave-text-opacity var(--kissopen-wave-duration) infinite;
+    animation-delay: calc(
+        (var(--kissopen-wave-lag) - var(--kissopen-wave-phase) - 1) * var(--kissopen-wave-duration)
+    );
+}
+
+.kissopen-wave-text[data-paused] .kissopen-wave-text__character {
+    animation-play-state: paused;
+}
+
+@keyframes kissopen-wave-text-opacity {
+    0% {
+        opacity: 0.4;
+        animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+    }
+
+    50% {
+        opacity: 1;
+        animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+    }
+
+    100% {
+        opacity: 0.4;
+    }
+}
+
+/* Less motion: the label at rest, in the row's own colour. */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-wave-text {
+        color: inherit;
+    }
+
+    .kissopen-wave-text__character {
+        opacity: 1;
+        animation: none;
+    }
+}

@@ -1,0 +1,730 @@
+/*
+ * AppShell — Kissopen desktop window composition.
+ *
+ * Flat native-style surfaces fill the desktop window. The title bar, rail,
+ * navigation, workspace, and optional inspector meet on shared hairlines rather
+ * than floating as separate rounded cards.
+ *
+ * The workspace keeps a 375px reading floor. If both side lanes cannot fit,
+ * the inspector overlays the workspace instead of crushing its content.
+ */
+
+.kissopen-desktop-app-shell {
+    /* What each region keeps at the 720px desktop minimum. */
+    --kissopen-desktop-app-shell-lane-min: 250px;
+    --kissopen-desktop-app-shell-workspace-min: 375px;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-width: 720px;
+    min-height: 480px;
+    overflow: hidden;
+    background-color: var(--header-background);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* An embedded shell owns only the workspace and inspector inside a window-level
+   shell. The outer shell enforces the desktop minimum and keeps navigation
+   mounted, so this surface must shrink to the region it is given. */
+.kissopen-desktop-app-shell[data-embedded] {
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-desktop-app-shell__window-controls {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: 78px;
+    height: 56px;
+    pointer-events: none;
+}
+
+.kissopen-desktop-app-shell__traffic-light-reservation {
+    display: block;
+    width: 78px;
+    height: 56px;
+}
+
+/* A focused surface without a sidebar or supplied TitleBar still needs a real
+   desktop drag lane. It participates in flex layout instead of covering the
+   first 56px of settings/content controls. */
+.kissopen-desktop-app-shell__standalone-title-bar {
+    display: block;
+    flex: none;
+    width: 100%;
+    height: 56px;
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+/*
+ * Native drag regions — the ownership contract.
+ *
+ * Chromium collects every `app-region` box in tree order and the window folds
+ * them into one region: `drag` unions, `no-drag` subtracts. Later rectangles
+ * win outright, and the resulting region is hit-tested by the window *below*
+ * the page, so anything inside it can never receive a click. Two rules follow,
+ * and breaking either one is what makes a header control unclickable:
+ *
+ *   1. Only the top band of a column may declare `drag`. A surface further down
+ *      re-covers every hole punched before it — including a popover hanging out
+ *      of the header above it, whose rows were carved out earlier in the tree.
+ *   2. Anything that floats out of a drag band owns its own hit surface and
+ *      declares `no-drag` itself. A control's own opt-out does not extend to a
+ *      menu, card, or padding box that escapes the band.
+ *
+ * Chat chrome therefore uses its actual visible headers as the drag surface.
+ * The prior transparent full-width overlay sat above these controls and
+ * swallowed pointer input. Interactive descendants opt out explicitly.
+ */
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-sidebar__header,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-channel-header,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-panel-header,
+.kissopen-desktop-app-shell__reveal[data-window-controls] {
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+/* Rule 1 in force. A tab strip is window chrome only where it is the column's
+   first row and there is no header above it; nested under a channel header it
+   is an ordinary control surface, and making it draggable reclaimed the top of
+   every menu that opened downwards out of that header. */
+.kissopen-desktop-app-shell[data-window-controls]
+    .kissopen-desktop-app-shell__workspace
+    > .kissopen-tabbed-pane:first-child
+    > .kissopen-tabbed-pane__bar {
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+/* A transparent dismissal backdrop is a full-window button, so this blanket
+   opt-out used to subtract the entire window and leave a window that could not
+   be dragged by any of its chrome for as long as a menu was open. It is a click
+   target for the page and nothing to the window, so it declares no region at
+   all — `app-region: none` is not an escape hatch, Chromium resolves it to
+   `no-drag`, so the only way out of the region list is to not match here. */
+.kissopen-desktop-app-shell[data-window-controls]
+    button:not(
+        .kissopen-agent-control__backdrop,
+        .kissopen-menu-button__backdrop,
+        .kissopen-select__backdrop,
+        .kissopen-slot-backdrop
+    ),
+.kissopen-desktop-app-shell[data-window-controls] a,
+.kissopen-desktop-app-shell[data-window-controls] input,
+.kissopen-desktop-app-shell[data-window-controls] select,
+.kissopen-desktop-app-shell[data-window-controls] textarea,
+.kissopen-desktop-app-shell[data-window-controls] [contenteditable="true"] {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+/* A tab bar heading its column is draggable between its controls, but its
+   trailing action lane is one stable interactive target. Carve out the whole
+   lane so native hit testing cannot reclaim the button's padded surround while
+   tabs scroll or reflow. */
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-tabbed-pane__actions {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+/* Rule 2 in force. A menu, popover, or card that hangs out of a drag band is
+   only partly made of buttons: its own padding, hairline, and separators are
+   not, and the strip of it still overlapping the band above stays draggable
+   unless the overlay claims its whole box. Each of these is the shared surface
+   every product popover is built from, so claiming them here covers the menus
+   opened from any header rather than one call site's control. */
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-menu,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-menu-button__popover,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-select__list,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-agent-control__popover,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-channel-header__menu-popover {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+/* The window chrome row is the native title bar's own 40px, so the traffic
+   lights, the sidebar toggle, and the heading beside them read as one band of
+   window furniture rather than a 56px product header the lights float inside.
+   The 28px toggle centres on the lights' axis at y=6. */
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-sidebar__header,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-channel-header,
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-panel-header {
+    height: 40px;
+}
+
+/* The native controls occupy x=14…68, so sidebar content begins after their
+   16px trailing clearance. In full screen the controls disappear and content
+   returns to the window's ordinary 12px inset. */
+.kissopen-desktop-app-shell[data-window-controls] {
+    --kissopen-desktop-app-shell-chrome-inset: calc(env(titlebar-area-x, 72px) + 12px);
+}
+
+.kissopen-desktop-app-shell[data-window-controls]:is(
+    [data-window-full-screen],
+    [data-connection-rail]
+) {
+    --kissopen-desktop-app-shell-chrome-inset: 12px;
+}
+
+/* Beside a rail in a window the lights are still there, 20px of them past
+   the rail's 56px edge with the halo fading out behind them. A heading with
+   something at its start — the settings back control and title — would land
+   under the green light on the closed inset, so it begins 36px in instead:
+   past the green light and the halo's fade, on the lights' own line. */
+.kissopen-desktop-app-shell[data-window-controls][data-connection-rail]:not(
+        [data-window-full-screen]
+    )
+    .kissopen-desktop-app-shell__sidebar
+    > .kissopen-sidebar[data-back]
+    > .kissopen-sidebar__header {
+    padding-left: 36px;
+}
+
+/* Keep sidebar headings clear of the native traffic lights. The collapse
+   control is independently docked to the sidebar's right edge. */
+.kissopen-desktop-app-shell[data-window-controls]
+    .kissopen-desktop-app-shell__sidebar
+    > .kissopen-sidebar
+    > .kissopen-sidebar__header {
+    padding-left: var(--kissopen-desktop-app-shell-chrome-inset);
+}
+
+/* The collapse control floats over the header's trailing 40px. Reserve that
+   lane in the hosted sidebar so header context truncates before the control
+   instead of painting underneath it. */
+.kissopen-desktop-app-shell__sidebar[data-resizable]
+    > .kissopen-sidebar
+    > .kissopen-sidebar__header {
+    padding-right: 56px;
+}
+
+/* In full screen the traffic lights are gone, so the heading is no longer
+   holding a lane clear for them and the product mark simply heads the list. A
+   row's glyph box starts at the body's 8px inset plus the row's own 10px
+   padding, so the mark begins at that same 18px and its 20px box shares the
+   rows' glyph lane; the 8px gap after it puts the wordmark on their label lane. */
+.kissopen-desktop-app-shell[data-window-controls]:is(
+        [data-window-full-screen],
+        [data-connection-rail],
+        [data-window-controls-end]
+    )
+    .kissopen-desktop-app-shell__sidebar
+    > .kissopen-sidebar
+    > .kissopen-sidebar__header {
+    padding-left: 18px;
+}
+
+.kissopen-desktop-app-shell[data-window-controls]:is(
+        [data-window-full-screen],
+        [data-connection-rail],
+        [data-window-controls-end]
+    )
+    .kissopen-desktop-app-shell__sidebar
+    > .kissopen-sidebar
+    > .kissopen-sidebar__header
+    .kissopen-sidebar__title-row {
+    gap: 8px;
+}
+
+/* Reserve the native control band in every window-level sidebar, including
+   account-only navigation and Settings. Product-specific shell classes miss
+   the account shell. Direct children keep this inset out of embedded panes.
+   Full screen and trailing window controls retain their compact header. */
+.kissopen-desktop-app-shell[data-window-controls]:not([data-window-full-screen]):not(
+        [data-window-controls-end]
+    )
+    > .kissopen-desktop-app-shell__body
+    > .kissopen-desktop-app-shell__content
+    > .kissopen-desktop-app-shell__main
+    > .kissopen-desktop-app-shell__sidebar
+    > .kissopen-sidebar
+    > .kissopen-sidebar__header {
+    height: 104px;
+    padding-top: 48px;
+    padding-bottom: 0;
+    padding-left: 18px;
+}
+
+/* Beside a connection rail in full screen, a heading with nothing in it — the
+   product mark stands down there — has no traffic lights to hold a band for
+   either, so it can fold away when the list starts with a Create row. Without
+   that row the band stays, keeping the collapse toggle clear of the first
+   section's actions. In a window the band stays for the lights as well.
+   The collapse toggle then shares the Create row's line: the row is 32px
+   behind the body's 6px inset, so the 28px toggle hangs at 8px to centre on
+   it, and the row leaves the toggle's 40px lane (12px edge plus 28px box,
+   less the body's own 6px) clear. */
+.kissopen-desktop-app-shell[data-window-controls][data-connection-rail][data-window-full-screen]
+    .kissopen-desktop-app-shell__sidebar
+    > .kissopen-sidebar[data-heading-empty]:has(
+        .kissopen-sidebar__body-content > .kissopen-sidebar__compose:first-child
+    )
+    > .kissopen-sidebar__header {
+    display: none;
+}
+
+.kissopen-desktop-app-shell[data-window-controls][data-connection-rail][data-window-full-screen]
+    .kissopen-desktop-app-shell__sidebar:has(
+        > .kissopen-sidebar[data-heading-empty]
+            .kissopen-sidebar__body-content
+            > .kissopen-sidebar__compose:first-child
+    )
+    > .kissopen-desktop-app-shell__sidebar-collapse {
+    top: 8px;
+}
+
+.kissopen-desktop-app-shell[data-window-controls][data-connection-rail][data-window-full-screen]
+    .kissopen-desktop-app-shell__sidebar
+    > .kissopen-sidebar[data-heading-empty]
+    .kissopen-sidebar__body-content
+    > .kissopen-sidebar__compose:first-child {
+    margin-right: 34px;
+}
+
+/* Same reservation on whichever strip heads the workspace once the sidebar is
+   hidden and the traffic lights plus the floating toggle sit over it. */
+.kissopen-desktop-app-shell[data-window-controls][data-sidebar-collapsed] .kissopen-channel-header,
+.kissopen-desktop-app-shell[data-window-controls][data-sidebar-collapsed]
+    .kissopen-desktop-app-shell__workspace
+    > .kissopen-tabbed-pane:first-child
+    .kissopen-tabbed-pane__bar {
+    padding-left: calc(var(--kissopen-desktop-app-shell-chrome-inset) + 44px);
+}
+
+/* And on the surface that takes the whole window. A `fill` overlay covers the
+   native title bar as well, so the Lightbox's header is the row the traffic
+   lights land on: it becomes the same 40px band of window furniture as every
+   other heading here, which puts the file's name and the controls beside it on
+   the lights' own axis rather than 6px under it. Its 28px controls keep the
+   band's y=6, exactly as the sidebar toggle does. */
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-lightbox__header {
+    min-height: 40px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* The lane held clear of the lights themselves. In full screen they are gone
+   and the header keeps its own 16px inset, which is why only this half of the
+   reservation is scoped away from it. */
+.kissopen-desktop-app-shell[data-window-controls]:not(
+        [data-window-full-screen],
+        [data-connection-rail]
+    )
+    .kissopen-lightbox__header {
+    padding-left: var(--kissopen-desktop-app-shell-chrome-inset);
+}
+
+/* The window's overlay lane: a place in the shell's own stacking context for a
+   surface that covers the window, and nothing else. It draws nothing, takes no
+   room, and lays out none of its contents — everything hung here is fixed to
+   the window — so `display: contents` keeps it out of the shell's column
+   entirely rather than leaving a zero-height flex item in it. */
+.kissopen-desktop-app-shell__overlays {
+    display: contents;
+}
+
+/*
+ * The held-Command read-out's lane. It is over the window rather than in it:
+ * the card covers the rail, sidebar, and workspace at once, so it leaves the
+ * flex flow instead of asking for a lane between them. The pointer passes
+ * through, and the first press of it is what ends the hold anyway.
+ *
+ * The gutter is quoted from styles/modal-overlay.css `top` placement, shape and
+ * all: a container cannot resolve cqh units against itself, so this box is the
+ * size container and the layout below it owns the padding. Holding the same
+ * geometry is the point — pressing K while still holding Command promotes this
+ * card into the palette without either of them moving.
+ *
+ * Which is why this is `fixed` and not `absolute`. ModalOverlay is fixed to the
+ * viewport, while the shell is mounted below whatever chrome the host puts
+ * above it — the Electron host adds a 32px connection header when the agent
+ * drops. Measured against the shell, the same formula would land 32px lower
+ * exactly when that header is showing, and promoting the card into the palette
+ * would visibly jump. The two must share one coordinate space, so this card
+ * lands where the palette will be regardless of the chrome around the shell.
+ */
+.kissopen-desktop-app-shell__shortcut-hints {
+    position: fixed;
+    inset: 0;
+    z-index: var(--kissopen-z-overlay);
+    container-type: size;
+    pointer-events: none;
+}
+
+.kissopen-desktop-app-shell__shortcut-hints-layout {
+    box-sizing: border-box;
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding-top: min(128px, max(24px, calc(100cqh - 485px)));
+    padding-right: 24px;
+    padding-bottom: 24px;
+    padding-left: 24px;
+}
+
+.kissopen-desktop-app-shell__title-bar {
+    box-sizing: border-box;
+    flex: none;
+    min-width: 0;
+}
+
+.kissopen-desktop-app-shell__body {
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 0%;
+    min-height: 0;
+}
+
+.kissopen-desktop-app-shell__rail {
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    flex: none;
+    min-height: 0;
+}
+
+.kissopen-desktop-app-shell__content {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 0%;
+    gap: 0;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+}
+
+.kissopen-desktop-app-shell__main {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: row;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.kissopen-desktop-app-shell__sidebar {
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    flex: 0 1 auto;
+    width: clamp(250px, 30vw, 360px);
+    min-width: var(--kissopen-desktop-app-shell-lane-min);
+    min-height: 0;
+    background: var(--groupped-background);
+    position: relative;
+}
+
+/* AppShell owns the sidebar width. The reusable Sidebar keeps its standalone
+   clamp, but must fill rather than overflow when it is hosted by this shell. */
+.kissopen-desktop-app-shell__sidebar > .kissopen-sidebar {
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-desktop-app-shell__sidebar::after {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--divider);
+    content: "";
+    pointer-events: none;
+}
+
+/* When the sidebar is resizable the drag handle owns the divider line instead. */
+.kissopen-desktop-app-shell__sidebar[data-resizable]::after {
+    display: none;
+}
+
+/* Collapsed: keep the sidebar mounted (identity/scroll preserved) but out of layout. */
+.kissopen-desktop-app-shell__sidebar[data-collapsed] {
+    display: none;
+}
+
+.kissopen-desktop-app-shell__sidebar-collapse {
+    /* Overlay pinned to the sidebar's empty top-right corner (clear of the
+       top-left macOS traffic lights); it is chrome above the sidebar content.
+       Being an overlay it centres itself rather than inheriting the heading's
+       alignment: the 56px sidebar header centres its content on 28px, so this
+       28px box hangs at 14px to sit on that same line as the heading beside it
+       and the channel header's icon and title across the divider. */
+    position: absolute;
+    z-index: 2;
+    top: 14px;
+    right: 12px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    /* The band's own tone, shared with its heading and with the panel's edge
+       controls across the window. */
+    color: var(--header-tint-secondary);
+    cursor: pointer;
+}
+
+/* The expanded control belongs at the sidebar's inner/right edge. Its collapsed
+   counterpart still moves beside the traffic lights because the sidebar edge no
+   longer exists while hidden. */
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-desktop-app-shell__sidebar-collapse {
+    top: 6px;
+}
+
+.kissopen-desktop-app-shell__sidebar-collapse:hover {
+    background: var(--surface-pressed);
+    color: var(--text);
+}
+
+.kissopen-desktop-app-shell__sidebar-collapse:focus-visible {
+    outline: 2px solid var(--surface-selected);
+    outline-offset: 1px;
+}
+
+/* Slim lane shown when the sidebar is collapsed, carrying the reveal control.
+   Its top inset is the collapse overlay's own `top`, so the glyph keeps its
+   line as the sidebar is hidden and shown rather than hopping by 2px. */
+.kissopen-desktop-app-shell__reveal {
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex: none;
+    width: 48px;
+    min-height: 0;
+    padding-top: 14px;
+    background: var(--groupped-background);
+    border-right: 1px solid var(--divider);
+}
+
+/* Desktop: the collapsed sidebar leaves no lane behind. The toggle floats at
+   the spot it occupied while expanded, as a bare control over the workspace's
+   own drag lane — exactly the arrangement the expanded toggle already uses. */
+.kissopen-desktop-app-shell__reveal-button[data-floating] {
+    position: absolute;
+    z-index: 4;
+    top: 6px;
+    left: var(--kissopen-desktop-app-shell-chrome-inset, 84px);
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+.kissopen-desktop-app-shell__reveal-button {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--header-tint-secondary);
+    cursor: pointer;
+}
+
+.kissopen-desktop-app-shell__reveal-button:not([data-floating]) {
+    position: relative;
+}
+
+.kissopen-desktop-app-shell__reveal-button:hover {
+    background: var(--surface-pressed);
+    color: var(--text);
+}
+
+.kissopen-desktop-app-shell__reveal-button:focus-visible {
+    outline: 2px solid var(--surface-selected);
+    outline-offset: 1px;
+}
+
+/* Vertical drag divider: its 8px hit lane overlays the owning surface edge so
+   structural hairlines meet continuously instead of leaving an 8px gutter. */
+.kissopen-desktop-app-shell__resize-handle {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 8px;
+    padding: 0;
+    background: transparent;
+    cursor: col-resize;
+    touch-action: none;
+}
+
+/* The sidebar and inspector own their splitters, so the hit lanes can overlap
+   their shared border without changing either column's layout width. */
+.kissopen-desktop-app-shell__resize-handle[data-edge="right"] {
+    right: -4px;
+}
+
+.kissopen-desktop-app-shell__resize-handle[data-edge="left"] {
+    left: -4px;
+}
+
+.kissopen-desktop-app-shell__resize-handle:focus-visible {
+    outline: none;
+}
+
+.kissopen-desktop-app-shell__resize-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 4px;
+    width: 1px;
+    background: var(--divider);
+}
+
+.kissopen-desktop-app-shell__resize-handle:hover .kissopen-desktop-app-shell__resize-line,
+.kissopen-desktop-app-shell__resize-handle:focus-visible .kissopen-desktop-app-shell__resize-line {
+    width: 2px;
+    background: var(--surface-selected);
+}
+
+.kissopen-desktop-app-shell__workspace {
+    /* Positioning context for a workspace that has no chrome of its own and
+       supplies its own `WindowDragRegion` as the window's drag lane. */
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    container: kissopen-workspace / inline-size;
+    min-width: var(--kissopen-desktop-app-shell-workspace-min);
+    min-height: 0;
+}
+
+.kissopen-desktop-app-shell__panel {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    min-width: var(--kissopen-desktop-app-shell-lane-min);
+    min-height: 0;
+    width: clamp(250px, 30vw, 360px);
+    background: var(--surface);
+    border: 0;
+    border-left: 1px solid var(--divider);
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.kissopen-desktop-app-shell[data-panel-overlay]
+    > .kissopen-desktop-app-shell__body
+    > .kissopen-desktop-app-shell__content
+    > .kissopen-desktop-app-shell__panel {
+    /* The inspector is an overlay only when two readable columns cannot fit. */
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: 4;
+    box-shadow: var(--home-shadow-float);
+}
+
+/* A selected tab is always legible, while AppShell's one focus owner says which
+   pane the keyboard acts on. Pointer-down joins DOM focus because a file canvas
+   or transcript is often not itself focusable; clicking it still owns Cmd-W. */
+.kissopen-desktop-app-shell__panel .kissopen-tabs__tab[data-active] {
+    background: var(--surface-high);
+    color: var(--text-secondary);
+}
+
+.kissopen-desktop-app-shell[data-focused-pane="panel"]
+    .kissopen-desktop-app-shell__content
+    > .kissopen-desktop-app-shell__main
+    > .kissopen-desktop-app-shell__workspace
+    .kissopen-tabs__tab[data-active] {
+    background: var(--surface-high);
+    color: var(--text-secondary);
+}
+
+.kissopen-desktop-app-shell[data-focused-pane="panel"]
+    .kissopen-desktop-app-shell__content
+    > .kissopen-desktop-app-shell__panel
+    .kissopen-tabs__tab[data-active] {
+    background: var(--surface-pressed);
+    color: var(--text);
+}
+
+/* Resizable panels take the divider line from the drag handle to their left. */
+.kissopen-desktop-app-shell__panel[data-resizable] {
+    border-left: 0;
+}
+
+/* Panel body fills above an optional pinned footer; both stay in the flex column. */
+.kissopen-desktop-app-shell__panel-content {
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* This panel is against the right edge of the window, so with nothing docked
+   under it its scrollport finishes in the window's bottom-right corner — where
+   macOS rounds the frame and would slice the end off a bar running the full
+   height. The shell is the only thing here that knows the panel meets the
+   window, so the shell is what says how far to hold the bar off that end; the
+   scrollport only reads the number (see styles/scrollbar.css).
+
+   Sixteen is where the frame begins to curve. macOS 26
+   rounds a window far more than the ten points that held from Big Sur through
+   Sequoia: a plain window like this one — hidden title bar, no toolbar — is
+   16pt, and one with a toolbar is 26pt. Measured off a screen capture of this
+   window, its right edge runs perfectly straight down to 29 device pixels above
+   the bottom and curves in below that. In CSS pixels that start lands anywhere
+   from 16 to 19.2 depending on the page's zoom, since the frame is drawn in
+   points and this is stated in pixels; sixteen lets the bar run four pixels
+   lower while keeping it out of the visible arc at the reference zoom.
+   The track's end is the ink's end here, because a vertical thumb wears its
+   inset on the right alone and has no bottom border to stand on.
+
+   `:last-child` is the condition: with a footer docked beneath it, the content
+   no longer reaches the corner and holding the bar off the end would be a gap
+   for nothing. */
+.kissopen-desktop-app-shell__panel-content:last-child {
+    --kissopen-scrollbar-end-inset: 16px;
+}
+
+.kissopen-desktop-app-shell__panel-footer {
+    box-sizing: border-box;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Floating: the footer is an overlay on the panel body rather than a row under
+   it, so the body keeps its full height while the dock is on screen. */
+.kissopen-desktop-app-shell__panel-footer[data-floating] {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}

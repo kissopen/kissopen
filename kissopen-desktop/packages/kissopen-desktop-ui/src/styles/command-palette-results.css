@@ -1,0 +1,204 @@
+/*
+ * C-273 CommandPaletteResults — the ⌘K palette's result body.
+ *
+ * Sections stack with an 8px breath and a 28px mono uppercase caption; captions
+ * name a section and nothing else, so there are no rules or stripes between
+ * them. A command row is 44px on the 4px grid: a 28px leading lane (avatar or
+ * glyph), a 12px gutter, the title over a muted second line, then an optional
+ * cap. A control row states no height — it wears the one the settings page
+ * gives its FormRow, which is the whole point of showing it here. The
+ * highlighted row carries the selected fill, so keyboard travel is visible
+ * while focus stays in the palette input.
+ */
+
+.kissopen-command-palette-results,
+.kissopen-command-palette-results * {
+    box-sizing: border-box;
+}
+
+.kissopen-command-palette-results {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    width: 100%;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-command-palette-results__list {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Spoken, never drawn, and never in the way of a pointer travelling the rows
+   under it — the highlight follows the pointer, and a clipped 1px span must not
+   be what the pointer lands on. */
+.kissopen-command-palette-results__announcement {
+    pointer-events: none;
+}
+
+.kissopen-command-palette-results__section {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+}
+
+.kissopen-command-palette-results__caption {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 28px;
+    padding: 0 10px;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ---- Rows ------------------------------------------------------------- */
+
+.kissopen-command-palette-results__row {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+    appearance: none;
+    transition: background-color 120ms ease;
+}
+
+.kissopen-command-palette-results__row[data-kind="command"] {
+    height: 44px;
+    cursor: pointer;
+}
+
+/* The hosted settings row spans the row it was given, and keeps its own
+   vertical rhythm — this row deliberately states no height of its own. */
+.kissopen-command-palette-results__row[data-kind="control"] > * {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* A FormRow carries the divider it wears where rows tile into a settings list.
+   The last row of a section has nothing under it to be divided from, so the
+   hairline is taken back without changing the height it reserved. */
+.kissopen-command-palette-results__row[data-kind="control"]:last-child .kissopen-form-row {
+    border-bottom-color: transparent;
+}
+
+.kissopen-command-palette-results__row:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-command-palette-results__row[data-active] {
+    background: var(--surface-selected);
+}
+
+.kissopen-command-palette-results__row:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/* A segmented control paints its chosen segment in the same role a selected row
+   uses (see segmented-control.css), so on the highlighted row — the one row
+   whose value Enter is about to cycle — the current choice sinks into the
+   highlight and reads as unchosen. Lift the chosen segment one surface step
+   instead: the fill still means "chosen", it is the raised surface a control
+   sits on in either appearance, and it stays a theme role. In the dark
+   appearance that lift is only a dozen values, so the segment also wears the
+   edge a raised surface wears against what is behind it — the same pairing the
+   palette card itself uses, and translucent, so it darkens the light row and
+   lightens the dark one from whatever it lands on. The 1px is already reserved
+   and kept transparent by segmented-control.css, so wearing it moves nothing. */
+.kissopen-command-palette-results__row[data-active]
+    .kissopen-segmented-control__segment[data-active] {
+    border-color: var(--modal-border);
+    background: var(--surface);
+}
+
+/* The palette card publishes the inner radius its 8px inset leaves inside the
+   14px shell corner (14 − 1 border − 8 inset = 5px). The name predates this
+   list; restating the number here would be a copy free to drift from the inset
+   it is derived from. See DESIGN.md, "Nested rounded corners". */
+.kissopen-command-palette-results__section:last-child
+    .kissopen-command-palette-results__row:last-child {
+    border-bottom-right-radius: var(
+        --kissopen-search-results-last-radius,
+        var(--kissopen-radius-sm)
+    );
+    border-bottom-left-radius: var(
+        --kissopen-search-results-last-radius,
+        var(--kissopen-radius-sm)
+    );
+}
+
+.kissopen-command-palette-results__leading {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: var(--text-secondary);
+}
+
+/* A waiting update is the one piece of news in the list, and it wears the same
+   warning role as the sidebar footer's mark — the only colour among neutral
+   glyphs, in both places, so it is recognized rather than read. */
+.kissopen-command-palette-results__leading[data-emphasis="update"] {
+    color: var(--box-warning-text);
+}
+
+.kissopen-command-palette-results__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-command-palette-results__title {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-command-palette-results__meta {
+    display: block;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-command-palette-results__caps {
+    flex: none;
+}

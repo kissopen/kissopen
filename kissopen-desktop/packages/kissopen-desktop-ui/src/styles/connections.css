@@ -1,0 +1,239 @@
+.kissopen-connections {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--surface);
+}
+.kissopen-connections__rail {
+    display: flex;
+    flex-direction: column;
+    /* Tiles start on the traffic lights' own x=14 and leave 6px on the trailing
+       side, the sidebar's own panel inset, so the sidebar content sits close
+       beside them: 14 + 36 + 6. */
+    flex: 0 0 56px;
+    min-height: 0;
+    box-sizing: border-box;
+    background: var(--rail-background);
+}
+.kissopen-connections__rail[data-window-controls] {
+    /* Matches the 40px hidden title bar the macOS traffic lights are centred in. */
+    padding-top: 40px;
+}
+/* The halo behind the traffic lights. The lights are 14px discs centred on
+   y=20 and spanning x=14…76, with the rail ending at 56, so the green one
+   would sit on the seam between the rail's tone and the sidebar's. A solid
+   capsule of the rail's tone stands under the whole cluster instead, with
+   2px of clear ground around every disc — 18px tall with a 9px radius (2 +
+   the 7px disc radius), from 2px before the red light to 2px after the green
+   — so nothing changes shade right against a light. The fade is the shape
+   itself blurred, so no edge anywhere can read as a line: a 4px blur keeps a
+   shape solid to about 8px inside its edge and is gone about 8px outside
+   it, so the shape is drawn 8px larger all round than the solid core it is
+   meant to leave, and its fade runs 16px out from that core. Where the
+   halo lies on the rail it is the rail's own colour and so invisible; the
+   tiles stand above its fade. */
+.kissopen-connections:has(> .kissopen-connections__rail[data-window-controls]) {
+    position: relative;
+}
+.kissopen-connections:has(> .kissopen-connections__rail[data-window-controls])::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 3px;
+    left: 4px;
+    width: 82px;
+    height: 34px;
+    border-radius: 17px;
+    background: var(--rail-background);
+    filter: blur(4px);
+    opacity: 0.8;
+    pointer-events: none;
+}
+.kissopen-connections__rail > .kissopen-scroll-area {
+    /* The tile list takes the height between the title bar and the footer. */
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.kissopen-connections__footer {
+    /* Reserves the sidebar footer's 40px lane so the tile list ends on the same
+       line, but draws no hairline: the footer separator belongs to the sidebar
+       and stops at the rail's edge. */
+    flex: none;
+    height: 40px;
+    box-sizing: border-box;
+}
+.kissopen-connections__items {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    /* Full-screen windows have no traffic-light lane; keep clear ground above Home. */
+    padding: 12px 6px 8px 14px;
+}
+.kissopen-connections__rail[data-window-controls] .kissopen-connections__items {
+    padding-top: 8px;
+}
+.kissopen-connections__item {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Above the halo's tail, so its last few percent never tint a tile. */
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    cursor: pointer;
+    user-select: none;
+    touch-action: none;
+    transition:
+        background-color 120ms ease,
+        box-shadow 120ms ease,
+        color 120ms ease;
+    -webkit-app-region: no-drag;
+}
+.kissopen-connections__separator {
+    flex: none;
+    width: 36px;
+    height: 1px;
+    background: var(--divider);
+}
+
+/* The sheen overlays the tile without clipping its unread or selection dots.
+   Only its paint moves, so pointer reordering keeps owning the tile's transform. */
+.kissopen-connections__item[data-working]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image: linear-gradient(
+        110deg,
+        transparent 35%,
+        color-mix(in srgb, var(--text) 28%, transparent) 50%,
+        transparent 65%
+    );
+    background-size: 300% 100%;
+    background-repeat: no-repeat;
+    animation: kissopen-connections-working-sweep 1800ms linear infinite;
+    animation-delay: calc(-1800ms * var(--kissopen-connections-shimmer-offset, 0));
+}
+.kissopen-connections__rail[data-shimmer-paused] .kissopen-connections__item[data-working]::before {
+    animation-play-state: paused;
+}
+@keyframes kissopen-connections-working-sweep {
+    from {
+        background-position: 100% 0;
+    }
+    to {
+        background-position: 0% 0;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-connections__item[data-working]::before {
+        animation: none;
+        background-image: none;
+        box-shadow: inset 0 0 0 1px var(--text-secondary);
+    }
+}
+
+.kissopen-connections__unread {
+    /* The notification intentionally overlaps the tile's top-right corner. */
+    position: absolute;
+    z-index: 2;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--status-error);
+    box-shadow: 0 0 0 2px var(--rail-background);
+}
+.kissopen-connections__items[data-reordering] .kissopen-connections__item {
+    transition:
+        background-color 120ms ease,
+        box-shadow 120ms ease,
+        color 120ms ease,
+        transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kissopen-connections__items[data-reordering] .kissopen-connections__item[data-dragging] {
+    z-index: 3;
+    cursor: grabbing;
+    background: var(--surface-ripple);
+    box-shadow: 0 4px 12px var(--shadow-subtle);
+    /* Exactly like a project row: only neighbours ease; the held tile follows the hand. */
+    transition:
+        background-color 120ms ease,
+        box-shadow 120ms ease,
+        color 120ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-connections__items[data-reordering] .kissopen-connections__item {
+        transition: none;
+    }
+}
+.kissopen-connections__item[data-local] {
+    background: var(--surface);
+}
+.kissopen-connections__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+    /* The thumbhash placeholder, painted under the picture until it loads. */
+    background-size: cover;
+    background-position: center;
+}
+.kissopen-connections__item:hover {
+    color: var(--text);
+}
+/* The current connection carries a small dot beside its tile. */
+.kissopen-connections__item[aria-current="page"] {
+    color: var(--text);
+}
+.kissopen-connections__item[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background: var(--text);
+}
+.kissopen-connections__item:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
+}
+.kissopen-connections__body,
+.kissopen-connections__surface {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+}
+.kissopen-connections__surface {
+    /* Fixed setup and modal chrome is contained by its connection, never the rail. */
+    contain: layout paint;
+    isolation: isolate;
+}
+.kissopen-connections__error {
+    padding: 8px 16px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}

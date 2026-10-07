@@ -1,0 +1,65 @@
+/*
+ * ScrollingText — a single line that scrolls horizontally instead of clipping.
+ *
+ * The scrollbar itself is hidden: the line is one row of transcript type, and a
+ * 15px gutter under it would double its height. The fade on a side that still
+ * hides text is the affordance instead. Like the dock scrim, it is an alpha
+ * mask rather than a gradient to `transparent`, so no engine tints the fade
+ * grey and the row keeps whatever surface sits behind it.
+ */
+
+.kissopen-scrolling-text {
+    display: block;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+.kissopen-scrolling-text::-webkit-scrollbar {
+    display: none;
+}
+
+.kissopen-scrolling-text__content {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- the scrolled content must be one inline run whose width is its text: a flex box would make each text node an item and collapse the spaces between them */
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.kissopen-scrolling-text[data-fade-end] {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+}
+
+/* While a label inside is still typing, the end fade is on from the first
+   frame. Overflow only becomes measurable once the reveal passes the row edge,
+   so waiting for the measurement made the fade pop in mid-animation instead of
+   framing it. */
+.kissopen-scrolling-text:has(.kissopen-typed-text[data-typing]) {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+}
+
+.kissopen-scrolling-text[data-fade-start] {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 24px);
+    mask-image: linear-gradient(to right, transparent 0, black 24px);
+}
+
+.kissopen-scrolling-text[data-fade-start][data-fade-end] {
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        black 24px,
+        black calc(100% - 24px),
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        black 24px,
+        black calc(100% - 24px),
+        transparent 100%
+    );
+}

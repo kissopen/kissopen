@@ -1,0 +1,43 @@
+.local/
+plugin-catalog/
+.env
+.env.*
+!.env.example
+node_modules/
+.DS_Store
+*.p12
+*.p8
+*.mobileprovision
+
+# Private runtime state and packaging output are never source dependencies.
+*.key
+*.pem
+*.sqlite*
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.ipa
+*.dmg
+*.xcarchive/
+coverage/
+playwright-report/
+test-results/
+/kissopen-desktop/packages/kissopen-desktop-electron/build/kissopen-agent/
+/kissopen-desktop/vendor/agent/*
+!/kissopen-desktop/vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
+
+# Superseded commercial/reference copies stay local. The independent public
+# server and Agent are maintained in their own repositories.
+/account-service/
+/kissopen/packages/kissopen-server/
+/kissopen/packages/kissopen-server-self-host/
+/kissopen/packages/kissopen-cli/
+/kissopen/packages/kissopen-agent/
+/kissopen/environments/
+/kissopen/.claude/
+/kissopen-desktop/packages/kissopen-desktop-web/
+
+# Supply Firebase/native service configuration privately for your own project.
+google-services.json
+GoogleService-Info.plist

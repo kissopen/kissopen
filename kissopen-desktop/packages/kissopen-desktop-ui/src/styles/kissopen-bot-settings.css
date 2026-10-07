@@ -1,0 +1,274 @@
+/*
+ * KissopenAgentBotSettingsDialog — one assistant's settings.
+ *
+ * One column: the identity strip, the page tabs, then the page. Fields keep
+ * TextField's own rhythm (13px label, 6px to the control); sections are 20px
+ * apart on the 4px grid. The core-file editor is a list beside the text, both
+ * flex children so the editor takes the width the list leaves.
+ */
+
+.kissopen-bot-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-sizing: border-box;
+    font-family: var(--kissopen-font-ui);
+    color: var(--text);
+}
+
+.kissopen-bot-settings * {
+    box-sizing: border-box;
+}
+
+.kissopen-bot-settings__identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.kissopen-bot-settings__identity-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-bot-settings__identity-name {
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-bot-settings__identity-meta,
+.kissopen-bot-settings__quiet {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-bot-settings__page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.kissopen-bot-settings__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kissopen-bot-settings__label,
+.kissopen-bot-settings__section {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.kissopen-bot-settings__section {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.kissopen-bot-settings__row,
+.kissopen-bot-settings__pair {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kissopen-bot-settings__pair > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.kissopen-bot-settings__pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+    padding: 0 12px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.kissopen-bot-settings__pick:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-bot-settings__pick[data-disabled] {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.kissopen-bot-settings__file-input {
+    display: none;
+}
+
+.kissopen-bot-settings__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.kissopen-bot-settings__chip {
+    height: 28px;
+    padding: 0 12px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-pill);
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.kissopen-bot-settings__chip:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-bot-settings__chip[aria-checked="true"] {
+    border-color: var(--radio-active);
+    background: var(--surface-selected);
+    font-weight: 600;
+}
+
+.kissopen-bot-settings__copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+}
+
+.kissopen-bot-settings__copy-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.kissopen-bot-settings__done {
+    color: var(--success);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-bot-settings__error,
+.kissopen-bot-settings__footer-error {
+    color: var(--box-error-text);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-bot-settings__footer-error {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.kissopen-bot-settings__files {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.kissopen-bot-settings__file-list {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 4px;
+    width: 144px;
+}
+
+.kissopen-bot-settings__file {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    height: 32px;
+    padding: 0 8px;
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.kissopen-bot-settings__file:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-bot-settings__file[aria-selected="true"] {
+    background: var(--surface-selected);
+    font-weight: 600;
+}
+
+.kissopen-bot-settings__file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-bot-settings__editor {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-bot-settings__editor-head,
+.kissopen-bot-settings__editor-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+}
+
+.kissopen-bot-settings__editor-head > .kissopen-bot-settings__quiet,
+.kissopen-bot-settings__editor-foot > .kissopen-bot-settings__quiet {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.kissopen-bot-settings__history {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 160px;
+    padding: 8px;
+    overflow-y: auto;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+}
+
+.kissopen-bot-settings__revision {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-bot-settings__revision-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 16px;
+}

@@ -1,0 +1,18 @@
+.kissopen-thinking-mark {
+    display: inline-flex;
+    flex: none;
+}
+.kissopen-thinking-mark .kissopen-mark__left {
+    animation: kissopen-loader-opacity-left 1.2s ease-in-out infinite;
+}
+.kissopen-thinking-mark .kissopen-mark__right {
+    animation: kissopen-loader-opacity-right 1.2s ease-in-out infinite;
+}
+.kissopen-thinking-mark[data-motion="still"] path {
+    animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-thinking-mark path {
+        animation: none;
+    }
+}

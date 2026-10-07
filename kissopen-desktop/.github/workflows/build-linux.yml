@@ -1,0 +1,72 @@
+name: Build and boot Linux AppImages
+
+on:
+    workflow_call:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    linux:
+        name: Linux AppImage ${{ matrix.arch }}
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - arch: x64
+                      runner: ubuntu-24.04
+                    - arch: arm64
+                      runner: ubuntu-24.04-arm
+        steps:
+            - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+            - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+            - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: "24"
+                  cache: pnpm
+            - name: Install display server and AppImage dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y xvfb libfuse2t64 libnss3 libgtk-3-0t64 libgbm1 libasound2t64
+            - run: pnpm install --frozen-lockfile
+            - name: Typecheck desktop and gym
+              run: |
+                  pnpm --dir packages/kissopen-desktop-electron typecheck
+                  pnpm --dir packages/kissopen-desktop-gym typecheck
+            - name: Build the standard desktop AppImage on its native architecture
+              env:
+                  RELEASE_ARCH: ${{ matrix.arch }}
+              run: |
+                  VERSION="$(node -p "require('./package.json').version")"
+                  pnpm --dir packages/kissopen-desktop-electron build
+                  # AppImage normally rewrites x64 to x86_64. Keep the release
+                  # filename contract shared with the cask and publish checks.
+                  pnpm --dir packages/kissopen-desktop-electron exec electron-builder --linux AppImage --"$RELEASE_ARCH" --publish never \
+                    --config.linux.artifactName="Kissopen-${VERSION}-${RELEASE_ARCH}.AppImage"
+            - name: Boot the actual AppImage and verify its welcome screen
+              env:
+                  KISSOPEN_DESKTOP_GYM_PACKAGED: "1"
+                  KISSOPEN_DESKTOP_GYM_SCREENSHOT: ${{ runner.temp }}/kissopen-appimage.png
+                  ELECTRON_DISABLE_SANDBOX: "1"
+                  RELEASE_ARCH: ${{ matrix.arch }}
+              run: |
+                  VERSION="$(node -p "require('./package.json').version")"
+                  export KISSOPEN_DESKTOP_ELECTRON_EXECUTABLE="$GITHUB_WORKSPACE/packages/kissopen-desktop-electron/release/Kissopen-${VERSION}-${RELEASE_ARCH}.AppImage"
+                  chmod +x "$KISSOPEN_DESKTOP_ELECTRON_EXECUTABLE"
+                  xvfb-run --auto-servernum pnpm --dir packages/kissopen-desktop-gym gym:electron smoke
+            - name: Upload verified AppImage
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-linux-${{ matrix.arch }}
+                  path: packages/kissopen-desktop-electron/release/*.AppImage
+                  if-no-files-found: error
+            - name: Upload boot screenshot
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-boot-linux-${{ matrix.arch }}
+                  path: ${{ runner.temp }}/kissopen-appimage.png
+                  if-no-files-found: ignore

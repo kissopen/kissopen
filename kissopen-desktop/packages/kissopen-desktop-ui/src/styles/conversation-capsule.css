@@ -1,0 +1,30 @@
+/*
+ * C-283 ConversationCapsule — the pill above an open conversation.
+ *
+ * One rounded container holding two 28px icon buttons with a hairline between
+ * them, so the pair reads as a single control. The buttons keep their own
+ * ghost treatment; the capsule only supplies the shape, the surface, and the
+ * divider.
+ */
+
+.kissopen-conversation-capsule {
+    display: inline-flex;
+    box-sizing: border-box;
+    align-items: center;
+    height: 32px;
+    padding: 2px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-high);
+}
+
+/* The divider is drawn on the second child so an capsule with only the menu
+   (no compose action) has nothing to separate. */
+.kissopen-conversation-capsule > :nth-child(2) {
+    box-shadow: inset 1px 0 0 var(--divider);
+}
+
+.kissopen-conversation-capsule .kissopen-button,
+.kissopen-conversation-capsule .kissopen-menu-button > .kissopen-button {
+    border-radius: var(--kissopen-radius-pill);
+}

@@ -1,0 +1,153 @@
+/*
+ * ConversationComputeEvent — a compute lifecycle row on the assistant activity
+ * rail.
+ *
+ * Its 6px vertical inset around one 20px line gives it the same 32px height as a
+ * compact tool call, so a run of preparation notices reads as one list. The
+ * detail disclosure opens under that line and keeps the same left edge, so the
+ * fields a reader quotes line up with the sentence they belong to.
+ */
+
+.kissopen-conversation-compute,
+.kissopen-conversation-compute * {
+    box-sizing: border-box;
+}
+
+.kissopen-conversation-compute {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 6px 96px 6px 30px;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* A turn whose first row is a compute event sits inside the Message that owns
+   the agent identity line, and that Message already supplies the transcript
+   inset. */
+.kissopen-message--activity-lead .kissopen-conversation-compute {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.kissopen-conversation-compute__row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-conversation-compute__icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.kissopen-conversation-compute__label {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.kissopen-conversation-compute__message {
+    min-width: 0;
+    flex: 1 1 auto;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.kissopen-conversation-compute__metric {
+    flex: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums lining-nums;
+    line-height: 20px;
+}
+
+/* Ready is the one state worth a colour of its own: it is the moment the wait
+   the rows above it described actually ended. */
+.kissopen-conversation-compute[data-tone="done"] .kissopen-conversation-compute__icon,
+.kissopen-conversation-compute[data-tone="done"] .kissopen-conversation-compute__label {
+    color: color-mix(in srgb, var(--success) 38%, var(--text-secondary));
+}
+
+.kissopen-conversation-compute[data-tone="error"] .kissopen-conversation-compute__icon,
+.kissopen-conversation-compute[data-tone="error"] .kissopen-conversation-compute__label,
+.kissopen-conversation-compute[data-tone="error"] .kissopen-conversation-compute__message {
+    color: color-mix(in srgb, var(--status-error) 38%, var(--text-secondary));
+}
+
+.kissopen-conversation-compute__toggle {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    height: 20px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.kissopen-conversation-compute:hover .kissopen-conversation-compute__toggle,
+.kissopen-conversation-compute:focus-within .kissopen-conversation-compute__toggle,
+.kissopen-conversation-compute__toggle[aria-expanded="true"] {
+    opacity: 1;
+}
+
+.kissopen-conversation-compute__toggle:hover {
+    background: var(--surface-pressed);
+}
+
+.kissopen-conversation-compute:hover .kissopen-copy-button,
+.kissopen-conversation-compute:focus-within .kissopen-copy-button {
+    opacity: 1;
+}
+
+.kissopen-conversation-compute__details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+    padding: 4px 0 0 20px;
+}
+
+.kissopen-conversation-compute__detail {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+}
+
+.kissopen-conversation-compute__detail-label {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+}
+
+.kissopen-conversation-compute__detail-value {
+    overflow-wrap: anywhere;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 18px;
+}

@@ -1,0 +1,497 @@
+.work-library {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    background: var(--home-bg);
+    color: var(--text);
+    container-type: inline-size;
+}
+.work-library,
+.work-library__dialog {
+    --button-primary-background: var(--home-accent);
+    --button-primary-tint: var(--home-on-accent);
+    --switch-track-active: var(--home-accent);
+    --radio-active: var(--home-accent);
+}
+/* ScrollArea paints the track; its inner viewport owns native scrolling. */
+.work-library__viewport {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+.work-library__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 36px 40px 56px;
+}
+/* A library page: the shared page heading, then the library scrolling under
+   it — the heading in the same place as 资料库's and 远程控制's, so moving
+   between them nothing shifts. */
+.work-library-page {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--home-bg);
+}
+.work-library__content[data-headed] {
+    padding-top: 0;
+}
+.work-library__heading,
+.work-library__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.work-library__heading h1 {
+    margin: 8px 0;
+    font-size: 28px;
+    font-weight: 650;
+    letter-spacing: -0.6px;
+}
+.work-library__heading p,
+.work-library__section-intro p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--home-muted);
+}
+.work-library__eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.1px;
+    color: var(--home-accent);
+}
+.work-library__toolbar {
+    padding: 8px 0 16px;
+    border-bottom: 1px solid var(--home-border);
+}
+.work-library__search {
+    width: 280px;
+}
+.work-library__subnav {
+    display: flex;
+    gap: 28px;
+    border-bottom: 1px solid var(--home-border);
+}
+.work-library__subnav button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 2px 14px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--home-muted);
+    font: inherit;
+    cursor: pointer;
+}
+.work-library__subnav button[aria-pressed="true"] {
+    color: var(--home-accent);
+    border-bottom-color: var(--home-accent);
+    font-weight: 600;
+}
+.work-library__subnav button span,
+.work-library__count {
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 11px;
+}
+.work-library__cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: stretch;
+}
+.work-library__card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex: 0 0 calc((100% - 36px) / 3);
+    min-width: 0;
+    padding: 22px;
+    box-sizing: border-box;
+    border: 1px solid var(--home-border);
+    border-radius: 20px;
+    background: var(--home-card);
+}
+.work-library__card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.work-library__plugin-card {
+    position: relative;
+}
+.work-library__plugin-open {
+    /* The full-card hit target overlays the card; independent controls sit above it. */
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    cursor: pointer;
+}
+.work-library__plugin-open:hover {
+    box-shadow: inset 0 0 0 1px var(--home-accent);
+}
+.work-library__plugin-open:focus-visible {
+    outline: 2px solid var(--home-accent);
+    outline-offset: -3px;
+}
+.work-library__plugin-card .kissopen-button,
+.work-library__plugin-card .kissopen-switch {
+    position: relative;
+    z-index: 2;
+}
+.work-library__plugin-detail {
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 1040px;
+}
+.work-library__detail-back {
+    display: flex;
+    align-items: center;
+}
+.work-library__detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+    border: 1px solid var(--home-border);
+    border-radius: 20px;
+    background: var(--home-card);
+}
+.work-library__detail-section h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+.work-library__plugin-description {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--home-muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+.work-library__plugin-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin: 0;
+}
+.work-library__plugin-facts > div {
+    display: flex;
+    flex: 1 1 160px;
+    flex-direction: column;
+    gap: 8px;
+}
+.work-library__plugin-facts dt {
+    color: var(--home-muted);
+    font-size: 12px;
+}
+.work-library__plugin-facts dd {
+    margin: 0;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+.work-library__detail-connection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--home-border);
+}
+.work-library__card[data-compact="true"] {
+    flex-basis: calc((100% - 54px) / 4);
+    padding: 18px;
+}
+.work-library__card[data-compact="true"] .work-library__description {
+    -webkit-line-clamp: 2;
+}
+.work-library__subnav button:focus-visible,
+.work-library__title-button:focus-visible {
+    outline: 2px solid var(--home-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+.work-library__mark {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    color: var(--home-accent);
+    background: var(--home-accent-soft);
+    overflow: hidden;
+}
+.work-library__mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.work-library__naming {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+}
+.work-library__naming h3,
+.work-library__title-button {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.work-library__naming > span {
+    font-size: 12px;
+    color: var(--home-muted);
+}
+.work-library__description {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--home-muted);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+.work-library__notice {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--home-peach-text);
+    margin: 0;
+}
+.work-library__card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--home-border);
+}
+.work-library__status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--home-muted);
+}
+.work-library__status[data-active="true"] {
+    color: var(--home-accent);
+}
+.work-library__actions,
+.work-library__notification {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.work-library__notification {
+    color: var(--home-muted);
+}
+.work-library__section,
+.work-library__section-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.work-library__section h2,
+.work-library__section-intro h2 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+.work-library__task-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--home-muted);
+}
+.work-library__task-meta > span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.work-library__task-meta .kissopen-icon {
+    flex-shrink: 0;
+}
+.work-library__title-button {
+    text-align: left;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+.work-library__title-button:hover {
+    color: var(--home-accent);
+}
+.work-library__run {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--home-accent);
+}
+.work-library__run small {
+    font-size: 11px;
+    color: var(--home-muted);
+}
+.work-library__task .work-library__card-footer {
+    flex-direction: column;
+    align-items: stretch;
+}
+/* A task's card has one way in: its details, where running and editing live. */
+.work-library__task .work-library__card-footer > .kissopen-button {
+    align-self: flex-end;
+}
+.work-library__action-feedback {
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    overflow-wrap: anywhere;
+}
+.work-library__action-feedback[data-error="true"] {
+    color: var(--text-destructive);
+}
+.work-library__details {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+/* Run, edit, pause, end and delete in one row that wraps when narrow; the
+   line saying a run was submitted sits under them. */
+.work-library__details > .work-library__actions {
+    flex-wrap: wrap;
+}
+.work-library__details > .work-library__actions > .work-library__action-feedback {
+    flex-basis: 100%;
+    order: 1;
+}
+.work-library__detail-rule {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--home-accent-soft);
+    font-size: 13px;
+    color: var(--home-accent);
+}
+.work-library__detail-rule > span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.work-library__instruction {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.work-library__history {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px;
+    border: 1px solid var(--home-border);
+    border-radius: 12px;
+    background: var(--home-card-soft);
+}
+.work-library__history header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    font-size: 12px;
+    color: var(--home-muted);
+}
+.work-library__history p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.work-library__task[data-ended="true"] {
+    background: var(--home-card-soft);
+}
+/* The task the person was sent here to see: an accent edge and a soft halo,
+   kept until they act somewhere in the library. */
+.work-library__task[data-focused="true"] {
+    border-color: var(--home-accent);
+    box-shadow: 0 0 0 3px var(--home-accent-soft);
+}
+.work-library__pending {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 150px;
+    justify-content: center;
+    color: var(--home-muted);
+    font-size: 13px;
+}
+.work-library__dialog-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.work-library__edit {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+.work-library__edit > .work-library__actions {
+    justify-content: flex-end;
+}
+.work-library__dialog-content[data-composing="true"] {
+    height: min(600px, calc(100vh - 200px));
+    min-height: 240px;
+}
+.work-library__dialog-content > .kissopen-relay-detail {
+    padding: 0;
+}
+@container (max-width: 1050px) {
+    .work-library__card,
+    .work-library__card[data-compact="true"] {
+        flex-basis: calc((100% - 18px) / 2);
+    }
+    .work-library__content {
+        padding: 28px;
+    }
+}
+@container (max-width: 620px) {
+    .work-library__card,
+    .work-library__card[data-compact="true"] {
+        flex-basis: 100%;
+    }
+    .work-library__search {
+        width: 100%;
+    }
+}

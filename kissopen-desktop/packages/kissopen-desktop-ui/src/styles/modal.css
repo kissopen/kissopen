@@ -1,0 +1,142 @@
+/*
+ * C-028 Modal — dialog card (header / body / footer) on a raised surface.
+ *
+ * The root .kissopen-modal is a transparent centering layer (no scrim / no fixed
+ * positioning) so the dialog renders as a screenshot-safe specimen; a consuming
+ * app portals it over its own backdrop. The inner .kissopen-modal__dialog is the
+ * measured card: three fixed widths (360 / 480 / 640), a 14px shell radius, a
+ * 1px modal hairline, the high surface background, and an elevated drop
+ * shadow (the same black-on-dark elevation used by the composer picker).
+ *
+ * Geometry contract (border-box): header is a fixed 60px control row (28px
+ * chip / close square + 16px top+bottom padding); the footer action row is
+ * 16px top+bottom padding + a 1px top hairline. Header/body/footer share a
+ * 20px content inset (the close square hugs the 16px right gutter).
+ */
+
+.kissopen-modal,
+.kissopen-modal__dialog,
+.kissopen-modal__header,
+.kissopen-modal__icon,
+.kissopen-modal__title,
+.kissopen-modal__body,
+.kissopen-modal__footer {
+    box-sizing: border-box;
+}
+
+.kissopen-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-modal__dialog {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface-high);
+    border: 1px solid var(--modal-border);
+    border-radius: var(--kissopen-radius-shell);
+    box-shadow: 0 24px 64px var(--shadow-elevated);
+}
+
+.kissopen-modal__dialog[data-size="small"] {
+    width: 360px;
+}
+
+.kissopen-modal__dialog[data-size="medium"] {
+    width: 480px;
+}
+
+.kissopen-modal__dialog[data-size="large"] {
+    width: 640px;
+}
+
+/* ---- Header ---------------------------------------------------------- */
+
+.kissopen-modal__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    min-height: 60px;
+    padding: 16px 16px 16px 20px;
+}
+
+.kissopen-modal__icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--surface-selected);
+    border-radius: 8px;
+    /* Neutral: a dialog's glyph names its subject rather than offering a link,
+       and colour in this shell is kept for the destructive tone below. */
+    color: var(--text);
+}
+
+.kissopen-modal__dialog[data-tone="danger"] .kissopen-modal__icon {
+    background: var(--box-error-background);
+    color: var(--text-destructive);
+}
+
+.kissopen-modal__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Close reuses the ghost icon Button (28px square, glyph optically centered);
+ * the title's flex-grow pins it against the 16px right gutter. */
+.kissopen-modal__close {
+    flex: none;
+}
+
+/* ---- Body ------------------------------------------------------------ */
+
+/* Scrollport: edge-to-edge, no padding of its own. */
+.kissopen-modal__body {
+    flex: 1 1 auto;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.kissopen-modal__body-viewport {
+    overflow: auto;
+}
+
+/* Inner content wrapper carries the 4/20/20 body inset; block flow so arbitrary
+   modal content lays out exactly as before. */
+.kissopen-modal__body-content {
+    display: block;
+    padding: 4px 20px 20px;
+}
+
+/* ---- Footer ---------------------------------------------------------- */
+
+.kissopen-modal__footer {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--divider);
+}

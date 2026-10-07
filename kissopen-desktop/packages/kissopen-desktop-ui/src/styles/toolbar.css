@@ -1,0 +1,198 @@
+/*
+ * C-026 Toolbar — panel/section header bar.
+ *
+ * Contract: default 48px high, 16px
+ * x-padding, transparent so it composes on the surface. The left heading
+ * (title + optional subtitle) truncates through its lane; the right actions
+ * cluster (inset search well + trailing slot) never shrinks and pins flush to
+ * the right content edge. Height is overridable through the `height` prop,
+ * which sets --kissopen-toolbar-height.
+ */
+
+.kissopen-toolbar,
+.kissopen-toolbar * {
+    box-sizing: border-box;
+}
+
+.kissopen-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: var(--kissopen-toolbar-height, 48px);
+    margin: 0;
+    padding: 0 16px;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+
+    /*
+     * Optical vertical ink corrections, tuned per engine at true-2x with
+     * alpha-weighted centroids (see the @supports scopes at the bottom of the
+     * file and Toolbar.test.tsx). Declared here so the resolved value is
+     * readable through getComputedStyle on the root, which the test asserts.
+     */
+    --kissopen-toolbar-title-optical-y: -1px;
+    --kissopen-toolbar-subtitle-optical-y: -1px;
+}
+
+/* ---- Leading slot ----------------------------------------------------- */
+
+.kissopen-toolbar__leading {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+}
+
+/* ---- Heading: title over optional subtitle ---------------------------- */
+
+.kissopen-toolbar__heading {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+/*
+ * Every declaration a heading element would otherwise bring its own value for
+ * is stated here, so titleLevel changes what the title is called and nothing
+ * about how it sits: the box keeps its 20px line and its place on the grid
+ * whether it renders as a span or as an h1.
+ */
+.kissopen-toolbar__title {
+    display: block;
+    min-width: 0;
+    margin: 0;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 20px;
+}
+
+/*
+ * Truncation and the optical lift both live on the ink wrapper so the outer
+ * title box keeps its integer 20px line box on the layout grid while the paint
+ * is nudged onto the lane. The outer box is not clipped, so an element capture
+ * of the title still sees all of the (lifted) ink.
+ */
+.kissopen-toolbar__title-ink {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-toolbar-title-optical-y));
+}
+
+.kissopen-toolbar__subtitle {
+    display: block;
+    min-width: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.kissopen-toolbar__subtitle-ink {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-toolbar-subtitle-optical-y));
+}
+
+/* ---- Actions: search well + trailing slot ----------------------------- */
+
+.kissopen-toolbar__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto; /* pin the cluster to the right edge, heading or not */
+}
+
+.kissopen-toolbar__search {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    width: 220px;
+    height: 28px;
+    padding: 0 8px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--input-background);
+    transition: border-color 120ms ease;
+}
+
+.kissopen-toolbar__search:focus-within {
+    border-color: var(--divider);
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+.kissopen-toolbar__search-icon {
+    display: flex;
+    flex: none;
+    color: var(--text-secondary);
+}
+
+.kissopen-toolbar__search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 26px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 26px;
+    letter-spacing: 0;
+    font-synthesis: none;
+    caret-color: var(--radio-active);
+}
+
+.kissopen-toolbar__search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 1;
+}
+
+.kissopen-toolbar__trailing {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+}
+
+/*
+ * Per-engine optical corrections, measured at true-2x with alpha-weighted ink
+ * centroids on zeroed CSS (see Toolbar.test.tsx). Figtree paints low in its
+ * line box; each lift is a device-pixel (0.5px-at-2x) multiple so the paint
+ * never re-rasterizes. Raw uncorrected centroids: title (15px/700) Blink +1.0,
+ * Gecko +1.5, WebKit +0.45 low; subtitle (12px/500) Blink +1.1, Gecko +1.6,
+ * WebKit +0.58 low. Corrected residuals land within |dy| <= 0.55px (WebKit
+ * title) and <= 0.12px everywhere else — all inside the 0.75px word-label
+ * ceiling. Engine scopes follow the project convention: only Gecko parses
+ * -moz-appearance, only WebKit parses -webkit-named-image().
+ */
+@supports (-moz-appearance: none) {
+    .kissopen-toolbar {
+        --kissopen-toolbar-title-optical-y: -1.5px;
+        --kissopen-toolbar-subtitle-optical-y: -1.5px;
+    }
+}
+
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-toolbar {
+        --kissopen-toolbar-title-optical-y: -0.5px;
+        --kissopen-toolbar-subtitle-optical-y: -0.5px;
+    }
+}

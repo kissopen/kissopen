@@ -1,0 +1,95 @@
+/*
+ * C-270 SetupAssistants — three assistants side by side, on a setup page.
+ *
+ * Three equal columns with nothing drawn around them. The row sits under a
+ * centred paragraph on a plain surface, and a card, a border or a tile behind
+ * each mark would be three boxes' worth of furniture around nine words. What
+ * separates the columns is the space between them.
+ *
+ * They do not wrap: three fit the setup measure at any window size this app
+ * opens at, and a wrapped column would leave a stranded one under a centred
+ * column of text. Every dimension is on the 4px grid.
+ */
+
+.kissopen-setup-assistants,
+.kissopen-setup-assistants__item,
+.kissopen-setup-assistants__mark {
+    box-sizing: border-box;
+}
+
+.kissopen-setup-assistants {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+}
+
+.kissopen-setup-assistants__item {
+    display: flex;
+    /* Equal thirds from an equal basis: the lines below differ in length, and
+       columns sized by their content would make "Codex" narrower than "Claude
+       Code" for no reason a reader could use. */
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    text-align: center;
+    transition: opacity 180ms ease;
+}
+
+.kissopen-setup-assistants__mark {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    color: var(--text);
+}
+
+.kissopen-setup-assistants__name {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.kissopen-setup-assistants__detail {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    text-wrap: pretty;
+}
+
+/* A location rather than a sentence: the monospace face, one size down, and
+   free to break at the separators the path already has. */
+.kissopen-setup-assistants__detail[data-kind="path"] {
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    line-height: 15px;
+    overflow-wrap: anywhere;
+}
+
+/*
+ * The whole column carries its own status, because there is no badge to carry
+ * it. A machine that does not have the command at all keeps its place in the row
+ * and steps back out of the reading order; one that has it but cannot use it is
+ * the only thing here anybody can act on, so its line is the only one at full
+ * ink — read as an instruction rather than as a location.
+ */
+.kissopen-setup-assistants__item[data-status="checking"],
+.kissopen-setup-assistants__item[data-status="missing"] {
+    opacity: 0.45;
+}
+
+.kissopen-setup-assistants__item[data-status="signed-out"] .kissopen-setup-assistants__detail {
+    color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-setup-assistants__item {
+        transition: none;
+    }
+}

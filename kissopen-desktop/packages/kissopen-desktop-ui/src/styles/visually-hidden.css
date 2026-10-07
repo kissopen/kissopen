@@ -1,0 +1,26 @@
+/*
+ * Text that is read but never drawn.
+ *
+ * It is for a fact the screen states in some more compact way than a sentence —
+ * an abbreviated diff stat, say, whose visible form is `+4.2k` and whose
+ * spoken form is "4238 lines added". The visible mark is hidden from the
+ * accessibility tree and this carries the words, rather than an `aria-label`
+ * on the visible element: the elements carrying these marks are ordinary
+ * `span`s whose implicit `generic` role prohibits an author name, so a label
+ * there may simply be dropped.
+ *
+ * It must not collapse to `display: none` or `visibility: hidden`, which take
+ * the text out of the accessibility tree along with the layout.
+ */
+.kissopen-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

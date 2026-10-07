@@ -1,0 +1,11 @@
+/* Reached as ./styles/accents.css — relative to the document. It supplies the
+   left rule on each section, so if only this sheet failed the page would still
+   be styled but visibly plainer. */
+main section {
+    padding-left: 14px;
+    border-left: 3px solid #2baccc;
+}
+
+main section + section {
+    margin-top: 8px;
+}

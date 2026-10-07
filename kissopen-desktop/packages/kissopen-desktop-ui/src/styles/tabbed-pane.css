@@ -1,0 +1,119 @@
+/*
+ * C-160 TabbedPane — a scrolling tab bar over a body that takes the remaining
+ * height.
+ *
+ * The pane is a flex column so the body, not the pane, owns scrolling:
+ * `min-height: 0` lets the body shrink inside the column instead of pushing the
+ * bar out of view. Inside the bar the capsule strip scrolls
+ * horizontally, with `overflow-y: hidden` so a scrollbar never appears under
+ * the tabs. A neutral selected fill replaces the former underline.
+ */
+
+.kissopen-tabbed-pane {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-tabbed-pane__bar {
+    box-sizing: border-box;
+    display: flex;
+    flex: none;
+    align-items: stretch;
+    background: var(--surface);
+    gap: 4px;
+    padding-inline: 8px;
+}
+
+.kissopen-tabbed-pane[data-size="small"] .kissopen-tabbed-pane__bar {
+    height: var(--kissopen-subheader-height);
+}
+
+.kissopen-tabbed-pane[data-size="medium"] .kissopen-tabbed-pane__bar {
+    height: 40px;
+}
+
+.kissopen-tabbed-pane[data-size="large"] .kissopen-tabbed-pane__bar {
+    height: 48px;
+}
+
+.kissopen-tabbed-pane__scroller {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+.kissopen-tabbed-pane__scroller::-webkit-scrollbar {
+    display: none;
+}
+
+/* Sized by its content so the following action remains beside a short strip. */
+.kissopen-tabbed-pane__strip {
+    display: flex;
+    flex: none;
+    align-items: stretch;
+}
+
+.kissopen-tabbed-pane__tabs {
+    flex: none;
+    border-bottom: 0;
+}
+
+.kissopen-tabbed-pane__tabs .kissopen-tabs__tab {
+    max-width: 240px;
+}
+
+/* The label is the only part that gives way, so icons and badges stay whole. */
+.kissopen-tabbed-pane__tabs .kissopen-tabs__tab-label {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * The actions follow the tab scrollport, so the "add tab" control reads as the
+ * next thing after the tabs while remaining visible when the strip overflows.
+ * Keeping it outside the clipping scrollport also lets a shortcut hint float
+ * below the unchanged control instead of widening the bar.
+ */
+.kissopen-tabbed-pane__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    /* No leading padding: the last tab already ends with its own, and doubling
+       it leaves the "+" stranded away from the tabs. The trailing padding is
+       the bar's ordinary outer gutter. */
+    padding: 0 8px 0 0;
+}
+
+/*
+ * The bar's own trailing controls, held against its far edge whatever the tabs
+ * do. `margin-left: auto` takes the free space the shrinkable scrollport leaves,
+ * so a strip with two tabs puts this control in the same column a strip with
+ * twenty does — and the 16px gutter is the ChannelHeader's, which is what lines
+ * it up with the header control directly above it.
+ */
+.kissopen-tabbed-pane__trailing {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    padding: 0 8px;
+}
+
+.kissopen-tabbed-pane__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}

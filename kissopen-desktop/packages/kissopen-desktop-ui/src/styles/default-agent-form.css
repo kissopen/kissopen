@@ -1,0 +1,46 @@
+/*
+ * C-064 DefaultAgentForm — the modality-neutral default-agent naming form.
+ * The form is one flex column on the 8px rhythm; the preset row aligns its
+ * action to the leading edge, and the whole-form error retains the calibrated
+ * danger-text treatment below the fields.
+ */
+
+.kissopen-default-agent-form,
+.kissopen-default-agent-form__preset {
+    box-sizing: border-box;
+}
+
+.kissopen-default-agent-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+}
+
+.kissopen-default-agent-form__description {
+    margin: 0;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-default-agent-form__preset {
+    display: flex;
+    align-items: center;
+}
+
+.kissopen-default-agent-form__error {
+    margin: 0;
+    color: var(--text-destructive);
+    font-family: var(--kissopen-font-ui);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+/* The 16px spark has the same one-backing-pixel low raster centroid in the
+ * medium preset button across Blink, Gecko, and WebKit. */
+.kissopen-default-agent-form__preset .kissopen-button__icon svg {
+    transform: translateY(-0.5px);
+}

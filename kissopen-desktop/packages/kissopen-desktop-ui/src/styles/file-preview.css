@@ -1,0 +1,193 @@
+/*
+ * C-169 FilePreview — one file, shown rather than downloaded.
+ *
+ * A compact diff-style path header, then a body that fills whatever region the
+ * preview was given. A picture is handed to the shared ImageViewer, which
+ * brings its own frame and controls; video and audio are centered on the inset
+ * stage with the artwork contained rather than cropped, because a preview that
+ * crops has answered a different question than the one asked. Source scrolls in a
+ * full-bleed scrollport around the Pierre renderer, and a Markdown document is
+ * handed to `MarkdownDocument`, which owns its own reading measure.
+ * Colors and type are theme tokens only.
+ */
+
+.kissopen-file-preview,
+.kissopen-file-preview * {
+    box-sizing: border-box;
+}
+
+.kissopen-file-preview {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    background: var(--surface);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    color: var(--text);
+}
+
+/* ---- Header ----------------------------------------------------------- */
+
+.kissopen-file-preview__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 10px;
+    height: var(--kissopen-subheader-height);
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.kissopen-file-preview__glyph {
+    width: 16px;
+    height: 16px;
+}
+
+.kissopen-file-preview__path {
+    min-width: 0;
+}
+
+/* Pierre paints the diff title as one path in primary ink. Preview uses the
+   same path treatment; only its file-family glyph differs from the change
+   glyph, while diff totals occupy the trailing side in the comparison view. */
+.kissopen-file-preview__path .kissopen-file-path-label__directory {
+    color: var(--text);
+}
+
+.kissopen-file-preview__meta {
+    display: block;
+    flex: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.kissopen-file-preview__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+}
+
+.kissopen-file-preview__updating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ---- Body ------------------------------------------------------------- */
+
+.kissopen-file-preview__body {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* The stage is the room a file that plays sits in: one centered child, with
+   room around it. Pictures and recordings have viewers of their own and do not
+   pass through here; what is left is sound, which has nothing to show. */
+.kissopen-file-preview__stage {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    padding: 16px;
+    background: var(--groupped-background);
+}
+
+.kissopen-file-preview__audio {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+}
+
+.kissopen-file-preview__document {
+    display: block;
+    flex: 1 1 0%;
+    width: 100%;
+    min-height: 0;
+    border: none;
+    background: var(--surface);
+}
+
+/* Scrollport for the highlighted source: edge-to-edge, no padding of its own. */
+.kissopen-file-preview__source {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.kissopen-file-preview__source-viewport {
+    --kissopen-code-trailing-clearance: calc(var(--kissopen-scrollbar-track) + 1ch);
+    overflow: auto;
+}
+
+/* `CodeBlock` carries the type and material; the preview only says that the
+   file fills the pane it was given rather than the height of its own text.
+   The first line sits against the header rather than below a band of blank
+   surface: the header already names the file, so a gap above line 1 only reads
+   as the file starting late. The bar is an overlay and takes no layout, so the
+   text runs to the pane edge and continues underneath it rather than stopping
+   at a reserved lane. */
+.kissopen-file-preview__source-renderer {
+    flex: 0 0 auto;
+    min-height: 100%;
+    --diffs-gap-block: 0px;
+}
+
+/* ---- Notices ---------------------------------------------------------- */
+
+.kissopen-file-preview__notice {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 0;
+    padding: 24px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.kissopen-file-preview__notice[data-tone="danger"] {
+    color: var(--text-destructive);
+}
+
+.kissopen-file-preview__notice-title {
+    display: block;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.kissopen-file-preview__notice[data-tone="danger"] .kissopen-file-preview__notice-title {
+    color: var(--text-destructive);
+}
+
+.kissopen-file-preview__notice-detail {
+    display: block;
+    max-width: 360px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+}

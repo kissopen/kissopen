@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>HTML preview — self test</title>
+        <!-- Absolute path. This one only resolves if the document's folder is
+             published at the root of an origin, which is the whole point of the
+             proxy: a subpath-mounted preview would 404 here. -->
+        <link rel="stylesheet" href="/styles/site.css" />
+        <!-- Relative path, resolved against this document. -->
+        <link rel="stylesheet" href="./styles/accents.css" />
+    </head>
+    <body>
+        <header>
+            <h1>HTML preview</h1>
+            <p class="lede">
+                Every check below runs in this page. Green is what should happen; red is a
+                regression.
+            </p>
+        </header>
+
+        <main>
+            <section>
+                <h2>Loaded by the markup</h2>
+                <ul class="checks">
+                    <li id="check-absolute-css">
+                        <b>Absolute stylesheet</b>
+                        <span><code>/styles/site.css</code> — needs a real origin root</span>
+                    </li>
+                    <li id="check-relative-css">
+                        <b>Relative stylesheet</b>
+                        <span><code>./styles/accents.css</code></span>
+                    </li>
+                    <li id="check-image">
+                        <b>Image beside the page</b>
+                        <span><code>./media/badge.svg</code></span>
+                    </li>
+                    <li id="check-script">
+                        <b>Script execution</b>
+                        <span><code>./scripts/app.js</code> — this list is painted by it</span>
+                    </li>
+                </ul>
+                <img alt="Demo badge" height="72" id="badge" src="./media/badge.svg" width="72" />
+            </section>
+
+            <section>
+                <h2>Checked at runtime</h2>
+                <ul class="checks" id="runtime"></ul>
+            </section>
+
+            <section>
+                <h2>What the page is</h2>
+                <dl id="facts"></dl>
+            </section>
+        </main>
+
+        <script src="./scripts/app.js"></script>
+    </body>
+</html>

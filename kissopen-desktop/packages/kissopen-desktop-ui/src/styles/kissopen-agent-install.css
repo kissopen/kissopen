@@ -1,0 +1,71 @@
+.kissopen-agent-install {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.kissopen-agent-install__command {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-agent-install__command code {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    background: var(--input-background);
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+}
+
+.kissopen-agent-install__copy {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-agent-install__terminal {
+    position: relative;
+    display: flex;
+    min-height: 240px;
+    overflow: auto;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    background: var(--terminal-background);
+    color: var(--text);
+}
+
+.kissopen-agent-install__terminal pre {
+    margin: 0;
+    padding: 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-agent-install__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+}
+
+.kissopen-agent-install__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}

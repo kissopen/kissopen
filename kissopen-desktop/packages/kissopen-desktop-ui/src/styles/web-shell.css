@@ -1,0 +1,235 @@
+/* C-302 WebShell ------------------------------------------------------------ */
+
+.kissopen-web-shell {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--home-bg);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+}
+
+/* The rail: the account's areas, always in the same place. */
+.kissopen-web-shell__rail {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 72px;
+    padding: 16px 0 14px;
+    box-sizing: border-box;
+    border-right: 1px solid var(--home-border);
+    background: var(--home-card-soft);
+}
+
+/* 30 × 25.7: the mark's own box, from the component. */
+.kissopen-web-shell__mark {
+    flex: none;
+}
+
+.kissopen-web-shell__rail-items,
+.kissopen-web-shell__rail-end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.kissopen-web-shell__rail-items {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.kissopen-web-shell__rail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 56px;
+    min-height: 52px;
+    padding: 6px 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--home-muted);
+    font: inherit;
+    cursor: pointer;
+}
+
+.kissopen-web-shell__rail-item:hover {
+    background: var(--home-accent-soft);
+    color: var(--text);
+}
+
+.kissopen-web-shell__rail-item[aria-current="page"] {
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+
+.kissopen-web-shell__rail-item:focus-visible,
+.kissopen-web-shell__avatar:focus-visible {
+    outline: 2px solid var(--home-accent);
+    outline-offset: 2px;
+}
+
+.kissopen-web-shell__rail-label {
+    max-width: 52px;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The rail's one offer: the accent glyph, and a label small enough to say 分享赢好礼 whole. */
+.kissopen-web-shell__rail-item--promo {
+    color: var(--home-accent);
+}
+
+.kissopen-web-shell__rail-item--promo .kissopen-web-shell__rail-label {
+    max-width: 56px;
+    font-size: 10px;
+    letter-spacing: -0.02em;
+}
+
+.kissopen-web-shell__account {
+    position: relative;
+}
+
+.kissopen-web-shell__avatar {
+    display: flex;
+    padding: 2px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
+.kissopen-web-shell__account-menu {
+    position: absolute;
+    bottom: 0;
+    left: calc(100% + 24px);
+    z-index: var(--kissopen-z-overlay, 50);
+    width: 240px;
+}
+
+/* The list of things in the open area. */
+.kissopen-web-shell__list {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 288px;
+    min-height: 0;
+    border-right: 1px solid var(--home-border);
+    background: var(--home-card-soft);
+}
+
+.kissopen-web-shell__list-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 12px 0 20px;
+}
+
+.kissopen-web-shell__list-title {
+    font-size: 16px;
+    font-weight: 650;
+}
+
+.kissopen-web-shell__list-action {
+    display: flex;
+    padding: 0 12px 8px;
+}
+
+.kissopen-web-shell__list-action > * {
+    flex: 1 1 auto;
+}
+
+/* The list's rows are the desktop sidebar's, without its own frame. */
+.kissopen-web-shell__sections.kissopen-sidebar {
+    flex: 1 1 0;
+    width: 100%;
+    min-height: 0;
+    background: transparent;
+}
+
+.kissopen-web-shell__content {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-web-shell__reopen {
+    position: absolute;
+    top: 12px;
+    z-index: 5;
+}
+
+.kissopen-web-shell__reopen--list {
+    left: 12px;
+}
+
+.kissopen-web-shell__reopen--aside {
+    right: 12px;
+}
+
+/* The right column: the open thing's panel, or the assistant's. */
+.kissopen-web-shell__aside {
+    position: relative;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 340px;
+    min-height: 0;
+    border-left: 1px solid var(--home-border);
+    background: var(--home-card-soft);
+}
+
+.kissopen-web-shell__aside[data-panel] {
+    width: clamp(360px, 32vw, 520px);
+}
+
+.kissopen-web-shell__aside-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 5;
+}
+
+/* Narrower windows keep the rail and what is open; the side columns step aside. */
+@media (max-width: 1180px) {
+    .kissopen-web-shell__aside {
+        display: none;
+    }
+}
+
+@media (max-width: 860px) {
+    .kissopen-web-shell__list {
+        display: none;
+    }
+}
+
+/* Clicking anywhere else puts the account menu away. */
+.kissopen-web-shell__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--kissopen-z-overlay, 50) - 1);
+}
+
+/* A page of the account — usage, the profile — at a reading width. */
+.kissopen-web-page {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 32px 40px 56px;
+}

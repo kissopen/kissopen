@@ -1,0 +1,57 @@
+/*
+ * C-266 DeferredPane — one committed body plus one full-size body preparing
+ * behind it. Layers overlay because they are alternate occupants of the exact
+ * same pane; neither may displace the other while a switch is in flight.
+ */
+
+.kissopen-deferred-pane {
+    position: relative;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-deferred-pane__layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+}
+
+.kissopen-deferred-pane__layer[data-state="pending"],
+.kissopen-deferred-pane__layer[data-state="slow"] {
+    z-index: 2;
+}
+
+.kissopen-deferred-pane__layer[data-state="pending"] {
+    background: transparent;
+    pointer-events: none;
+}
+
+.kissopen-deferred-pane__content {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-deferred-pane__layer[data-state="pending"] .kissopen-deferred-pane__content,
+.kissopen-deferred-pane__layer[data-state="slow"] .kissopen-deferred-pane__content {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.kissopen-deferred-pane__fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+}

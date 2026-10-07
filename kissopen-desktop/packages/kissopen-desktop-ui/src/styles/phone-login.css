@@ -1,0 +1,151 @@
+/*
+ * C-287 PhoneLogin — signing in with a phone number and the code sent to it.
+ *
+ * One narrow column in the middle of the region: signing in is the only thing
+ * this surface is for, so nothing competes with it for the eye.
+ */
+
+.kissopen-phone-login,
+.kissopen-phone-login__card {
+    box-sizing: border-box;
+}
+
+.kissopen-phone-login {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    padding: 48px 24px;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    background: var(--surface);
+}
+
+/* The whole window: nothing else is usable until someone signs in. */
+.kissopen-phone-login[data-standalone] {
+    position: relative;
+    height: 100vh;
+    min-height: 0;
+}
+
+/* The title bar is hidden in the desktop window, so the page supplies the lane
+   a window is dragged by; the card sits well below it. */
+.kissopen-phone-login__drag {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 48px;
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+.kissopen-phone-login__card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.kissopen-phone-login__card .kissopen-wordmark {
+    align-self: center;
+    margin-bottom: 8px;
+}
+
+.kissopen-phone-login__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: -0.01em;
+    text-align: center;
+}
+
+.kissopen-phone-login__lead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px 8px;
+    margin: -8px 0 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
+}
+
+.kissopen-phone-login__phone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-phone-login__prefix {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 44px;
+    padding: 0 12px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+}
+
+.kissopen-phone-login__phone > :last-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Six digits read as one code, not as a word. */
+.kissopen-phone-login__code input {
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.35em;
+    text-align: center;
+}
+
+.kissopen-phone-login__error {
+    margin: -4px 0 0;
+    color: var(--warning-critical);
+    font-size: 13px;
+    line-height: 18px;
+    text-align: center;
+}
+
+.kissopen-phone-login__link {
+    padding: 0;
+    color: var(--text);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.kissopen-phone-login__link:disabled {
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: default;
+}
+
+.kissopen-phone-login__resend {
+    align-self: center;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+/* The language, beneath the card, for a reader who cannot read the page yet. */
+.kissopen-phone-login__language {
+    position: absolute;
+    right: 0;
+    bottom: 24px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+}

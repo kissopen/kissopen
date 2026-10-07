@@ -1,0 +1,45 @@
+/*
+ * The shared first-run backdrop: a gradient, always decoration, always
+ * full-bleed, and always beneath a positioned content layer owned by the
+ * screen using it. Its colours are theme tokens, deeper in the dark
+ * appearance, and always deep enough to carry white words and one white
+ * primary action.
+ */
+
+.kissopen-onboarding-sky,
+.kissopen-onboarding-sky__glow {
+    box-sizing: border-box;
+}
+
+.kissopen-onboarding-sky {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: linear-gradient(
+        150deg,
+        var(--onboarding-backdrop-start) 0%,
+        var(--onboarding-backdrop-middle) 48%,
+        var(--onboarding-backdrop-end) 100%
+    );
+}
+
+/* A soft light behind the centred copy, so the words sit in the calmest part
+   of the gradient rather than across its steepest change, and a warm bloom
+   low in one corner. */
+.kissopen-onboarding-sky__glow {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(
+            ellipse 60% 50% at 50% 42%,
+            var(--onboarding-backdrop-glow) 0%,
+            transparent 70%
+        ),
+        radial-gradient(
+            ellipse 80% 60% at 85% 100%,
+            var(--onboarding-backdrop-bloom) 0%,
+            transparent 70%
+        );
+}

@@ -1,0 +1,747 @@
+/*
+ * Spinner — ASCII terminal loaders redrawn as compact geometric shapes.
+ *
+ * CSS draws every variant except `braille-2`, whose 2x4 cell is too small for
+ * independent antialiased circles: one canvas stamps it onto the final device
+ * pixels. All geometry derives from `--kissopen-spinner-size` (the line height of
+ * the box), so a variant keeps its proportions at 12px and at 48px.
+ *
+ * CSS frame parking: each animated part offsets its `animation-delay` by
+ * `--kissopen-spinner-offset` (frame ÷ frame count, set by the component) plus
+ * its own `--kissopen-spinner-phase`. With `[data-paused]` also freezing
+ * `animation-play-state`, a fixture renders any CSS variant on an exact cell.
+ * The Braille canvas reads the component's explicit `data-frame` instead.
+ *
+ * Declared widths: braille is twice its snapped dot pitch (8px at the 14px and
+ * 16px production sizes); blocks are size * 1.125, bounce size * 2.625, bar
+ * size * 3.5, and everything else is square.
+ */
+
+.kissopen-spinner {
+    --kissopen-spinner-size: 16px;
+    --kissopen-spinner-duration: 480ms;
+    --kissopen-spinner-offset: 0;
+    --kissopen-spinner-unit: calc(var(--kissopen-spinner-size) / 8);
+    --kissopen-spinner-dim: color-mix(in srgb, currentcolor 18%, transparent);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    box-sizing: border-box;
+    width: var(--kissopen-spinner-width, var(--kissopen-spinner-size));
+    height: var(--kissopen-spinner-size);
+    color: var(--text);
+    vertical-align: middle;
+}
+
+/*
+ * Shared animation longhands for every part. Variants only ever set
+ * `animation-name` (plus a timing function or direction when they need one) —
+ * never the `animation` shorthand, which would reset the parking delay and
+ * `animation-play-state` back to their initial values.
+ */
+.kissopen-spinner * {
+    box-sizing: border-box;
+    animation-duration: var(--kissopen-spinner-duration);
+    animation-timing-function: steps(1, end);
+    animation-iteration-count: infinite;
+    /*
+     * Parking equation: the component's frame offset plus the part's own
+     * stagger, both in fractions of one cycle.
+     */
+    animation-delay: calc(
+        -1 * (var(--kissopen-spinner-offset) + var(--kissopen-spinner-phase, 0)) *
+            var(--kissopen-spinner-duration)
+    );
+}
+
+.kissopen-spinner[data-paused] * {
+    animation-play-state: paused;
+}
+
+.kissopen-spinner[data-tone="muted"] {
+    color: var(--text-secondary);
+}
+
+.kissopen-spinner[data-tone="accent"] {
+    color: var(--text-link);
+}
+
+.kissopen-spinner[data-tone="inverse"] {
+    color: var(--button-primary-tint);
+}
+
+/* ---- Shared parts ---------------------------------------------------- */
+
+.kissopen-spinner__dot {
+    flex: none;
+    width: calc(var(--kissopen-spinner-unit) * 1.5);
+    height: calc(var(--kissopen-spinner-unit) * 1.5);
+    border-radius: var(--kissopen-radius-pill);
+    background: currentcolor;
+}
+
+.kissopen-spinner__bracket {
+    flex: none;
+    width: calc(var(--kissopen-spinner-unit) * 1.5);
+    height: 100%;
+    border: 1px solid currentcolor;
+}
+
+.kissopen-spinner__bracket[data-side="left"] {
+    border-right: none;
+}
+
+.kissopen-spinner__bracket[data-side="right"] {
+    border-left: none;
+}
+
+.kissopen-spinner__track {
+    display: flex;
+    align-items: center;
+    flex: none;
+    height: 100%;
+}
+
+/* ---- braille cells — ⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏, ⣾⣽⣻⢿, ⢄⢂⢁⡁, … ------------------ */
+
+/*
+ * Shared outer geometry for every braille-cell variant. Every variant is the
+ * same full 2x4 cell — two columns of four dots in one compact box — so the
+ * family shares one silhouette even when a spinner never lights its bottom
+ * row. CSS lays out every family member except `braille-2`; its canvas uses the
+ * same box and resolves the inner grid in physical pixels.
+ *
+ * Dot diameter and dot pitch are independent: the pitch is the centre-to-centre
+ * distance the cell is laid out on, and the column height and column gap are
+ * both derived from it, so changing the diameter alone moves no dot centre.
+ *
+ * Dot diameter and pitch are snapped independently to whole CSS pixels. At the
+ * required 2x device scale, an integer-sized spinner can then centre that
+ * integer cell on whole physical pixels even when the CSS inset is 0.5px. This
+ * matters at the production 14px size: deriving everything directly from the
+ * size made each dot 1.75 CSS px (3.5 physical pixels), its pitch 3.5 CSS px,
+ * and every edge asymmetric. The snapped result is an 8 x 14 box containing
+ * 2px dots on a 4px pitch. The 16px default keeps its existing 8 x 16 box and
+ * 6 x 14 ink geometry.
+ */
+
+.kissopen-spinner[data-variant^="braille"] {
+    --kissopen-spinner-dot: max(1px, round(calc(var(--kissopen-spinner-size) / 8), 1px));
+    --kissopen-spinner-pitch: max(
+        var(--kissopen-spinner-dot),
+        round(calc(var(--kissopen-spinner-size) / 4), 1px)
+    );
+    --kissopen-spinner-width: calc(var(--kissopen-spinner-pitch) * 2);
+
+    gap: calc(var(--kissopen-spinner-pitch) - var(--kissopen-spinner-dot));
+}
+
+.kissopen-spinner[data-variant^="braille"] .kissopen-spinner__column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: none;
+    height: calc(var(--kissopen-spinner-pitch) * 3 + var(--kissopen-spinner-dot));
+}
+
+.kissopen-spinner[data-variant^="braille"] .kissopen-spinner__dot {
+    width: var(--kissopen-spinner-dot);
+    height: var(--kissopen-spinner-dot);
+    opacity: 0.18;
+    /*
+     * The braille cells are the one family that interpolates instead of using
+     * the shared `steps(1, end)` hold: their keyframes ramp each dot in and
+     * out over 60% of a frame (see spinner-braille.css), so the cell fades
+     * between glyphs instead of blinking.
+     */
+    animation-timing-function: linear;
+}
+
+/* `braille-2` alone owns final physical pixels. The backing bitmap is resized
+   to the browser-reported device-pixel content box, so nearest-neighbour is a
+   safeguard rather than an ordinary scale operation. */
+.kissopen-spinner[data-variant="braille-2"] .kissopen-spinner__braille-canvas {
+    display: block;
+    flex: none;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+
+/* ---- line — |/-\ ------------------------------------------------------ */
+
+.kissopen-spinner[data-variant="line"] .kissopen-spinner__glyph {
+    width: calc(var(--kissopen-spinner-unit) * 1.25);
+    height: calc(var(--kissopen-spinner-size) * 0.875);
+    border-radius: var(--kissopen-radius-pill);
+    background: currentcolor;
+    animation-name: kissopen-spinner-line;
+    animation-timing-function: steps(4);
+}
+
+@keyframes kissopen-spinner-line {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+/* ---- arc — ◜◝◞◟ ------------------------------------------------------- */
+
+.kissopen-spinner[data-variant="arc"] .kissopen-spinner__glyph {
+    width: 100%;
+    height: 100%;
+    border-width: calc(var(--kissopen-spinner-unit) * 1.25);
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: currentcolor;
+    border-radius: var(--kissopen-radius-pill);
+    animation-name: kissopen-spinner-turn;
+    animation-timing-function: steps(4);
+}
+
+/* ---- circle — ◐◓◑◒ ---------------------------------------------------- */
+
+/*
+ * This is the one spinner that stands in an icon's place — an activity row
+ * swaps it for the tool's glyph the moment the tool starts — so it is drawn to
+ * Ionicons' metrics rather than to the spinner box. An Ionicons outline is a
+ * 1px stroke inside a 13 x 13 ink box at a 16px box; a full-box disc with a
+ * fixed 1px border read a third heavier and a notch larger than the glyph it
+ * replaces, which is what made a run look louder than the work around it.
+ *
+ * The disc does not rotate, and that is what keeps it still. Rotating a
+ * half-filled disc through four right angles draws exactly the same four
+ * phases as filling the left, top, right, and bottom half in turn — but a
+ * transform resamples the whole shape, so the ring's antialiasing has to be
+ * recomputed against the device grid on every frame. Whenever the glyph's
+ * edges do not land on that grid, each frame rounds differently and the disc's
+ * own outline shifts by a device pixel: the reader sees an icon sliding side
+ * to side rather than one turning in place. Animating the fill instead leaves
+ * the bordered box untouched, so the outline rasterises once and only the
+ * boundary across it moves.
+ *
+ * This matters because the window zooms. Cmd +/- multiplies the device ratio,
+ * so a 2x display runs at 1.34, 2.2, 2.5, 3.5 and so on, and no amount of
+ * pixel snapping in CSS can anticipate those — `round()` works in CSS pixels,
+ * which zoom scales along with everything else. Measured over the four frames
+ * at every Chromium zoom step: rotated, the outline moves a device pixel at
+ * five of them (67%, 75%, 110%, 125%, 175% at the 16px size); with the fill
+ * animated instead it does not move at any of them, at any size.
+ *
+ * The dimensions are still snapped so the glyph is crisp at the common
+ * ratios, which is a separate concern from whether it holds still.
+ */
+.kissopen-spinner[data-variant="circle"] .kissopen-spinner__glyph {
+    width: round(calc(var(--kissopen-spinner-size) * 0.8125), 1px);
+    height: round(calc(var(--kissopen-spinner-size) * 0.8125), 1px);
+    /* Longhands: the shorthand puts a non-theme var inside a colour-bearing
+     * declaration, which the theme rule forbids. */
+    border-width: round(calc(var(--kissopen-spinner-size) / 16), 1px);
+    border-style: solid;
+    border-color: currentcolor;
+    border-radius: var(--kissopen-radius-pill);
+    /* Frame 0, so a glyph with no running animation still reads as the moon. */
+    background-image: linear-gradient(90deg, currentcolor 50%, transparent 50%);
+    animation-name: kissopen-spinner-phase;
+}
+
+/* Left, top, right, bottom — the same cycle a 90deg step rotation produced.
+   The shared `steps(1, end)` holds each phase for its whole frame. */
+@keyframes kissopen-spinner-phase {
+    0% {
+        background-image: linear-gradient(90deg, currentcolor 50%, transparent 50%);
+    }
+
+    25% {
+        background-image: linear-gradient(180deg, currentcolor 50%, transparent 50%);
+    }
+
+    50% {
+        background-image: linear-gradient(270deg, currentcolor 50%, transparent 50%);
+    }
+
+    75% {
+        background-image: linear-gradient(0deg, currentcolor 50%, transparent 50%);
+    }
+}
+
+@keyframes kissopen-spinner-turn {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---- blocks — ▁▃▅▇ equaliser ------------------------------------------ */
+
+.kissopen-spinner[data-variant="blocks"] {
+    --kissopen-spinner-width: calc(var(--kissopen-spinner-size) * 1.125);
+
+    align-items: flex-end;
+    gap: var(--kissopen-spinner-unit);
+}
+
+.kissopen-spinner[data-variant="blocks"] .kissopen-spinner__bar {
+    flex: none;
+    width: calc(var(--kissopen-spinner-unit) * 1.5);
+    border-radius: 1px;
+    background: currentcolor;
+    animation-name: kissopen-spinner-equalise;
+    animation-timing-function: linear;
+}
+
+.kissopen-spinner[data-variant="blocks"] .kissopen-spinner__bar:nth-child(2) {
+    --kissopen-spinner-phase: 0.25;
+}
+
+.kissopen-spinner[data-variant="blocks"] .kissopen-spinner__bar:nth-child(3) {
+    --kissopen-spinner-phase: 0.5;
+}
+
+.kissopen-spinner[data-variant="blocks"] .kissopen-spinner__bar:nth-child(4) {
+    --kissopen-spinner-phase: 0.75;
+}
+
+@keyframes kissopen-spinner-equalise {
+    0% {
+        height: 25%;
+        animation-timing-function: steps(1, end);
+    }
+
+    25% {
+        height: 50%;
+        animation-timing-function: steps(1, end);
+    }
+
+    50% {
+        height: 100%;
+        animation-timing-function: steps(1, end);
+    }
+
+    75% {
+        height: 62.5%;
+        animation-timing-function: steps(1, end);
+    }
+
+    100% {
+        height: 25%;
+    }
+}
+
+/* ---- bar — [####    ] -------------------------------------------------- */
+
+.kissopen-spinner[data-variant="bar"] {
+    --kissopen-spinner-width: calc(var(--kissopen-spinner-size) * 3.5);
+    --kissopen-spinner-duration: 720ms;
+    --kissopen-spinner-cell: calc(var(--kissopen-spinner-unit) * 3);
+
+    gap: var(--kissopen-spinner-unit);
+}
+
+.kissopen-spinner[data-variant="bar"] .kissopen-spinner__track {
+    /* Eight cells of 3 units, the last one without its trailing gutter. */
+    width: calc(var(--kissopen-spinner-cell) * 8 - var(--kissopen-spinner-unit));
+    background-image: repeating-linear-gradient(
+        90deg,
+        var(--kissopen-spinner-dim) 0 calc(var(--kissopen-spinner-unit) * 2),
+        transparent calc(var(--kissopen-spinner-unit) * 2) var(--kissopen-spinner-cell)
+    );
+}
+
+.kissopen-spinner[data-variant="bar"] .kissopen-spinner__fill {
+    width: 100%;
+    height: 100%;
+    /*
+     * The fill keeps the track's full width and reveals whole cells with
+     * clip-path, so the block pitch never rescales as the bar grows.
+     */
+    background-image: repeating-linear-gradient(
+        90deg,
+        currentcolor 0 calc(var(--kissopen-spinner-unit) * 2),
+        transparent calc(var(--kissopen-spinner-unit) * 2) var(--kissopen-spinner-cell)
+    );
+    animation-name: kissopen-spinner-progress;
+    animation-timing-function: steps(8, jump-start);
+}
+
+@keyframes kissopen-spinner-progress {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* ---- bounce — [ =   ] -------------------------------------------------- */
+
+.kissopen-spinner[data-variant="bounce"] {
+    --kissopen-spinner-width: calc(var(--kissopen-spinner-size) * 2.625);
+    --kissopen-spinner-duration: 800ms;
+
+    gap: var(--kissopen-spinner-unit);
+}
+
+.kissopen-spinner[data-variant="bounce"] .kissopen-spinner__track {
+    width: calc(var(--kissopen-spinner-size) * 2);
+}
+
+.kissopen-spinner[data-variant="bounce"] .kissopen-spinner__block {
+    flex: none;
+    width: calc(var(--kissopen-spinner-unit) * 2);
+    height: calc(var(--kissopen-spinner-unit) * 2);
+    border-radius: 1px;
+    background: currentcolor;
+    animation-name: kissopen-spinner-bounce;
+    animation-timing-function: linear;
+}
+
+@keyframes kissopen-spinner-bounce {
+    0% {
+        transform: translateX(0);
+        animation-timing-function: steps(5, end);
+    }
+
+    50% {
+        transform: translateX(
+            calc(var(--kissopen-spinner-size) * 2 - var(--kissopen-spinner-unit) * 2)
+        );
+        animation-timing-function: steps(5, end);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* ---- dots — . .. ... --------------------------------------------------- */
+
+.kissopen-spinner[data-variant="dots"] {
+    --kissopen-spinner-duration: 1040ms;
+
+    gap: var(--kissopen-spinner-unit);
+}
+
+/*
+ * cli-spinners' `simpleDots`: ".  ", ".. ", "...", "   ". The ellipsis
+ * accumulates and then clears, so dot n is lit from frame n-1 until the blank
+ * frame — one on-window each, not a phase-shifted blink.
+ */
+
+.kissopen-spinner[data-variant="dots"] .kissopen-spinner__dot {
+    width: calc(var(--kissopen-spinner-unit) * 2);
+    height: calc(var(--kissopen-spinner-unit) * 2);
+    opacity: 0.18;
+}
+
+.kissopen-spinner[data-variant="dots"] .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-ellipsis-1;
+}
+
+.kissopen-spinner[data-variant="dots"] .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-ellipsis-2;
+}
+
+.kissopen-spinner[data-variant="dots"] .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-ellipsis-3;
+}
+
+@keyframes kissopen-spinner-ellipsis-1 {
+    0% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 0.18;
+    }
+}
+
+@keyframes kissopen-spinner-ellipsis-2 {
+    0% {
+        opacity: 0.18;
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 0.18;
+    }
+}
+
+@keyframes kissopen-spinner-ellipsis-3 {
+    0% {
+        opacity: 0.18;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 0.18;
+    }
+}
+
+/* ---- toggle — ▮▯ ------------------------------------------------------- */
+
+.kissopen-spinner[data-variant="toggle"] {
+    --kissopen-spinner-duration: 800ms;
+}
+
+.kissopen-spinner[data-variant="toggle"] .kissopen-spinner__glyph {
+    width: calc(var(--kissopen-spinner-size) * 0.75);
+    height: 100%;
+    border: 1px solid currentcolor;
+    border-radius: 1px;
+    background-color: currentcolor;
+    animation-name: kissopen-spinner-toggle;
+    animation-timing-function: steps(2, jump-none);
+}
+
+@keyframes kissopen-spinner-toggle {
+    from {
+        background-color: currentcolor;
+    }
+
+    to {
+        background-color: transparent;
+    }
+}
+
+/* ---- pulse — .oO@ ------------------------------------------------------ */
+
+.kissopen-spinner[data-variant="pulse"] {
+    --kissopen-spinner-duration: 640ms;
+}
+
+.kissopen-spinner[data-variant="pulse"] .kissopen-spinner__glyph {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--kissopen-radius-pill);
+    background: currentcolor;
+    animation-name: kissopen-spinner-pulse;
+    animation-timing-function: steps(4, jump-none);
+    animation-direction: alternate;
+}
+
+@keyframes kissopen-spinner-pulse {
+    from {
+        transform: scale(0.25);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+/* ---- grow-vertical — ▁▃▄▅▆▇ -------------------------------------------- */
+
+.kissopen-spinner[data-variant="grow-vertical"] {
+    --kissopen-spinner-duration: 720ms;
+
+    align-items: flex-end;
+}
+
+.kissopen-spinner[data-variant="grow-vertical"] .kissopen-spinner__glyph {
+    width: calc(var(--kissopen-spinner-size) * 0.75);
+    border-radius: 1px;
+    background: currentcolor;
+    animation-name: kissopen-spinner-grow-vertical;
+    animation-timing-function: steps(6, jump-none);
+    animation-direction: alternate;
+}
+
+@keyframes kissopen-spinner-grow-vertical {
+    from {
+        height: 12.5%;
+    }
+
+    to {
+        height: 100%;
+    }
+}
+
+/* ---- grow-horizontal — ▏▎▍▌▋▊▉ ----------------------------------------- */
+
+.kissopen-spinner[data-variant="grow-horizontal"] {
+    --kissopen-spinner-duration: 840ms;
+
+    justify-content: flex-start;
+}
+
+.kissopen-spinner[data-variant="grow-horizontal"] .kissopen-spinner__glyph {
+    height: 100%;
+    border-radius: 1px;
+    background: currentcolor;
+    animation-name: kissopen-spinner-grow-horizontal;
+    animation-timing-function: steps(7, jump-none);
+    animation-direction: alternate;
+}
+
+@keyframes kissopen-spinner-grow-horizontal {
+    from {
+        width: 12.5%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+/* ---- triangle — ◢◣◤◥ ---------------------------------------------------- */
+
+.kissopen-spinner[data-variant="triangle"] .kissopen-spinner__glyph {
+    width: 100%;
+    height: 100%;
+    background: currentcolor;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    animation-name: kissopen-spinner-turn;
+    animation-timing-function: steps(4);
+}
+
+/* ---- quadrant — ◰◳◲◱ ---------------------------------------------------- */
+
+.kissopen-spinner[data-variant="quadrant"] .kissopen-spinner__glyph {
+    width: 100%;
+    height: 100%;
+    border: 1px solid currentcolor;
+    /* One filled quarter inside the outline; the box turns 90° per frame. */
+    background-image: conic-gradient(currentcolor 0 90deg, transparent 90deg);
+    animation-name: kissopen-spinner-turn;
+    animation-timing-function: steps(4);
+}
+
+/* ---- box-bounce — ▖▘▝▗ -------------------------------------------------- */
+
+.kissopen-spinner[data-variant="box-bounce"] {
+    --kissopen-spinner-duration: 640ms;
+
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.kissopen-spinner[data-variant="box-bounce"] .kissopen-spinner__glyph {
+    width: 50%;
+    height: 50%;
+    background: currentcolor;
+    animation-name: kissopen-spinner-box-bounce;
+}
+
+/* Corner order ▖ ▘ ▝ ▗ — bottom-left, top-left, top-right, bottom-right. */
+@keyframes kissopen-spinner-box-bounce {
+    0% {
+        transform: translate(0, 100%);
+    }
+
+    25% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(100%, 0);
+    }
+
+    75% {
+        transform: translate(100%, 100%);
+    }
+}
+
+/* ---- hamburger — ☱☲☴ ---------------------------------------------------- */
+
+.kissopen-spinner[data-variant="hamburger"] {
+    --kissopen-spinner-duration: 750ms;
+
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.kissopen-spinner[data-variant="hamburger"] .kissopen-spinner__bar {
+    flex: none;
+    width: 100%;
+    height: calc(var(--kissopen-spinner-unit) * 1.5);
+    border-radius: 1px;
+    background: currentcolor;
+    opacity: 0.18;
+    animation-name: kissopen-spinner-hamburger;
+}
+
+.kissopen-spinner[data-variant="hamburger"] .kissopen-spinner__bar:nth-child(2) {
+    --kissopen-spinner-phase: 0.333333;
+}
+
+.kissopen-spinner[data-variant="hamburger"] .kissopen-spinner__bar:nth-child(3) {
+    --kissopen-spinner-phase: 0.666667;
+}
+
+@keyframes kissopen-spinner-hamburger {
+    0% {
+        opacity: 1;
+    }
+
+    33.3333% {
+        opacity: 0.18;
+    }
+}
+
+/* ---- noise — ▓▒░ -------------------------------------------------------- */
+
+.kissopen-spinner[data-variant="noise"] {
+    --kissopen-spinner-duration: 450ms;
+}
+
+.kissopen-spinner[data-variant="noise"] .kissopen-spinner__glyph {
+    width: 100%;
+    height: 100%;
+    border-radius: 1px;
+    background: currentcolor;
+    animation-name: kissopen-spinner-noise;
+}
+
+@keyframes kissopen-spinner-noise {
+    0% {
+        opacity: 0.75;
+    }
+
+    33.3333% {
+        opacity: 0.45;
+    }
+
+    66.6667% {
+        opacity: 0.2;
+    }
+}
+
+/* ---- arrow — ←↖↑↗→↘↓↙ --------------------------------------------------- */
+
+.kissopen-spinner[data-variant="arrow"] {
+    --kissopen-spinner-duration: 800ms;
+}
+
+.kissopen-spinner[data-variant="arrow"] .kissopen-spinner__glyph {
+    width: 100%;
+    height: 100%;
+    background: currentcolor;
+    /* Chevron head pointing up; the box turns 45° per frame through 8 headings. */
+    clip-path: polygon(50% 0, 100% 100%, 50% 72%, 0 100%);
+    animation-name: kissopen-spinner-turn;
+    animation-timing-function: steps(8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* Keep the loop legible but halve its rate rather than freezing progress. */
+    .kissopen-spinner[data-variant] {
+        --kissopen-spinner-duration: 1600ms;
+    }
+}

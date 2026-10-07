@@ -1,0 +1,118 @@
+{
+  "cli": {
+    "version": ">= 14.2.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "global-development": {
+      "autoIncrement": true,
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "global-development",
+      "env": {
+        "APP_ENV": "development",
+        "APP_MARKET": "global",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    },
+    "global-preview": {
+      "autoIncrement": true,
+      "distribution": "internal",
+      "channel": "global-preview",
+      "env": {
+        "APP_ENV": "preview",
+        "APP_MARKET": "global",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    },
+    "global-preview-store": {
+      "autoIncrement": true,
+      "distribution": "store",
+      "channel": "global-preview",
+      "env": {
+        "APP_ENV": "preview",
+        "APP_MARKET": "global",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    },
+    "global-production": {
+      "autoIncrement": true,
+      "distribution": "store",
+      "channel": "global-production",
+      "env": {
+        "APP_ENV": "production",
+        "APP_MARKET": "global",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    },
+    "cn-development": {
+      "autoIncrement": true,
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "cn-development",
+      "env": {
+        "APP_ENV": "development",
+        "APP_MARKET": "cn",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    },
+    "cn-preview": {
+      "autoIncrement": true,
+      "distribution": "internal",
+      "channel": "cn-preview",
+      "env": {
+        "APP_ENV": "preview",
+        "APP_MARKET": "cn",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    },
+    "cn-preview-store": {
+      "autoIncrement": true,
+      "distribution": "store",
+      "channel": "cn-preview",
+      "env": {
+        "APP_ENV": "preview",
+        "APP_MARKET": "cn",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    },
+    "cn-production": {
+      "autoIncrement": true,
+      "distribution": "store",
+      "channel": "cn-production",
+      "env": {
+        "APP_ENV": "production",
+        "APP_MARKET": "cn",
+        "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+      }
+    }
+  },
+  "submit": {
+    "global-preview-store": {
+      "ios": {
+        "appleId": "app@nodeloc.com",
+        "bundleIdentifier": "com.worpar.app.preview"
+      }
+    },
+    "global-production": {
+      "ios": {
+        "appleId": "app@nodeloc.com",
+        "ascAppId": "6818844945",
+        "bundleIdentifier": "com.worpar.app"
+      }
+    },
+    "cn-preview-store": {
+      "ios": {
+        "appleId": "app@nodeloc.com",
+        "bundleIdentifier": "com.yiqijuan.app.preview"
+      }
+    },
+    "cn-production": {
+      "ios": {
+        "appleId": "app@nodeloc.com",
+        "ascAppId": "6818844836",
+        "bundleIdentifier": "com.yiqijuan.app"
+      }
+    }
+  }
+}

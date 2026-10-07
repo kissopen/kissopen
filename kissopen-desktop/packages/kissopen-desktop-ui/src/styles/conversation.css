@@ -1,0 +1,387 @@
+/*
+ * ConversationView: the assembled conversation surface — header status, entry
+ * list and the composer dock with its `/` palette.
+ * Layout is flexbox throughout; colors and type come only from theme roles.
+ */
+
+.kissopen-conversation {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background: var(--surface);
+}
+
+.kissopen-conversation__status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.kissopen-conversation__status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--text-secondary);
+}
+
+.kissopen-conversation__status[data-running] {
+    color: var(--box-warning-text);
+}
+
+.kissopen-conversation__status[data-running] .kissopen-conversation__status-dot {
+    background: var(--box-warning-text);
+}
+
+.kissopen-conversation__status-elapsed {
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+}
+
+/*
+ * Center the scrolling column at the shared readable measure. The scrollport
+ * itself stays full-bleed (DESIGN → full-bleed scrollports): only its inner
+ * content wrapper caps its width and centers, so entries and the composer below
+ * share one column while the scrollbar still runs edge to edge.
+ */
+.kissopen-conversation .kissopen-message-list__content {
+    width: 100%;
+    max-width: var(--kissopen-chat-measure);
+    margin-inline: auto;
+}
+
+.kissopen-conversation .kissopen-message-list__content:not([data-virtualized]) {
+    /* The dock is seamless with the transcript, so the clearance beneath the
+       newest message is what keeps it from reading as part of the composer. */
+    padding-bottom: 24px;
+}
+
+.kissopen-conversation .kissopen-message[data-agent][data-grouped] {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+/* Prose resuming under a run of tool rows opens the same gap that separates the
+   prose above from the first of those rows, so the run reads as belonging to the
+   text it followed. Both edges of that boundary are 8px: a fresh author's 16px
+   on the way in and a grouped row's 2px on the way out would make one run sit
+   closer to the text below it than to the text that introduced it. */
+.kissopen-conversation .kissopen-message[data-agent].kissopen-conversation__resumed {
+    padding-top: 8px;
+}
+
+.kissopen-conversation .kissopen-message[data-agent].kissopen-conversation__continues {
+    padding-bottom: 8px;
+}
+
+/* An answer and the status that closes it are one block. This row owns their
+   4px boundary in both the live and settled states so replacing the footer does
+   not move the transcript. Padding for a new author would put the turn's last
+   line and its own footer further apart than the paragraphs above them. */
+.kissopen-conversation .kissopen-message[data-agent].kissopen-conversation__closing {
+    padding-bottom: 4px;
+}
+
+/* The live turn and its external work are one stable line. The status takes
+   whatever room remains and carries the activity summary to the far end; both
+   sides truncate in place instead of turning terminals or subagents into a
+   second row. */
+.kissopen-conversation__status-line {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-conversation__status-line[data-active-turn] {
+    gap: 16px;
+}
+
+.kissopen-conversation__status-line > .kissopen-agent-working-status {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+}
+
+/* A settled turn leaves the whole line to the summary, which then reads as an
+   ordinary transcript row rather than something pushed to the right. */
+.kissopen-conversation__status-line > .kissopen-agent-working-status:not([data-active]) {
+    flex: 0 0 0;
+    width: 0;
+    padding: 0;
+}
+
+/* When the live status opens the agent turn, Message supplies identity rather
+   than prose. Drop its prose-only right reserve so the trailing activity keeps
+   the same 20px gutter it owns on every other live status line. */
+.kissopen-message[data-agent].kissopen-message--working-lead {
+    padding-right: 0;
+}
+
+.kissopen-conversation__activity-entry {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    /* Alone, the summary starts on the status clock's column: the 30px row
+       inset, the 3px + 7px + 3px braille loader column, and the 6px the clock
+       already sits past it. */
+    padding-left: 49px;
+}
+
+/* The clock-column inset belongs only to the external-work-only state. Beside
+   a live status, the parent line's gap separates the two visible children. The
+   status carries the running turn's 4px clearance as a margin, so the summary
+   takes the same one and the two texts share a line box. */
+.kissopen-conversation__status-line[data-active-turn] > .kissopen-conversation__activity-entry {
+    margin-top: 4px;
+    padding-left: 0;
+}
+
+.kissopen-conversation
+    .kissopen-message[data-agent].kissopen-conversation__resumed:not([data-own])
+    .kissopen-message__gutter {
+    top: 8px;
+}
+
+/* The dangling avatar is positioned from the row's top edge, so it has to be
+   placed against whatever padding that row actually carries. A plain agent row
+   keeps the base 16px padding, so its author line spans 16px..36px and the 20px
+   avatar hangs at 16px to centre on it. Grouped and resumed rows halve or
+   quarter that padding and take their own offsets. */
+.kissopen-conversation .kissopen-message[data-agent]:not([data-own]) .kissopen-message__gutter {
+    top: 16px;
+}
+
+.kissopen-conversation
+    .kissopen-message[data-agent][data-grouped]:not([data-own])
+    .kissopen-message__gutter {
+    top: 2px;
+}
+
+/*
+ * The notice row: a fixed strip between the header and the transcript, taking
+ * only the height its contents ask for and never scrolling. What it says is a
+ * fact about the place the conversation is happening in, so it has to stay
+ * readable however far the transcript beneath it has been scrolled.
+ */
+.kissopen-conversation__notice {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    padding: 12px 16px 0;
+}
+
+/*
+ * Steering the reader has queued but the turn has not taken yet. It sits below
+ * the live status line rather than among the rows above it, because it is the
+ * one thing in the transcript that has not happened: ordered as history it
+ * would read as something the agent had already been told.
+ *
+ * It is held back rather than greyed out — the words stay the reader's own, at
+ * their own colour, just short of full presence — and it comes forward as it is
+ * applied, at which point it becomes an ordinary row in the transcript above.
+ */
+.kissopen-conversation__queued {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+    opacity: 0.62;
+    transition: opacity 160ms ease;
+}
+
+/*
+ * The way to take a waiting message back, under its bubble on the bubble's own
+ * right edge. Quiet text rather than a button shape: it is a second thought,
+ * not the thing the row is for.
+ */
+.kissopen-conversation__queued-actions {
+    display: flex;
+    justify-content: flex-end;
+    height: 24px;
+    margin-top: -4px;
+    padding: 0 28px 4px 0;
+}
+
+.kissopen-conversation__queued-withdraw {
+    appearance: none;
+    height: 20px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.kissopen-conversation__queued-withdraw:hover,
+.kissopen-conversation__queued-withdraw:focus-visible {
+    background: var(--surface-ripple);
+    color: var(--text);
+    outline: none;
+}
+
+.kissopen-conversation__panel,
+.kissopen-conversation__empty {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.kissopen-conversation__panel-viewport,
+.kissopen-conversation__empty-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.kissopen-conversation__loading > .kissopen-conversation__empty-viewport {
+    align-items: center;
+    justify-content: center;
+}
+
+.kissopen-conversation__activity-fallback {
+    width: 100%;
+    max-width: var(--kissopen-chat-measure);
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 12px;
+}
+
+/*
+ * The dock is a grounded solid surface whose boundary with the transcript is
+ * seamless — no hairline and no gap. The 16px returned to the input's lower
+ * inset is balanced by 16px less space below the complete stack, preserving
+ * its total height. The painted card ends 40px above the window in both modes,
+ * while the sidebar keeps its own 56px footer bar. Its contents center on the
+ * entry column's measure, so the input starts flush with the transcript.
+ */
+.kissopen-conversation__dock {
+    --kissopen-composer-footer-height: 28px;
+    --kissopen-composer-footer-gap: 4px;
+    --kissopen-composer-dock-bottom: 8px;
+    --kissopen-composer-card-bottom-offset: calc(
+        var(--kissopen-composer-dock-bottom) + var(--kissopen-composer-footer-height) +
+            var(--kissopen-composer-footer-gap)
+    );
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: var(--kissopen-composer-card-bottom-offset);
+    background: var(--surface);
+}
+
+/* The footer row is already part of the 40px card-to-window offset, so only
+ * its terminal 8px remains outside the complete composer stack. */
+.kissopen-conversation__dock:has(.kissopen-composer__footer) {
+    padding-bottom: var(--kissopen-composer-dock-bottom);
+}
+
+.kissopen-conversation__dock > * {
+    width: 100%;
+    max-width: var(--kissopen-chat-measure);
+    padding-right: 20px;
+    padding-left: 12px;
+}
+
+.kissopen-conversation__dock-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/*
+ * Floating conversation dock — the composer over an expanded panel.
+ *
+ * It leaves the flow on purpose (an overlay, not a row): the surface underneath
+ * keeps its full height, so nothing reflows or loses its last lines when the
+ * dock appears. Only the dock takes pointer input; the faded band above it
+ * belongs to the surface it is floating over.
+ */
+.kissopen-floating-dock {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    pointer-events: none;
+}
+
+/* In a panel footer the composer itself occupies its real height in the flex
+   column. Only the fade below is overlaid, so the input covers no content and
+   no matching spacer or padding is introduced. */
+.kissopen-floating-dock[data-placement="footer"] {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+}
+
+/* Carries the surface colour up behind the dock so text scrolling under it
+   fades out instead of being sliced by a hard edge. The fade is an alpha mask
+   over a solid surface fill rather than a gradient to `transparent`: every
+   engine interpolates a colour gradient towards transparent *black*, which
+   would tint the fade grey in light mode. In a mask only the alpha channel is
+   read, so the two stops here are opacity, not colour. */
+.kissopen-floating-dock__scrim {
+    flex: none;
+    height: 72px;
+    background: var(--surface);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black);
+    mask-image: linear-gradient(to bottom, transparent, black);
+}
+
+/* Footer placement removes the fade from flex flow and hangs it over the final
+   72px of the panel body; the measure below remains the footer's sole height. */
+.kissopen-floating-dock[data-placement="footer"] .kissopen-floating-dock__scrim {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+}
+
+/* Stretches its child: the dock centres its own contents at the chat measure,
+   exactly as it does in the conversation flow. */
+.kissopen-floating-dock__measure {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: none;
+    width: 100%;
+    background: var(--surface);
+    pointer-events: auto;
+}
+
+/*
+ * Composer footer accessory row: message controls lead, the target picker
+ * trails. It fills the footer so the two groups can sit at opposite edges.
+ */
+.kissopen-composer-footer-bar {
+    display: flex;
+    align-items: center;
+    flex: 1 1 0%;
+    gap: 8px;
+    justify-content: space-between;
+    min-width: 0;
+}
+
+.kissopen-composer-footer-bar__group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}

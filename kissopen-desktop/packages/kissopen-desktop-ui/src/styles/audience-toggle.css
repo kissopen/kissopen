@@ -1,0 +1,43 @@
+/*
+ * C-065 AudienceToggle.
+ *
+ * A compact current-mode text control beneath the composer input.
+ */
+
+.kissopen-audience-toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    opacity: 0.5;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    transition:
+        color 120ms ease,
+        opacity 120ms ease;
+}
+
+.kissopen-audience-toggle:hover:not(:disabled) {
+    color: var(--text);
+    opacity: 1;
+}
+
+.kissopen-audience-toggle:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-audience-toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}

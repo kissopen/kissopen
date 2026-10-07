@@ -1,0 +1,34 @@
+.kissopen-brand-logo {
+    content: var(--kissopen-brand-logo-source);
+}
+.kissopen-mark {
+    display: block;
+    flex: none;
+    overflow: visible;
+    user-select: none;
+}
+.kissopen-mark__left,
+.kissopen-mark__right {
+    fill: var(--brand-accent);
+    stroke: var(--brand-accent);
+}
+.kissopen-mark[data-framed] .kissopen-mark__left,
+.kissopen-mark[data-framed] .kissopen-mark__right {
+    fill: var(--kissopen-brand-icon-ink);
+    stroke: var(--kissopen-brand-icon-ink);
+}
+.kissopen-mark__tile {
+    fill: var(--kissopen-brand-icon-ground);
+}
+.kissopen-lockup {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    user-select: none;
+}
+.kissopen-lockup__image {
+    display: block;
+    content: var(--kissopen-lockup-source);
+    height: var(--kissopen-lockup-height, 24px);
+    width: auto;
+}

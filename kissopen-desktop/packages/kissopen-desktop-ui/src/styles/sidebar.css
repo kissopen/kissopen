@@ -1,0 +1,1430 @@
+/*
+ * C-009 Sidebar — responsive native navigation column.
+ *
+ * Contract: 30% of the desktop width, clamped to 250–360px. It fills height
+ * on the grouped surface, with a 56px header, 32px rows, and a 40px footer.
+ */
+
+.kissopen-sidebar,
+.kissopen-sidebar * {
+    box-sizing: border-box;
+}
+
+.kissopen-sidebar {
+    --kissopen-surface-header-height: 56px;
+    --kissopen-surface-footer-height: 40px;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: clamp(250px, 30vw, 360px);
+    height: 100%;
+    /* A custom theme's background picture shows through its veil here too. */
+    background:
+        linear-gradient(var(--kissopen-wallpaper-veil), var(--kissopen-wallpaper-veil)),
+        var(--kissopen-wallpaper) center / cover no-repeat,
+        var(--home-card-soft);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    /* The footer's development menu opens above the sidebar and must be able to
+       paint over the workspace; the body below owns its own scroll clipping. */
+    overflow: visible;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.kissopen-sidebar__item-menu {
+    position: fixed;
+    z-index: 40;
+}
+
+/* ---- Header ----------------------------------------------------------- */
+
+/* The header stands over the rows it names: its inset is where a row's ink
+   starts, which is the panel inset plus the row's own padding. */
+.kissopen-sidebar__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: var(--kissopen-surface-header-height);
+    padding: 0 calc(var(--kissopen-panel-inset) + var(--kissopen-panel-row-padding));
+}
+
+.kissopen-sidebar__heading {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.kissopen-sidebar__title-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+/* The lockup heads the list at the rows' own scale: a 16px mark sits in the
+   glyph lane and its caps come out close to the row labels' size. */
+.kissopen-sidebar__brand-logo {
+    --kissopen-lockup-height: 16px;
+    display: flex;
+    align-self: flex-start;
+    max-width: 100%;
+}
+
+/*
+ * The sidebar's own header band, in the same quiet tone as the header across
+ * the divider from it (see channel-header.css): the two bands are one line
+ * across the window and must not disagree about how loud a heading is.
+ */
+.kissopen-sidebar__title {
+    display: block;
+    overflow: hidden;
+    color: var(--header-tint-secondary);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-sidebar-header-optical-y, 0px));
+}
+
+.kissopen-sidebar__title-chevron {
+    display: flex;
+    flex: none;
+    color: var(--header-tint-secondary);
+    transform: translateY(var(--kissopen-sidebar-chevron-optical-y, 0px));
+}
+
+.kissopen-sidebar__subtitle {
+    display: block;
+    overflow: hidden;
+    color: var(--header-tint-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-sidebar-header-optical-y, 0px));
+}
+
+.kissopen-sidebar__header-accessory {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.kissopen-sidebar__header-trailing {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    transform: translateY(2px);
+}
+
+/* ---- Back / drill-down header ----------------------------------------- */
+
+.kissopen-sidebar[data-back] .kissopen-sidebar__heading {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.kissopen-sidebar__back {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: -6px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    appearance: none;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+/* Mirror the right chevron into a back (left) chevron. Icon uses a font span,
+   not an SVG, so the transform belongs on the shared Icon element. */
+.kissopen-sidebar__back .kissopen-icon {
+    transform: scaleX(-1);
+}
+
+.kissopen-sidebar__back:hover {
+    background: var(--surface-ripple);
+    color: var(--text);
+}
+
+.kissopen-sidebar__back:focus-visible {
+    outline: 2px solid var(--surface-selected);
+    outline-offset: -2px;
+}
+
+.kissopen-sidebar__title--back {
+    font-weight: 700;
+}
+
+/* Drill-in morph: the "Administration" title rises from the row position up
+   into the header while the back chevron eases in from the left and the sub-nav
+   settles in below it — so the tapped row reads as flying up into a back header.
+   The distance (26px) is one row + gap, matching the row's original offset. */
+@media (prefers-reduced-motion: no-preference) {
+    .kissopen-sidebar[data-back] .kissopen-sidebar__back {
+        animation: kissopen-sidebar-back-in 260ms ease both;
+    }
+
+    .kissopen-sidebar[data-back] .kissopen-sidebar__title--back {
+        animation: kissopen-sidebar-title-rise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .kissopen-sidebar[data-back] .kissopen-sidebar__body-content {
+        animation: kissopen-sidebar-detail-body 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: 40ms;
+    }
+}
+
+@keyframes kissopen-sidebar-back-in {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+}
+
+@keyframes kissopen-sidebar-title-rise {
+    from {
+        opacity: 0;
+        transform: translateY(26px);
+    }
+}
+
+@keyframes kissopen-sidebar-detail-body {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+}
+
+/* ---- Body ------------------------------------------------------------- */
+
+/* Scrollport: edge-to-edge, no padding of its own. */
+.kissopen-sidebar__body {
+    flex: 1;
+    min-height: 0;
+}
+
+.kissopen-sidebar__body-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Inner content wrapper carries the shared panel inset around the sections —
+   see --kissopen-panel-inset for what it promises. */
+.kissopen-sidebar__body-content {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    padding: var(--kissopen-panel-inset);
+}
+
+/* The pinned rows are their own column so a reorder drag measures them and
+   nothing else. They keep the compose row's tight rhythm: this wrapper is a
+   grouping, not a group the reader can see. */
+.kissopen-sidebar__actions {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+}
+
+.kissopen-sidebar__section {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.kissopen-sidebar__section + .kissopen-sidebar__section {
+    margin-top: 12px;
+}
+
+/* New chat is a SidebarRow; keep the same 2px row rhythm before the first menu. */
+.kissopen-sidebar__compose + .kissopen-sidebar__section,
+.kissopen-sidebar__actions + .kissopen-sidebar__section {
+    margin-top: 2px;
+}
+
+/* Whatever an agent hangs here is a group in this column like any other, so the
+   sidebar — not the guest — owns the clear space on both sides of it. */
+.kissopen-sidebar__body-accessory {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.kissopen-sidebar__compose + .kissopen-sidebar__body-accessory,
+.kissopen-sidebar__actions + .kissopen-sidebar__body-accessory,
+.kissopen-sidebar__body-accessory + .kissopen-sidebar__section {
+    margin-top: 12px;
+}
+
+/* A window with nothing hung here holds no lane open: the clear space belongs to
+   the group, so with no group there is none, and the sections keep the same
+   rhythm they would have if the host had passed no accessory at all. */
+.kissopen-sidebar__body-accessory:empty {
+    margin-top: 0;
+}
+
+.kissopen-sidebar__body-accessory:empty + .kissopen-sidebar__section {
+    margin-top: 2px;
+}
+
+.kissopen-sidebar__section-head {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    height: 24px;
+    padding: 0 var(--kissopen-panel-row-padding);
+}
+
+.kissopen-sidebar__section-label {
+    display: block;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 24px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-sidebar-section-optical-y, 0px));
+}
+
+/* The machine a section's rows come from, marked beside its name. It sits
+   between the label and the heading control and never grows, so a heading that
+   gains a status does not move the control the reader reaches for. */
+.kissopen-sidebar__section-status {
+    flex: none;
+    margin-right: auto;
+    margin-left: 6px;
+}
+
+/* The whole control is one target in a desktop window: a native title-bar drag
+   region that overlapped this heading would otherwise hand the press to the
+   window manager instead of to the button. Stated here rather than relying on
+   the shell so the guarantee travels with the control. */
+.kissopen-sidebar__section-action {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+    margin: 0;
+    /* Optical, for the reason the rows' trailing slot carries the same: the
+       glyph is smaller than its cell, so the cell hangs into the padding to put
+       its ink where a row's trailing marks put theirs. */
+    margin-right: -3px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-secondary);
+    appearance: none;
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        opacity 120ms ease;
+}
+
+.kissopen-sidebar__section-head:hover .kissopen-sidebar__section-action,
+.kissopen-sidebar__section-action:focus-visible {
+    opacity: 1;
+}
+
+/* A control the section exists to offer is not something to go looking for: it
+   stands whether or not the heading is under the pointer, and it keeps standing
+   while the act it started is still running. */
+.kissopen-sidebar__section-action[data-reveal="always"],
+.kissopen-sidebar__section-action[data-busy] {
+    opacity: 1;
+}
+
+.kissopen-sidebar__section-action[data-busy],
+.kissopen-sidebar__section-action[data-busy]:hover,
+.kissopen-sidebar__section-action:disabled,
+.kissopen-sidebar__section-action:disabled:hover {
+    background: transparent;
+    cursor: default;
+}
+
+.kissopen-sidebar__section-action:hover {
+    background: var(--surface-ripple);
+    color: var(--text-secondary);
+}
+
+.kissopen-sidebar__section-action:focus-visible {
+    outline: 2px solid var(--surface-selected);
+    outline-offset: 1px;
+}
+
+.kissopen-sidebar__section-error {
+    display: block;
+    flex: none;
+    margin: 0;
+    padding: 0 var(--kissopen-panel-row-padding) 2px;
+    color: var(--text-destructive);
+    font-family: var(--kissopen-font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 15px;
+}
+
+/*
+ * The tree wrapper owns row spacing while its connector layer leaves the flow.
+ * The layer is an overlay by design: it describes geometry behind the rows and
+ * must not add a box or intercept a pointer intended for a row.
+ */
+.kissopen-sidebar__tree {
+    position: relative;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+}
+
+.kissopen-sidebar__tree > .kissopen-sidebar__item {
+    position: relative;
+    z-index: 0;
+}
+
+/* The lift under a carried subtree. Its geometry is never transitioned — that is
+   what keeps it under the hand — but the shadow itself comes up rather than being
+   switched on: a row is picked up and put down, and both take a moment.
+
+   One element does both halves. It is mounted, empty and invisible, as soon as a
+   row is touched, and stays mounted for the length of its own fade after the hand
+   has gone, so `opacity` is always a transition between two states of the same
+   node rather than a mount and an unmount. That is what a flicked row needs: a
+   drag let go of before the shadow has finished arriving turns around from
+   wherever it had got to, which keyframes — starting again from their own first
+   frame — cannot do. */
+.kissopen-sidebar__tree-drag-surface {
+    position: absolute;
+    z-index: 0;
+    right: 0;
+    left: 0;
+    display: block;
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--surface-ripple);
+    box-shadow: 0 4px 12px var(--shadow-subtle);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease;
+}
+
+.kissopen-sidebar__tree-drag-surface[data-carried] {
+    opacity: 1;
+}
+
+.kissopen-sidebar__tree-connectors {
+    position: absolute;
+    /* Tree ink stays above row fills, including selection and the held row. */
+    z-index: 2;
+    inset: 0;
+    pointer-events: none;
+}
+
+.kissopen-sidebar__tree-connector {
+    position: absolute;
+    display: block;
+    width: 1px;
+    background: var(--text-secondary);
+    opacity: 0.28;
+    transition: none;
+    transform-origin: top center;
+}
+
+.kissopen-sidebar__empty {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 28px;
+    /* Not the row padding on the trailing side: what sits there is a small
+       Button, which already holds its label 11px inside its own box. Padding it
+       like a row of marks would set that label a control's inset further in
+       again; 6px lets the button's box overhang the row's trailing edge
+       slightly, which is where a control's fill belongs against text. */
+    padding: 0 6px 0 var(--kissopen-panel-row-padding);
+}
+
+.kissopen-sidebar__empty-description {
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 15px;
+    flex: 1;
+    min-width: 0;
+}
+
+.kissopen-sidebar__empty-action {
+    flex: none;
+    max-width: 100%;
+}
+
+/* ---- Rows ------------------------------------------------------------- */
+
+.kissopen-sidebar__item {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 32px;
+    margin: 0;
+    padding: 0 var(--kissopen-panel-row-padding);
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+    appearance: none;
+    cursor: pointer;
+    /* The shadow is listed for the rows that can be carried: a row that has been
+       let go of puts its lift back down over the same moment it takes its fill
+       back, rather than losing the shadow a frame before the colour. */
+    transition:
+        background-color 120ms ease,
+        box-shadow 120ms ease,
+        color 120ms ease;
+}
+
+/* Rows only animate their transform while a reorder is in flight. Once the move
+   is reported the list is rearranged and every transform drops to none in the
+   same commit; if that drop were transitioned, each row would glide in from
+   wherever it had been pushed to — the dropped row appearing to fly in from
+   above — instead of simply being where the new order puts it. */
+.kissopen-sidebar__section[data-reordering] .kissopen-sidebar__item,
+.kissopen-sidebar__actions[data-reordering] .kissopen-sidebar__item {
+    transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The row under the pointer rides above its neighbours and drops the transition
+   on its position, so it tracks the pointer exactly while the rows it displaces
+   still glide. The shadow is what lifts it off the column: a row being carried is
+   the one thing in the sidebar that is not lying flat in the list — so it comes
+   up over the same moment it takes anywhere else, while `transform`, left out of
+   the list on purpose, stays under the hand. */
+.kissopen-sidebar__item[data-dragging] {
+    z-index: 1;
+    background: var(--surface-ripple);
+    box-shadow: 0 4px 12px var(--shadow-subtle);
+    transition:
+        background-color 120ms ease,
+        box-shadow 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-sidebar__item[data-grabbed] {
+    cursor: grabbing;
+}
+
+/* A tree drag paints one surface around the complete held subtree, so no row in
+   it paints a lift of its own — for the whole of the move, including the travel
+   after the surface has gone. Its rows keep this attribute only so every
+   transform tracks the pointer without lag. */
+.kissopen-sidebar__tree[data-connector-dragging] > .kissopen-sidebar__item[data-dragging] {
+    background: transparent;
+    box-shadow: none;
+}
+
+.kissopen-sidebar__tree[data-connector-dragging]
+    > .kissopen-sidebar__item[data-dragging][data-active] {
+    background: var(--surface-selected);
+}
+
+/* Said again inside the list being arranged, because that is where it has to
+   win: the rule above is one class and one attribute, the reordering rule two
+   classes and an attribute, so on its own it loses the transition it is trying
+   to drop and the carried row eases toward the pointer over 160ms instead of
+   tracking it — a lag under the hand, worst exactly when the hand moves fast. */
+.kissopen-sidebar__section[data-reordering] .kissopen-sidebar__item[data-dragging],
+.kissopen-sidebar__actions[data-reordering] .kissopen-sidebar__item[data-dragging] {
+    transition:
+        background-color 120ms ease,
+        box-shadow 120ms ease,
+        color 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-sidebar__section[data-reordering] .kissopen-sidebar__item,
+    .kissopen-sidebar__actions[data-reordering] .kissopen-sidebar__item {
+        transition:
+            background-color 120ms ease,
+            color 120ms ease;
+    }
+
+    /* A reader who asked for less motion is not kept waiting for the lift to go
+       out either: the sidebar drops the surface the moment the gesture ends, so
+       the entry it would have paired with is dropped here to match. */
+    .kissopen-sidebar__tree-drag-surface {
+        transition: none;
+    }
+}
+
+/* Said out loud, never drawn: the region reports a keyboard move to a screen
+   reader and must not take a line of the sidebar to do it. */
+.kissopen-sidebar__announcement {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.kissopen-sidebar__item:hover {
+    background: var(--home-hover);
+}
+
+.kissopen-sidebar__item:focus-visible {
+    outline: 2px solid var(--home-accent);
+    outline-offset: -2px;
+}
+
+.kissopen-sidebar__item[data-active] {
+    background: var(--home-accent-soft);
+    color: var(--home-accent-strong);
+}
+
+/* The horizontal elbow from the parent-owned stem into one nested row. */
+.kissopen-sidebar__item-branch {
+    position: relative;
+    flex: none;
+    align-self: stretch;
+    width: 20px;
+    margin-left: -16px;
+}
+
+.kissopen-sidebar__item-branch::after {
+    position: absolute;
+    background: var(--text-secondary);
+    content: "";
+    opacity: 0.28;
+}
+
+.kissopen-sidebar__item-branch::after {
+    top: 50%;
+    /* Start at the stem's far edge, never on top of its painted pixel. */
+    left: calc(50% + 0.5px);
+    width: 9px;
+    height: 1px;
+}
+
+/* Cancel the archived row's 0.55 dimming so the elbow keeps the stem's tone. */
+.kissopen-sidebar__item[data-archived] .kissopen-sidebar__item-branch::after {
+    opacity: 0.509;
+}
+
+.kissopen-sidebar__item-leading {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    color: var(--text-secondary);
+}
+
+/*
+ * What the row is doing, as one mark inside the trailing slot.
+ *
+ * A fixed square rather than shrink-to-fit, so that starting or finishing work
+ * never resizes it: a spinner and a clock are different widths, and a mark that
+ * took each one's own width would nudge the lane around it as rows became busy.
+ * It is the same square as a control, so the two centre on one column when they
+ * exchange places. It reports only — the control stacked over it is the thing
+ * that can be used.
+ */
+.kissopen-sidebar__item-activity {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+/* Accent-tinted, so a row whose agent is deliberately doing nothing still stands
+   apart from an idle one without the spinner's claim that work is happening. */
+.kissopen-sidebar__item-activity[data-activity="waiting"] {
+    color: var(--text-link);
+}
+
+.kissopen-sidebar__item-activity[data-activity="failed"] {
+    color: var(--box-error-text);
+}
+
+.kissopen-sidebar__item-activity[data-activity="unavailable"] {
+    color: var(--box-warning-text);
+}
+
+/*
+ * The emoji a reader chose for a row, in a fixed 16px square — the same box the
+ * house glyph beside it occupies. Emoji are a colour font with no `currentColor`
+ * to inherit and wildly varying metrics between families, so the box is stated
+ * here rather than left to the character: without it a tall emoji would grow the
+ * 32px row and a wide one would push the name along, and neither would agree
+ * with the glyph rows above and below it.
+ *
+ * `line-height` is repeated on the inner span because an inline box takes its
+ * own, and an emoji's ascent commonly overshoots it; pinning both is what keeps
+ * the ink centred in the square rather than riding out of the top of it.
+ */
+.kissopen-sidebar__item-emoji {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    font-family: var(--kissopen-font-emoji);
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.kissopen-sidebar__item-emoji-glyph {
+    display: block;
+    line-height: 16px;
+}
+
+/*
+ * The fold, stacked over the row's own mark in the leading lane rather than
+ * given a lane of its own: the rows here are already a tree hanging off that
+ * lane, and a column of twisties beside it would indent every row in the window
+ * to make room for a control most rows do not have. Stacking also means reaching
+ * for it never resizes or reflows the row — the chevron simply appears where the
+ * avatar was.
+ *
+ * The two are never drawn at once. Rather than covering the mark with an opaque
+ * patch — which has to name the row's background, and so shows as a square of
+ * the wrong colour on exactly the hovered and selected rows where it appears —
+ * the mark is faded out underneath as the chevron comes up. Nothing here paints
+ * a surface, so a fold cannot disagree with the row it sits on.
+ */
+.kissopen-sidebar__item-fold {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    opacity: 0;
+    cursor: pointer;
+}
+
+/*
+ * A row that is shut keeps its chevron showing. The reader has to be able to
+ * find the work they folded away by looking down the column, rather than
+ * sweeping it to see which rows answer — and a project that has quietly hidden
+ * its checkouts while looking exactly like one with none is the whole failure
+ * this control could have.
+ */
+.kissopen-sidebar__item:hover .kissopen-sidebar__item-fold,
+.kissopen-sidebar__item:focus-visible .kissopen-sidebar__item-fold,
+.kissopen-sidebar__item[data-collapsed] .kissopen-sidebar__item-fold {
+    opacity: 1;
+}
+
+/* The mark steps aside for exactly as long as the chevron is up. The unread dot
+   is not part of the mark and keeps its place: whether a row has activity in it
+   is not something reaching for the fold should take away. */
+.kissopen-sidebar__item[data-foldable]:hover
+    .kissopen-sidebar__item-leading
+    > :not(.kissopen-sidebar__item-fold):not(.kissopen-sidebar__item-leading-unread),
+.kissopen-sidebar__item[data-foldable]:focus-visible
+    .kissopen-sidebar__item-leading
+    > :not(.kissopen-sidebar__item-fold):not(.kissopen-sidebar__item-leading-unread),
+.kissopen-sidebar__item[data-collapsed]
+    .kissopen-sidebar__item-leading
+    > :not(.kissopen-sidebar__item-fold):not(.kissopen-sidebar__item-leading-unread) {
+    opacity: 0;
+}
+
+.kissopen-sidebar__item[data-active] .kissopen-sidebar__item-fold,
+.kissopen-sidebar__item-fold:hover {
+    color: var(--text);
+}
+
+.kissopen-sidebar__item-leading-unread {
+    position: absolute;
+    top: 1px;
+    right: -1px;
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--surface);
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--status-error);
+}
+
+/* The compose pencil's ink is bottom-heavy; lift it to the row's optical center. */
+.kissopen-sidebar__compose .kissopen-sidebar__item-leading {
+    transform: translateY(-1px);
+}
+
+.kissopen-sidebar__item[data-active] .kissopen-sidebar__item-leading {
+    color: var(--home-accent-strong);
+}
+
+.kissopen-sidebar__item-label {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-sidebar-label-optical-y, 0px));
+}
+
+/*
+ * Command discovery borrows the row's existing trailing lane. Ordinary reports
+ * temporarily step aside; without one, the label yields enough width for the
+ * right-aligned key cap.
+ */
+.kissopen-sidebar__item-shortcut {
+    display: none;
+    flex: none;
+}
+
+[data-shortcut-hints]
+    .kissopen-sidebar__item[data-shortcut-row]:not(
+        :has(> .kissopen-sidebar__item-trailing:focus-within)
+    )
+    > .kissopen-sidebar__item-shortcut {
+    display: inline-flex;
+}
+
+[data-shortcut-hints]
+    .kissopen-sidebar__item[data-shortcut-row]:not(
+        :has(> .kissopen-sidebar__item-trailing:focus-within)
+    )
+    > :not(.kissopen-sidebar__item-branch):not(.kissopen-sidebar__item-leading):not(
+        .kissopen-sidebar__item-label
+    ):not(.kissopen-sidebar__item-shortcut) {
+    display: none;
+}
+
+/*
+ * A busy place shimmers its own name, and the shimmer is an inline-block — an
+ * atomic box the label's `text-overflow` cannot reach into, so a long name would
+ * be cut off mid-letter instead of ellipsised. The truncation therefore moves
+ * inside the box, which is a block container for its own text and ellipsises it
+ * the same way.
+ *
+ * `vertical-align` is not cosmetic here: an inline-block with `overflow` other
+ * than `visible` takes its baseline from the bottom of its margin box rather
+ * than from its text, so left on the baseline the name would drop a few pixels
+ * the moment it started shimmering and rise again when it stopped. Aligning the
+ * top edge to the line box keeps it exactly where an ordinary label sits.
+ */
+.kissopen-sidebar__item-label .kissopen-shimmer-text {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.kissopen-sidebar__item[data-active] .kissopen-sidebar__item-label {
+    font-weight: 600;
+}
+
+.kissopen-sidebar__item[data-unread] {
+    color: var(--text);
+}
+
+.kissopen-sidebar__item[data-unread] .kissopen-sidebar__item-label {
+    font-weight: 700;
+}
+
+.kissopen-sidebar__item[data-kind="action"] {
+    color: var(--text-secondary);
+}
+/* Archived channels stay in place and clickable but dim uniformly so the state
+   reads distinctly from an ordinary resting (already secondary-grey) row. The
+   uniform alpha keeps every child glyph's optical centroid unchanged. */
+.kissopen-sidebar__item[data-archived] {
+    opacity: 0.55;
+}
+.kissopen-sidebar__item[data-archived] .kissopen-sidebar__item-label {
+    font-weight: 500;
+}
+
+.kissopen-sidebar__item-badge {
+    flex: none;
+}
+
+.kissopen-sidebar__item-change-stats {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+.kissopen-sidebar__item[data-active] .kissopen-sidebar__item-change-stats [data-tone="added"],
+.kissopen-sidebar__item:focus-visible .kissopen-sidebar__item-change-stats [data-tone="added"] {
+    color: var(--git-added-text);
+}
+
+.kissopen-sidebar__item[data-active] .kissopen-sidebar__item-change-stats [data-tone="deleted"],
+.kissopen-sidebar__item:focus-visible .kissopen-sidebar__item-change-stats [data-tone="deleted"] {
+    color: var(--git-removed-text);
+}
+
+/*
+ * The trailing lane: the Git delta the row reports, then the mark for what the
+ * row is doing, with the controls laid over both.
+ *
+ * The delta is last in flow, so at rest it ends the row on the same column as
+ * the badges and metadata that end the rows around it. Work adds the activity
+ * cell after it and pushes it left by exactly that cell — a running row is the
+ * one row that reads differently, and it should.
+ *
+ * The lane's gap and its resting width are applied inline from
+ * SIDEBAR_TRAILING_GAP and `trailingLaneMinWidth`, because both are terms in
+ * the overlay geometry computed there; a copy here would be a second source of
+ * truth for the same numbers.
+ */
+.kissopen-sidebar__item-trailing {
+    display: flex;
+    position: relative;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    height: 18px;
+}
+
+/*
+ * The marks that come and go hang into the row's trailing padding by their own
+ * slack: a glyph is smaller than the cell it is centred in, so a cell stopping
+ * at the padding would put its ink further from the panel edge than the text
+ * and badges that end other rows. Not spacing between siblings — the lane's
+ * gap owns that.
+ */
+.kissopen-sidebar__item-activity {
+    margin-right: -3px;
+}
+
+/*
+ * Controls are laid over the lane instead of taking a place in it, so a row
+ * costs the same width whether or not the pointer is on it. They sit against
+ * the same optical edge the activity mark uses.
+ */
+.kissopen-sidebar__item-trailing[data-swaps] .kissopen-sidebar__item-actions {
+    position: absolute;
+    right: -3px;
+}
+
+/*
+ * What the controls cover is hidden where it stands. `visibility` keeps the
+ * delta's exact box and the lane's gaps, so the row does not re-lay-out under
+ * the pointer; `display: none` would collapse it and `opacity` would leave it
+ * catching clicks. The exact count stays in the accessibility tree either way,
+ * because it is a separate visually-hidden child rather than these marks.
+ */
+.kissopen-sidebar__item:hover
+    .kissopen-sidebar__item-trailing[data-swaps]
+    .kissopen-sidebar__item-change-stats
+    > [data-tone],
+.kissopen-sidebar__item-trailing[data-swaps]:focus-within
+    .kissopen-sidebar__item-change-stats
+    > [data-tone],
+.kissopen-sidebar__item:hover
+    .kissopen-sidebar__item-trailing[data-swaps]
+    .kissopen-sidebar__item-activity,
+.kissopen-sidebar__item-trailing[data-swaps]:focus-within .kissopen-sidebar__item-activity {
+    visibility: hidden;
+}
+
+.kissopen-sidebar__item-unread {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin: 0 6px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--status-error);
+}
+
+/* Meta never claims free space, but it must give space back and it must never
+   take more than half the row. A meta longer than the row (a filesystem path,
+   say) would otherwise overflow it and — because the label absorbs the row's
+   free space rather than reserving width of its own — squeeze the name the
+   reader actually scans down to nothing. Capped and clipped, it ellipsizes and
+   the name always keeps at least half the row. */
+.kissopen-sidebar__item-meta {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 50%;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-sidebar-meta-optical-y, 0px));
+}
+
+/* The row's controls, in one lane inside the trailing slot. The slot reserves the
+   lane's width whether or not the controls are showing, so revealing one on
+   hover moves nothing. The controls end flush with the slot, which ends at the
+   panel inset like every other mark in the row.
+
+   The gap between two controls is applied inline from SIDEBAR_CONTROL_GAP,
+   because it is a term in the slot width computed there. */
+.kissopen-sidebar__item-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+}
+
+/* One control. It sits inside the row button so it tracks the row's hover, and
+   takes the lane's height so the hit target is the full square rather than the
+   glyph. */
+.kissopen-sidebar__item-action {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        opacity 120ms ease;
+}
+
+.kissopen-sidebar__item-action-icon {
+    display: flex;
+    flex: none;
+}
+
+.kissopen-sidebar__item-action[data-shortcut-hint] {
+    position: relative;
+}
+
+.kissopen-sidebar__item-action-shortcut {
+    flex: none;
+}
+
+.kissopen-sidebar__item-action[data-reveal="hover"] {
+    opacity: 0;
+}
+
+.kissopen-sidebar__item:hover .kissopen-sidebar__item-action[data-reveal="hover"],
+.kissopen-sidebar__item-action[data-reveal="hover"]:focus-visible {
+    opacity: 1;
+}
+
+.kissopen-sidebar__item-action:hover {
+    background: var(--surface-selected);
+    color: var(--text);
+}
+
+.kissopen-sidebar__item-action[data-disabled],
+.kissopen-sidebar__item-action[data-disabled]:hover {
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: default;
+}
+
+.kissopen-sidebar__item-action:focus-visible {
+    outline: 2px solid var(--surface-selected);
+    outline-offset: 1px;
+}
+
+.kissopen-sidebar__item-working {
+    display: block;
+    flex: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    transform: translateY(var(--kissopen-sidebar-working-optical-y, 0px));
+}
+
+/*
+ * The trailing word for a row's own phase, set in the same mono lane the
+ * "working" marker uses so a row never shifts as it moves between the two. It
+ * is plain text rather than a pill: the row is already carrying a tinted glyph,
+ * and a second filled shape at the other edge would out-shout the row's name.
+ */
+.kissopen-sidebar__item-lifecycle {
+    display: block;
+    flex: none;
+    max-width: 88px;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(var(--kissopen-sidebar-working-optical-y, 0px));
+}
+
+.kissopen-sidebar__item-lifecycle[data-lifecycle="failed"] {
+    color: var(--box-error-text);
+}
+
+.kissopen-sidebar__item-lifecycle[data-lifecycle="unavailable"] {
+    color: var(--box-warning-text);
+}
+
+.kissopen-sidebar__item-status {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-right: 1px; /* optical: match the 18px badge lane edge */
+    border-radius: var(--kissopen-radius-pill);
+}
+
+.kissopen-sidebar__item-status[data-status="ready"] {
+    background: var(--status-connected);
+}
+
+.kissopen-sidebar__item-status[data-status="working"] {
+    background: var(--status-connecting);
+}
+
+/* ---- Footer ------------------------------------------------------------ */
+
+.kissopen-sidebar__footer {
+    display: flex;
+    flex: none;
+    align-items: center;
+    /*
+     * The footer closes the sidebar on the same 40px lane as the conversation
+     * dock's card edge; its header keeps the taller 56px surface rhythm.
+     */
+    height: var(--kissopen-surface-footer-height);
+    padding: 0 12px;
+    border-top: 1px solid var(--divider);
+}
+
+/* The anchor for a panel a footer control opens upward; see SidebarFooter. */
+.kissopen-sidebar-footer {
+    position: relative;
+}
+
+.kissopen-sidebar__dev-build {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/*
+ * The update mark in the sidebar footer: one 28px slot holding a filled orange
+ * arrow-up-circle. Every other control on this row is a neutral ghost glyph, so
+ * the warning orange is the whole signal — it is the only colour in the footer,
+ * and it is there only while a newer version is waiting. The trigger itself
+ * stays transparent and takes the same ripple as its neighbours; the circle is
+ * the drawn shape, not a painted button.
+ */
+.kissopen-sidebar-update {
+    display: flex;
+    flex: none;
+}
+
+.kissopen-sidebar-update__trigger {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--box-warning-text);
+    cursor: pointer;
+    appearance: none;
+    /* The mark arrives in a footer the reader is not looking at, so it rises
+       into place instead of appearing between two frames. */
+    animation: kissopen-sidebar-update-mark-in 260ms ease both;
+    transition: background-color 120ms ease;
+}
+
+@keyframes kissopen-sidebar-update-mark-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.8);
+    }
+}
+
+.kissopen-sidebar-update__trigger:hover,
+.kissopen-sidebar-update[data-open] .kissopen-sidebar-update__trigger {
+    background: var(--surface-ripple);
+}
+
+.kissopen-sidebar-update__trigger:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* The panel leaves the footer's flow and hangs above the whole row, ending on
+   the footer's right gutter — the mark itself sits between other controls and
+   is far too narrow to measure a card against without pushing it off the left
+   edge of the window. `.kissopen-sidebar-footer` is the containing block. */
+.kissopen-sidebar-update__panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 236px;
+    padding: 10px 12px 12px;
+    border: 1px solid var(--modal-border);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    /* Grows out of the mark it hangs off, so the panel reads as that control
+       opening rather than as a card that was already there. */
+    transform-origin: 100% 100%;
+    animation: kissopen-sidebar-update-panel-in 140ms ease both;
+    user-select: none;
+}
+
+@keyframes kissopen-sidebar-update-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px) scale(0.96);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-sidebar-update__trigger,
+    .kissopen-sidebar-update__panel {
+        animation-duration: 1ms;
+    }
+}
+
+.kissopen-sidebar-update__copy {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-sidebar-update__eyebrow {
+    display: block;
+    flex: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 14px;
+    text-transform: uppercase;
+}
+
+.kissopen-sidebar-update__subject {
+    display: block;
+    flex: none;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-sidebar-update__state {
+    display: block;
+    flex: none;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The one thing in the panel that is a sentence rather than a label, so it is
+   the one thing that wraps. */
+.kissopen-sidebar-update__assurance {
+    display: block;
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.kissopen-sidebar-update__apply {
+    flex: none;
+}
+
+/* Profile control pinned in the sidebar footer: avatar + name that opens the
+   viewer's profile, grows to fill the row beside a trailing control. */
+.kissopen-sidebar__profile {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+    cursor: pointer;
+    appearance: none;
+    transition: background-color 120ms ease;
+}
+
+.kissopen-sidebar__profile:hover {
+    background: var(--surface-ripple);
+}
+
+/* A surface with no profile to open renders the same identity row as inert
+   text: same geometry and type, without the affordances of a control. */
+.kissopen-sidebar__profile--static {
+    cursor: default;
+}
+
+.kissopen-sidebar__profile--static:hover {
+    background: transparent;
+}
+
+.kissopen-sidebar__profile:focus-visible {
+    outline: 2px solid var(--surface-selected);
+    outline-offset: -2px;
+}
+
+.kissopen-sidebar__profile-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*
+ * Optical vertical corrections, measured per engine at the fixed 1600×1600
+ * tester viewport (true-2x captures) via alpha-weighted ink centroids in
+ * Sidebar.test.tsx: every row kind and state, section labels, header, footer.
+ * Each var centers the mean painted centroid of its text family inside its
+ * lane; per-row residual is content bias (ascenders/descenders) only. Raw
+ * means before correction — labels: Blink +0.37, Gecko +0.87, WebKit +0.83
+ * (low); meta 11px: Blink -1.0 (high), Gecko/WebKit 0; working: +0.8 low in
+ * all engines; section labels: within 0.26 everywhere (no correction);
+ * heading ink vs header center: Blink -0.45, Gecko +0.22, WebKit -0.06;
+ * chevron ink vs title ink: Blink -0.57, Gecko -1.06, WebKit -0.52 (high).
+ * Engine scopes: only Gecko parses -moz-appearance, only WebKit parses
+ * -webkit-named-image().
+ */
+
+.kissopen-sidebar {
+    --kissopen-sidebar-label-optical-y: -0.4px;
+    --kissopen-sidebar-meta-optical-y: 1px;
+    --kissopen-sidebar-working-optical-y: -0.6px;
+    --kissopen-sidebar-section-optical-y: 0px;
+    --kissopen-sidebar-header-optical-y: 0.5px;
+    --kissopen-sidebar-chevron-optical-y: 1px;
+}
+
+@supports (-moz-appearance: none) {
+    .kissopen-sidebar {
+        --kissopen-sidebar-label-optical-y: -0.7px;
+        --kissopen-sidebar-meta-optical-y: 0px;
+        --kissopen-sidebar-header-optical-y: 0px;
+        --kissopen-sidebar-chevron-optical-y: 0.75px;
+    }
+}
+
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-sidebar {
+        --kissopen-sidebar-label-optical-y: -0.85px;
+        --kissopen-sidebar-meta-optical-y: 0px;
+        --kissopen-sidebar-working-optical-y: -0.8px;
+        --kissopen-sidebar-header-optical-y: 0px;
+        --kissopen-sidebar-chevron-optical-y: 0.5px;
+    }
+}
+
+/* The identity menu rises from the footer row, measured against the footer's
+   own gutters rather than the 28px glyph inside it: a card hung off the glyph
+   leaves the window. */
+.kissopen-sidebar-footer__menu {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 8px;
+    z-index: var(--kissopen-z-overlay);
+}

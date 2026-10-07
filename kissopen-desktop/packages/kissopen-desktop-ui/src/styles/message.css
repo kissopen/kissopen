@@ -1,0 +1,1411 @@
+/*
+ * Message + MessageList + DayDivider — the chat column.
+ *
+ * Message: 16px 20px flex row on the app surface (4px top/bottom when
+ * grouped). The incoming identity avatar hangs in an absolutely positioned
+ * 16x16 gutter slot instead of reserving flow width, so content alone sets
+ * the row's measure: an agent row's own 30px padding-left is the text start;
+ * a human row's bubble is pulled out to 18px padding-left so its 12px
+ * interior padding still lands the actual text on that same 30px line.
+ * MessageList owns y-scrolling and bottom-anchors sparse histories with a
+ * margin-top:auto spacer. DayDivider is quiet centered text.
+ */
+
+.kissopen-message,
+.kissopen-message *,
+.kissopen-message-list,
+.kissopen-message-list > *,
+.kissopen-day-divider,
+.kissopen-day-divider *,
+.kissopen-system-notice,
+.kissopen-system-notice * {
+    box-sizing: border-box;
+}
+
+/* ---- Message ---------------------------------------------------------- */
+
+.kissopen-message {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    column-gap: 12px;
+    padding: 16px 20px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    color: var(--text);
+    transition: background-color 120ms ease;
+}
+
+/* Consecutive (grouped) messages tighten into one turn: symmetric, smaller
+   vertical padding than a fresh author group, so a run of follow-ups reads as
+   one block and the single line of body text stays centered in its hover row. */
+.kissopen-message[data-grouped] {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+/* A tool-first agent group uses Message only for its identity line. Compact the
+ * attachment slot that carries that first activity and let the trace block own
+ * the space beneath it. */
+.kissopen-message--activity-lead {
+    padding-bottom: 0;
+}
+
+.kissopen-message--activity-lead .kissopen-message__meta {
+    margin-bottom: 0;
+}
+
+/* The identity line sits on a run of tool rows, so it opens a boundary of its
+   own rather than keeping only the run's 6px. It is a label introducing the run
+   beneath it, not prose the run interrupts, so it sits slightly tighter than the
+   14px between a run and the sentences around it: 6px here plus the row's own
+   6px. */
+.kissopen-message--activity-lead:has(.kissopen-agent-activity-row) .kissopen-message__meta {
+    margin-bottom: 6px;
+}
+
+/* The lead row of a focused turn is a tool line, not prose, and the rest of
+ * that turn's rows end on the transcript's own 30px inset. The message that
+ * carries the first one takes the same trailing inset instead of prose's wider
+ * right edge, so the hover time does not step in and out down one turn. */
+.kissopen-message--activity-lead:has(.kissopen-agent-activity-row[data-treatment="focused"]) {
+    padding-right: 30px;
+}
+
+.kissopen-message.kissopen-message--activity-lead:not([data-has-body])
+    .kissopen-message__attachments {
+    margin-top: 0;
+}
+
+/* Sending changes paint only: author, avatar, body, attachments, and reactions
+ * keep their exact geometry while the optimistic row waits for confirmation. */
+.kissopen-message__gutter,
+.kissopen-message__content {
+    transition:
+        color 120ms ease,
+        opacity 120ms ease;
+}
+
+.kissopen-message[data-delivery-state="sending"] .kissopen-message__gutter,
+.kissopen-message[data-delivery-state="sending"] .kissopen-message__content {
+    opacity: 0.56;
+}
+
+.kissopen-message[data-own][data-delivery-state="pending_steering"] .kissopen-message__bubble {
+    border: 1px solid var(--box-warning-border);
+    background: var(--box-warning-background);
+    color: var(--text);
+}
+
+.kissopen-message[data-delivery-state="failed"] .kissopen-message__content {
+    color: var(--text-secondary);
+    opacity: 0.78;
+}
+
+.kissopen-message__gutter {
+    display: flex;
+    flex: 0 0 36px;
+    align-items: flex-start;
+    justify-content: flex-end;
+    width: 36px;
+    min-width: 0;
+}
+
+/* Incoming identities hang in the narrow left gutter. The content itself never
+ * pays for an avatar column, so names and message text stay on the centered
+ * composer measure. The 20px mark stands taller than the 14px name beside it,
+ * centred on the name's 20px line and ending 4px before the text begins. */
+.kissopen-message:not([data-own]) .kissopen-message__gutter {
+    position: absolute;
+    top: 16px;
+    left: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 20px;
+    height: 20px;
+}
+
+.kissopen-message[data-grouped]:not([data-own]) .kissopen-message__gutter {
+    top: 6px;
+}
+
+/* Agent response measure begins at the composer's 16px text inset. Its right
+ * edge holds an extra 8px of air so long prose does not crowd controls. */
+.kissopen-message[data-agent] {
+    padding-right: 64px;
+    padding-left: 30px;
+}
+
+/* Incoming human bubbles include 12px horizontal interior padding. Pull the
+ * row outward by that amount so the actual text—not merely the bubble edge—
+ * aligns with agent text and the composer. The identity row restores that
+ * inset independently, so avatar, author, and body text share one start line. */
+.kissopen-message:not([data-agent]):not([data-own]) {
+    padding-right: 32px;
+    padding-left: 18px;
+}
+
+/*
+ * Grouped follow-ups hide their gutter time until the row is hovered or focused
+ * (only the first message of a group shows its time inline, always). The time
+ * stays right-aligned in the 36px gutter, so it keeps the full 12px gutter→body
+ * gap and never runs into the message text.
+ */
+.kissopen-message__gutter-time {
+    display: block;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 22px; /* sits on the first body line */
+    color: var(--text-secondary);
+    white-space: nowrap;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    /* Measured (all engines): the 11px mono baseline lands 1px above the 15px
+       body baseline when both ride a 22px line (different ascent metrics split
+       the half-leading differently). Drop it onto the body baseline. */
+    position: relative;
+    top: 1px;
+    opacity: 0;
+    transition: opacity 100ms ease;
+}
+
+.kissopen-message:hover .kissopen-message__gutter-time,
+.kissopen-message:focus-within .kissopen-message__gutter-time {
+    opacity: 1;
+}
+
+/* A bubbled (incoming human) grouped row insets its body by the bubble's 10px
+   top padding, so drop the gutter time by the same amount to keep it on the
+   bubble's first text line. Agent rows are unbubbled and keep the base offset;
+   own rows hide the gutter entirely. */
+.kissopen-message:not([data-agent]) .kissopen-message__gutter-time {
+    margin-top: 10px;
+}
+
+.kissopen-message__content {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Minimal meta line: author, then muted mono secondary items (AGENT tag,
+   audience, time) separated by faint dots — no colored badge. */
+.kissopen-message__meta {
+    display: flex;
+    align-items: baseline;
+    column-gap: 6px;
+    height: 20px;
+    margin-bottom: 5px;
+}
+
+.kissopen-message:not([data-own]) .kissopen-message__meta {
+    align-items: baseline;
+}
+
+.kissopen-message:not([data-agent]):not([data-own]) .kissopen-message__meta {
+    margin-left: 12px;
+}
+
+/* A standing fact about an incoming message — where another person's message
+   stands with respect to the agent's context, say — printed once under the name it is
+   a fact about. It takes the author line's own inset so the two read as one
+   identity block, and it stays quiet enough not to compete with the message.
+   Unlike the hover metadata it never appears or disappears under the pointer.
+   Its fixed 16px line plus 5px close is part of `conversationRowHeight`, so the
+   virtual row reserves it before rendering. */
+.kissopen-message__context-note {
+    display: block;
+    overflow: hidden;
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-message:not([data-agent]):not([data-own]) .kissopen-message__context-note {
+    margin-left: 12px;
+}
+
+.kissopen-message__meta-separator {
+    display: block;
+    flex: none;
+    align-self: center;
+    width: 2px;
+    height: 2px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--input-placeholder);
+}
+
+.kissopen-message__author {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+/* The dangling mark is tight to its hit target; the gutter supplies all
+ * surrounding air, keeping the avatar clear of the name and bubble. */
+.kissopen-message__avatar-dangling {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.kissopen-message__avatar-dangling .kissopen-avatar {
+    width: 20px;
+    height: 20px;
+}
+
+/* Clickable identity (opt-in via `onAuthorSelect`): the avatar and the author
+ * name become buttons that open the author's profile. Both reset all button
+ * chrome so they keep the exact geometry of the plain avatar/name — only the
+ * cursor, hover affordance, and focus ring are added. */
+.kissopen-message__identity {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    /* Wraps the avatar at zero inset, so its corner must be a true parallel of
+     * the avatar's: circular for a human, the rounded square for an agent. */
+    border-radius: var(--kissopen-radius-pill);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: opacity 100ms ease;
+}
+
+.kissopen-message[data-agent] .kissopen-message__identity {
+    border-radius: 6px;
+}
+
+/* The compact clickable lane is transparent and not a visual container; only
+ * the 16px avatar paints a rounded corner. */
+.kissopen-message .kissopen-message__identity.kissopen-message__avatar-dangling {
+    border-radius: 0;
+}
+
+.kissopen-message__identity:hover {
+    opacity: 0.86;
+}
+
+.kissopen-message__author--button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    letter-spacing: inherit;
+    text-align: left;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.kissopen-message__author--button:hover {
+    text-decoration: underline;
+}
+
+.kissopen-message__identity:focus-visible,
+.kissopen-message__author--button:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-message__time {
+    display: flex;
+    align-items: center;
+    height: 16px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.kissopen-message__hover-meta,
+.kissopen-message__meta-accessory {
+    display: flex;
+    align-items: center;
+    height: 16px;
+}
+
+.kissopen-message__hover-meta {
+    display: inline-flex;
+    column-gap: 6px;
+    padding-left: 8px;
+    vertical-align: baseline;
+    opacity: 0;
+    transition: opacity 100ms ease;
+}
+
+.kissopen-message__hover-meta[data-placement="header"] {
+    align-items: baseline;
+    padding-left: 0;
+}
+
+/* The automation marker is durable identity metadata, not a hover affordance, so
+   it stays visible with the author name while the time/accessory reveal on hover. */
+.kissopen-message__automated {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 16px;
+}
+
+/* On an own message the marker opens the bubble: its own line above the text,
+   with the body's line rhythm beneath it. A media-only automated message has no
+   bubble, so there the marker still rides the bottom-aligned bubble line and
+   sits on the baseline the aside time occupies (line-height 22px, 10px offset). */
+.kissopen-message__body .kissopen-message__automated--own {
+    display: flex;
+    margin-bottom: 4px;
+}
+
+.kissopen-message__bubble-line > .kissopen-message__automated--own {
+    margin-bottom: 13px;
+}
+
+.kissopen-message:hover .kissopen-message__hover-meta,
+.kissopen-message:focus-within .kissopen-message__hover-meta {
+    opacity: 1;
+}
+
+.kissopen-message__body {
+    position: relative;
+    font-size: var(--kissopen-chat-font-size);
+    line-height: var(--kissopen-chat-line-height);
+    color: var(--text);
+    overflow-wrap: break-word;
+}
+
+.kissopen-message__mention {
+    background: color-mix(in srgb, var(--radio-active) 14%, transparent);
+    color: var(--radio-active);
+    border-radius: 4px;
+    /* Asymmetric vertical padding recenters the glyph ink in the pill
+       background: measured glyph-vs-pill dy +0.76 (Blink) / +0.70 (WebKit)
+       with symmetric 1px/1px padding, so the pill extends further below the
+       baseline than above the ascenders. Total stays 2px. */
+    padding: 0.3px 5px 1.7px;
+    font-weight: 500;
+    white-space: nowrap;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.kissopen-message__code {
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+    background: var(--input-background);
+    border-radius: 4px;
+    /* Measured glyph-vs-pill dy -0.50 (Blink/WebKit) with symmetric padding:
+       uppercase mono ink floats high, so give the pill more room on top. */
+    padding: 1.5px 5px 0.5px;
+    white-space: nowrap;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+/* A bare link in a plain message is the same thing as a link inside a Markdown
+   one, and this file has already decided how those look: body-text colour,
+   underlined, no second brand colour. It was the only link in the transcript
+   painting itself system blue. */
+.kissopen-message__link {
+    color: var(--text);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.kissopen-message__link:hover {
+    opacity: 0.8;
+}
+
+/* ---- Bubbles ---------------------------------------------------------- */
+/*
+ * Incoming humans and the viewer's own messages wrap their body in a chat
+ * bubble; agents stay full-width on the surface so long-form Markdown, code,
+ * and tables keep reading like a document. The bubble radius is 10px and its
+ * vertical padding equals that radius, so any inline pill (mention/code) begins
+ * at or outside the corner field and stays an independent rounded shape — the
+ * bubble creates no nested-corner obligation against arbitrary body content.
+ */
+.kissopen-message:not([data-agent]) .kissopen-message__body {
+    width: fit-content;
+    max-width: 76%;
+    padding: 10px 12px;
+    border-radius: var(--kissopen-radius-md);
+}
+
+/* Own (outgoing): accent bubble, no avatar, right-aligned content column. */
+.kissopen-message[data-own] .kissopen-message__gutter {
+    display: none;
+}
+
+.kissopen-message[data-own] {
+    padding-right: 28px;
+}
+
+.kissopen-message[data-own] .kissopen-message__content {
+    align-items: flex-end;
+}
+
+.kissopen-message[data-own] .kissopen-message__body {
+    background: var(--user-message-background);
+    color: var(--user-message-text);
+}
+
+/* Own bubble + its hover time sit on one right-justified line so the 11px mono
+   time reveals immediately before the accent bubble, on its left. The line spans the
+   full content width, so the body's 76% cap resolves against the column. */
+.kissopen-message__bubble-line {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-message__incoming-line {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-message__incoming-line > .kissopen-message__body {
+    min-width: 0;
+}
+
+.kissopen-message[data-agent] .kissopen-message__incoming-line > .kissopen-message__body {
+    flex: 1 1 auto;
+}
+
+.kissopen-message__aside-time {
+    flex: none;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 22px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    /* Sits a hair above the bubble's baseline padding; matches gutter-time. */
+    margin-bottom: 10px;
+    opacity: 0;
+    transition: opacity 100ms ease;
+}
+
+.kissopen-message[data-agent] .kissopen-message__incoming-line > .kissopen-message__aside-time {
+    margin-bottom: 0;
+}
+
+.kissopen-message:hover .kissopen-message__aside-time,
+.kissopen-message:focus-within .kissopen-message__aside-time {
+    opacity: 1;
+}
+
+/* Incoming human: neutral raised bubble on the left. */
+.kissopen-message:not([data-agent]):not([data-own]) .kissopen-message__body {
+    background: var(--surface-pressed);
+    color: var(--text);
+}
+
+/* Every ink stays legible on the accent fill of an own bubble. Inline code
+   carries no fill (matching the body), so it just inherits the on-accent text;
+   the segment pills keep a tint so they stay visible. */
+.kissopen-message[data-own] .kissopen-message__mention,
+.kissopen-message[data-own] .kissopen-message__code,
+.kissopen-message[data-own] .kissopen-message__body--markdown code {
+    background: color-mix(in srgb, var(--user-message-text) 18%, transparent);
+    color: var(--user-message-text);
+}
+
+.kissopen-message[data-own] .kissopen-message__link,
+.kissopen-message[data-own] .kissopen-message__body--markdown a {
+    color: var(--user-message-text);
+    text-decoration: underline;
+}
+
+.kissopen-message[data-own] .kissopen-message__body--markdown pre {
+    background: color-mix(in srgb, var(--user-message-text) 18%, transparent);
+    border-color: transparent;
+}
+
+.kissopen-message[data-own] .kissopen-message__body--markdown pre code {
+    background: transparent;
+    color: var(--user-message-text);
+}
+
+.kissopen-message[data-own] .kissopen-message__body--markdown blockquote {
+    border-left-color: var(--user-message-text);
+    color: var(--user-message-text);
+}
+
+/* ---- Markdown body (string / agent-streamed content) ------------------ */
+
+/*
+ * A string body renders as Markdown. Block children reset their intrinsic
+ * margins to 0 and stack with an 8px top margin, so a single-line reply keeps
+ * the exact 22px row rhythm of an inline segment body while multi-block replies
+ * breathe. Every color, type ramp, and radius resolves to a theme token.
+ */
+.kissopen-message__body--markdown > * {
+    margin: 0;
+    min-width: 0;
+}
+
+.kissopen-message__body--markdown > * + * {
+    margin-top: 8px;
+}
+
+/* Compact chat body ramp: 14px/22px
+   paragraphs, headings that peak at h2, underlined body-color links, and
+   unfilled inline code. */
+.kissopen-message__body--markdown p {
+    font-size: var(--kissopen-chat-font-size);
+    line-height: var(--kissopen-chat-line-height);
+}
+
+.kissopen-message__trailing-inline {
+    white-space: nowrap;
+}
+
+.kissopen-message__body--markdown h1,
+.kissopen-message__body--markdown h2,
+.kissopen-message__body--markdown h3,
+.kissopen-message__body--markdown h4,
+.kissopen-message__body--markdown h5,
+.kissopen-message__body--markdown h6 {
+    color: var(--text);
+    font-weight: 600;
+    line-height: 24px;
+}
+
+/* h1 stays compact but heavy; h2 is the largest heading; h3 carries a taller
+   line. Mirrors the original Kissopen heading ramp. */
+.kissopen-message__body--markdown h1 {
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.kissopen-message__body--markdown h2 {
+    font-size: 20px;
+}
+
+.kissopen-message__body--markdown h3 {
+    font-size: 16px;
+    line-height: 28px;
+}
+
+.kissopen-message__body--markdown h4,
+.kissopen-message__body--markdown h5,
+.kissopen-message__body--markdown h6 {
+    font-size: 16px;
+}
+
+.kissopen-message__body--markdown strong {
+    font-weight: 700;
+}
+
+.kissopen-message__body--markdown em {
+    font-style: italic;
+}
+
+.kissopen-message__body--markdown del {
+    color: var(--text-secondary);
+}
+
+.kissopen-message__table-scroll {
+    max-width: 100%;
+}
+
+.kissopen-message__table-scroll-viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.kissopen-message__body--markdown table {
+    min-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    outline: 1px solid var(--divider);
+    outline-offset: -1px;
+    font-size: var(--kissopen-chat-font-size);
+    line-height: var(--kissopen-chat-line-height);
+}
+
+.kissopen-message__body--markdown th,
+.kissopen-message__body--markdown td {
+    border: 0;
+    padding: 8px 12px;
+    box-shadow: inset -1px -1px var(--divider);
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.kissopen-message__body--markdown th {
+    background: var(--input-background);
+    color: var(--text);
+    font-weight: 600;
+}
+
+.kissopen-message__body--markdown ul,
+.kissopen-message__body--markdown ol {
+    padding-left: 24px;
+    font-size: var(--kissopen-chat-font-size);
+    line-height: var(--kissopen-chat-line-height);
+}
+
+.kissopen-message__body--markdown ul {
+    list-style: disc outside;
+}
+
+.kissopen-message__body--markdown ol {
+    list-style: decimal outside;
+}
+
+.kissopen-message__body--markdown li::marker {
+    color: var(--text-secondary);
+}
+
+.kissopen-message__body--markdown li + li {
+    margin-top: 0;
+    padding-top: 6px;
+}
+
+/* Remark can put paragraphs and nested lists inside one list item. Reset their
+   user-agent margins so the AST model owns the same deterministic 6px stack in
+   every engine. */
+.kissopen-message__body--markdown li > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.kissopen-message__body--markdown li > * + * {
+    margin-top: 6px;
+}
+
+.kissopen-message__body--markdown .task-list-item {
+    list-style: none;
+}
+
+.kissopen-message__body--markdown .task-list-item > input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    margin: 0 6px 0 0;
+    vertical-align: -1px;
+}
+
+/* remark-rehype collects GFM definitions into one final section. Its generated
+   accessibility label is not a visual heading; the ordered definitions use the
+   same explicit list geometry as authored Markdown. */
+.kissopen-message__body--markdown [data-footnotes] > h2 {
+    display: none;
+}
+
+.kissopen-message__body--markdown [data-footnotes] > ol {
+    margin: 0;
+}
+
+.kissopen-message__body--markdown [data-footnote-ref],
+.kissopen-message__body--markdown [data-footnote-backref] {
+    display: inline-flex;
+    font: inherit;
+    line-height: inherit;
+    vertical-align: baseline;
+    white-space: nowrap;
+}
+
+/* Links carry no accent — the original view underlines them in the body text
+   color so they read as links without introducing a second brand color. */
+.kissopen-message__body--markdown a,
+.kissopen-message__md-link {
+    color: var(--text);
+    text-decoration: underline;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.kissopen-message__body--markdown a:hover,
+.kissopen-message__md-link:hover {
+    opacity: 0.8;
+}
+
+/* A workspace file remains a real inline link; Kissopen intercepts its navigation
+   and opens the file in the product viewer. */
+.kissopen-message__md-file {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+}
+
+/* Inline code: compact mono text on a subtle raised fill. */
+.kissopen-message__body--markdown code {
+    display: inline;
+    font-family: var(--kissopen-font-mono);
+    font-size: 14px;
+    line-height: 18px;
+    background: var(--surface-pressed);
+    border-radius: 4px;
+    padding: 0 5px;
+    color: var(--text);
+}
+
+/* Fenced code: a neutral raised card. The <pre> is the edge-to-edge scrollport
+   and its inner <code> carries the 16px inset so the right pad survives
+   horizontal scroll instead of being clipped by the overflow boundary. */
+.kissopen-message__code-block {
+    margin: 12px 0;
+    max-width: 100%;
+    border-radius: 8px;
+    background: var(--surface-pressed);
+}
+
+.kissopen-message__code-block-viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.kissopen-message__body--markdown pre {
+    margin: 0;
+    max-width: 100%;
+}
+
+.kissopen-message__body--markdown pre code {
+    display: block;
+    margin: 0;
+    background: transparent;
+    border-radius: 0;
+    padding: 16px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 20px;
+    white-space: pre;
+}
+
+.kissopen-message__body--markdown blockquote {
+    border-left: 2px solid var(--surface-selected);
+    padding-left: 10px;
+    color: var(--text-secondary);
+}
+
+/* Nested quote blocks follow the same explicit block rhythm as the body. */
+.kissopen-message__body--markdown blockquote > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.kissopen-message__body--markdown blockquote > * + * {
+    margin-top: 8px;
+}
+
+.kissopen-message__body--markdown hr {
+    height: 1px;
+    border: 0;
+    background: var(--divider);
+}
+
+/* Failure state paints at the measured end of the final text run. The absolute
+ * marker never participates in text flow, so settling cannot change dimensions. */
+.kissopen-message__generation-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 0;
+    height: 16px;
+    margin: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.kissopen-message__generation-marker::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 1px;
+    height: 16px;
+    content: "";
+}
+
+.kissopen-message__generation-marker[data-generation-marker="failed"]::after {
+    width: 8px;
+    height: 8px;
+    background: var(--text-destructive);
+    border-radius: var(--kissopen-radius-pill);
+}
+
+/* A durable non-breaking-space line box keeps an empty generated reply stable
+ * across status-only changes. */
+.kissopen-message__generation-anchor {
+    display: block;
+}
+
+/* When the surface opts in, a caret rides the end of a streaming body — the
+ * same bar activity labels wear while typing. It sits after the last rendered
+ * block so partial markdown keeps its normal layout, and it occupies no width
+ * of its own. */
+.kissopen-message[data-streaming-caret] .kissopen-message__body > :last-child::after {
+    display: inline-flex;
+    width: 2px;
+    height: 1em;
+    margin-left: 2px;
+    vertical-align: -0.125em;
+    background: currentcolor;
+    content: "";
+    animation: kissopen-message-streaming-caret 1s steps(1, end) infinite;
+}
+
+@keyframes kissopen-message-streaming-caret {
+    50% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-message[data-streaming-caret] .kissopen-message__body > :last-child::after {
+        animation: none;
+    }
+}
+
+.kissopen-message__empty-text {
+    color: var(--text-secondary);
+    font-style: italic;
+    opacity: 0.64;
+}
+
+.kissopen-message__attachments {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+    min-width: 0;
+}
+
+/* File pills keep their intrinsic width inside the otherwise full-width slot;
+   larger attachment cards can still stretch across the message content. */
+.kissopen-message__attachments > .kissopen-file-attachment {
+    align-self: flex-start;
+}
+
+/* A photo- or file-only message (no text body) uses a small balanced inset
+   instead of the larger text-to-attachment gap. */
+.kissopen-message:not([data-has-body]) .kissopen-message__media,
+.kissopen-message:not([data-has-body]) .kissopen-message__attachments {
+    margin-top: 4px;
+}
+
+/* ---- Inline photo attachments ----------------------------------------- */
+
+.kissopen-message__media {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- true 2-D photo grid: 2–4 attachments tile into a 2-column, multi-row mosaic flexbox cannot lay out */
+    display: grid;
+    gap: 4px;
+    margin-top: 8px;
+    max-width: 420px;
+    min-width: 0;
+}
+
+.kissopen-message__media[data-count="1"] {
+    grid-template-columns: minmax(0, max-content);
+}
+
+.kissopen-message__media[data-count="2"],
+.kissopen-message__media[data-count="3"],
+.kissopen-message__media[data-count="4"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kissopen-message__media-item {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    background: var(--input-background);
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    appearance: none;
+    transition: border-color 120ms ease;
+}
+
+.kissopen-message__media-item[data-interactive] {
+    cursor: zoom-in;
+}
+
+.kissopen-message__media[data-count="2"] .kissopen-message__media-item,
+.kissopen-message__media[data-count="3"] .kissopen-message__media-item,
+.kissopen-message__media[data-count="4"] .kissopen-message__media-item {
+    aspect-ratio: 1 / 1;
+}
+
+.kissopen-message__media-item[data-interactive]:hover {
+    border-color: var(--surface-selected);
+}
+
+.kissopen-message__media-item[data-interactive]:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* A fixed box (grid squares, or a lone photo with known dimensions) fills its
+   reserved space so the layout never reflows when the image loads. */
+.kissopen-message__media-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 180ms ease;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.kissopen-message__media-image[data-loaded] {
+    opacity: 1;
+}
+
+/* Laid over an image still downloading, in the box it will fill. */
+.kissopen-message__media-loading[data-overlay] {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+}
+
+/* A picture on its way: the reserved box, a highlight sweeping across it, and
+   a centred glyph so a tall empty area still reads as "an image", not as a
+   broken one. The sweep is a gradient on a pseudo-element rather than an
+   animated background-position, so a ThumbHash preview underneath keeps
+   showing through. */
+.kissopen-message__media-loading {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 120px;
+    overflow: hidden;
+    background: var(--surface-pressed);
+    background-position: center;
+    background-size: cover;
+}
+
+.kissopen-message__media-loading::before {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        100deg,
+        transparent 20%,
+        color-mix(in srgb, var(--text) 8%, transparent) 40%,
+        color-mix(in srgb, var(--text) 14%, transparent) 50%,
+        color-mix(in srgb, var(--text) 8%, transparent) 60%,
+        transparent 80%
+    );
+    background-size: 220% 100%;
+    animation: kissopen-media-sweep 1.6s linear infinite;
+    content: "";
+}
+
+/* The glyph is drawn from the same ink as the sweep so the two read as one
+   quiet placeholder rather than two competing marks. */
+.kissopen-message__media-loading::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    background-color: var(--text-secondary);
+    opacity: 0.35;
+    transform: translate(-50%, -50%);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2.5'/%3E%3Ccircle cx='8.8' cy='8.8' r='1.8'/%3E%3Cpath d='M21 15.5 16.2 11 5 20.5'/%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    content: "";
+}
+
+@keyframes kissopen-media-sweep {
+    from {
+        background-position: 120% 0;
+    }
+    to {
+        background-position: -120% 0;
+    }
+}
+
+/* A reader who asked for stillness gets the box and the glyph, not the sweep. */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-message__media-loading::before {
+        animation: none;
+    }
+}
+
+.kissopen-message__reactions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.kissopen-message__replies {
+    display: inline-flex;
+    align-items: center;
+    margin: 6px 0 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
+    color: var(--radio-active);
+    font-synthesis: none;
+    appearance: none;
+    cursor: pointer;
+    transition: color 120ms ease;
+}
+
+.kissopen-message__replies:hover {
+    color: var(--radio-active);
+    text-decoration: underline;
+}
+
+.kissopen-message__replies:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ---- MessageList ------------------------------------------------------ */
+
+/* Scrollport: edge-to-edge, no padding of its own. */
+.kissopen-message-list {
+    flex: 1 1 0%;
+    min-height: 0;
+}
+
+.kissopen-message-list__viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* TanStack's row model and the semantic reader anchor own scroll geometry. */
+    overflow-anchor: none;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* The non-virtual inner content wrapper keeps 12px above the history and a
+   compact 8px clearance beneath its newest message before the composer. It
+   fills the scrollport height so the spacer's `margin-top: auto` still
+   bottom-aligns a short thread. */
+.kissopen-message-list__content {
+    position: relative;
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    padding: 12px 0 8px;
+}
+
+/* A virtual list represents the same clearances as `paddingStart`/`paddingEnd`
+ * so its item offsets and the scrollport's scrollTop share one coordinate
+ * system instead of hiding 12px of layout outside TanStack's geometry. */
+.kissopen-message-list__content[data-virtualized] {
+    padding: 0;
+}
+
+/*
+ * The footer is the last row of the transcript content: it sits under the
+ * newest message and scrolls with the history the same way every other row
+ * does. Surfaces that want a larger clearance under it pad the content, not
+ * the footer itself.
+ */
+.kissopen-message-list__footer {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+}
+
+.kissopen-message-list__spacer {
+    flex: none;
+    margin-top: auto;
+}
+
+.kissopen-message-list__virtual {
+    position: relative;
+    flex: none;
+    width: 100%;
+}
+
+.kissopen-message-list__virtual-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+/* ---- DayDivider ------------------------------------------------------- */
+
+.kissopen-day-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    padding: 20px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-day-divider__label {
+    display: block;
+    flex: none;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* ---- SystemNotice ----------------------------------------------------- */
+/*
+ * A centered service line in the stream (membership announcements). Full-bleed
+ * row like DayDivider but content-forward: a 14px leading glyph, an 8px gap,
+ * and a single 13px/20px muted text run whose @user / #channel refs are
+ * color-lifted with no pill background (color-only emphasis keeps one painted
+ * baseline, so no per-ref optical-centering contract is introduced).
+ */
+
+.kissopen-system-notice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    gap: 8px;
+    /* Every notice owns its full vertical measure. Neighboring notices must
+       never alter this row's padding or dimensions. */
+    padding: 16px 20px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-system-notice__icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--input-placeholder);
+}
+
+.kissopen-system-notice__text {
+    display: block;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--text-secondary);
+    text-align: center;
+    text-wrap: balance;
+}
+
+/* ---- SteeringNotice ---------------------------------------------------- */
+/*
+ * A steering notice is a service line plus the message it announces. The line
+ * keeps SystemNotice's exact geometry, so the quote is the only thing added: a
+ * centered, muted run at the same 13px/20px rhythm, capped at the reading
+ * measure and inset so it reads as spoken by the line above it rather than as
+ * a bubble of its own.
+ */
+
+.kissopen-steering-notice {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* The line already owns the notice row's vertical measure; the quote hangs
+   under it, so the line sheds the padding that would double the gap. */
+.kissopen-steering-notice__line.kissopen-system-notice {
+    padding-bottom: 4px;
+}
+
+.kissopen-steering-notice__quote {
+    max-width: 560px;
+    margin: 0 0 16px;
+    padding: 0 20px;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--text-secondary);
+    text-align: center;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+/*
+ * The assistant-turn hint: mid-turn agent context reads as part of that turn,
+ * so it aligns to the message text column and drops to the tighter vertical
+ * rhythm of a grouped follow-up instead of separating the thread like a
+ * centered banner.
+ */
+/* The 14px leading glyph plus the 8px gap consume 22px, so an 8px inset lands
+   the text itself on the same 30px column a message body starts on. Its 6px
+   vertical inset around one 20px line matches a compact tool call exactly. */
+.kissopen-system-notice[data-align="start"] {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 6px 96px 6px 8px;
+}
+
+/* Same as the activity row and the error card: the identity Message around a
+   turn's first notice already supplies the transcript inset. */
+.kissopen-message--activity-lead .kissopen-system-notice[data-align="start"] {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Center the 14px leading glyph on the 20px line box of the text beside it. */
+.kissopen-system-notice[data-align="start"] .kissopen-system-notice__icon {
+    height: 20px;
+}
+
+.kissopen-system-notice[data-align="start"] .kissopen-system-notice__text {
+    overflow: hidden;
+    flex: 1 1 auto;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.kissopen-system-notice__ref {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* ---- Engine-scoped optical corrections -------------------------------- */
+/*
+ * Measured with the repo's alpha-weighted centroid probes at true 2x captures
+ * (dy = ink centroid minus box center, positive = ink sits low):
+ * - author 14px/20px Figtree bold: Blink dy +0.09, Gecko +1.09, WebKit +1.03
+ *   — Gecko and WebKit split the half-leading a full pixel lower.
+ * - body 15px/22px Figtree: Gecko paints the line 0.5px lower than
+ *   Blink/WebKit (centroids 18.29 vs 17.79/17.74), which would break the
+ *   gutter-time baseline and the cross-engine screenshot rhythm.
+ * - mention pill: Gecko glyph-vs-pill dy +1.20 vs +0.76/+0.70 elsewhere, so
+ *   it needs a deeper below-baseline padding split than the base rule.
+ * - code pill: Gecko glyph-vs-pill dy 0.00 with symmetric padding — the base
+ *   1.5/0.5 split (tuned for Blink/WebKit -0.50) must be undone for Gecko.
+ * - the author correction also lifts its baseline 1px in Gecko/WebKit, so the
+ *   header hover metadata and its separators follow it by the same amount.
+ * - day-divider label, gutter time, reaction row: measured within tolerance in
+ *   all engines after the base rules above; no scoped overrides.
+ */
+
+@supports (-moz-appearance: none) {
+    .kissopen-message__author {
+        position: relative;
+        top: -1px;
+    }
+
+    .kissopen-message__hover-meta[data-placement="header"] {
+        position: relative;
+        top: -1px;
+    }
+
+    .kissopen-message__hover-meta .kissopen-message__meta-separator,
+    .kissopen-message__hover-meta .kissopen-agent-trace-row__meta-separator {
+        position: relative;
+        top: -1px;
+    }
+
+    .kissopen-message__body {
+        position: relative;
+        top: -0.5px;
+    }
+
+    .kissopen-message__mention {
+        padding: 0px 5px 2.4px;
+    }
+
+    .kissopen-message__code {
+        padding: 1px 5px;
+    }
+}
+
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-message__author {
+        position: relative;
+        top: -1px;
+    }
+
+    .kissopen-message__hover-meta[data-placement="header"] {
+        position: relative;
+        top: -1px;
+    }
+
+    .kissopen-message__hover-meta .kissopen-agent-trace-row__meta-separator {
+        position: relative;
+        top: -1.2px;
+    }
+
+    .kissopen-message__hover-meta > .kissopen-message__meta-separator:first-child {
+        position: relative;
+        top: -1.05px;
+    }
+
+    .kissopen-message__hover-meta > .kissopen-message__meta-separator:not(:first-child) {
+        position: relative;
+        top: -1px;
+    }
+}
+
+/* Copying a message: the shared copy control, sized to the 16px hover-meta line
+   and revealed with the rest of the message's hover affordances. Beside an own
+   bubble it sits between the hover time and the bubble, on the bubble's line. */
+.kissopen-message .kissopen-message__copy {
+    width: 18px;
+    height: 16px;
+}
+
+/* Centred on the hover time's line: that time is 22px tall and 10px off the
+   bubble's bottom, so a 16px control 13px off the bottom shares its middle. */
+.kissopen-message__bubble-line > .kissopen-message__copy {
+    align-self: flex-end;
+    margin-bottom: 13px;
+}
+
+.kissopen-message:hover .kissopen-message__copy,
+.kissopen-message:focus-within .kissopen-message__copy {
+    opacity: 1;
+}

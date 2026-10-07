@@ -1,0 +1,209 @@
+/* C-145 ComposerModelControl — a compact, nested configuration control that
+ * is only composed into a Composer toolbar. */
+
+.kissopen-composer-model-control,
+.kissopen-composer-model-control * {
+    box-sizing: border-box;
+}
+
+.kissopen-composer-model-control {
+    position: relative;
+    display: flex;
+    flex: 0 1 auto;
+    justify-content: center;
+    width: fit-content;
+    max-width: 240px;
+    min-width: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-composer-model-control__trigger {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: fit-content;
+    max-width: 100%;
+    height: 32px;
+    margin: 0;
+    padding: 0 12px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.kissopen-composer-model-control__trigger:hover:not(:disabled) {
+    background: var(--surface-ripple);
+}
+
+.kissopen-composer-model-control__trigger:focus-visible,
+.kissopen-composer-model-control__row:focus-visible,
+.kissopen-composer-model-control__choice:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-composer-model-control__trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+.kissopen-composer-model-control__trigger[data-empty] {
+    color: var(--text-secondary);
+    cursor: default;
+    opacity: 1;
+}
+
+.kissopen-composer-model-control__summary {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-composer-model-control__effort,
+.kissopen-composer-model-control__row-value {
+    color: var(--text-secondary);
+}
+
+.kissopen-composer-model-control__effort::before {
+    content: " ";
+}
+
+.kissopen-composer-model-control__menu,
+.kissopen-composer-model-control__choices {
+    position: absolute;
+    z-index: 30;
+    background: var(--surface);
+    border: 1px solid var(--modal-border);
+    border-radius: 14px;
+}
+
+.kissopen-composer-model-control__menu {
+    bottom: calc(100% + 8px);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    padding: 6px;
+}
+
+.kissopen-composer-model-control__row {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 40px;
+    margin: 0;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    text-align: left;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.kissopen-composer-model-control__row:hover,
+.kissopen-composer-model-control__choice:hover {
+    background: var(--surface-pressed);
+}
+
+.kissopen-composer-model-control__row-value {
+    flex: 1;
+    min-width: 0;
+    margin-left: 10px;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-composer-model-control__choices {
+    bottom: 0;
+    right: calc(100% + 8px);
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    /* The measured cap comes from the control itself; this is the fallback for a
+     * list rendered before it can be measured. */
+    max-height: calc(100vh - 16px);
+    padding: 6px;
+}
+
+.kissopen-composer-model-control__list {
+    flex: 0 1 auto;
+    min-height: 0;
+}
+
+.kissopen-composer-model-control__list-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.kissopen-composer-model-control__group {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-width: 0;
+    height: 26px;
+    margin-top: 4px;
+    padding: 0 10px;
+    overflow: hidden;
+    border-top: 1px solid var(--modal-border);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.kissopen-composer-model-control__group:first-of-type {
+    margin-top: 0;
+    border-top: 0;
+}
+
+.kissopen-composer-model-control__choice {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 36px;
+    margin: 0;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    text-align: left;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}

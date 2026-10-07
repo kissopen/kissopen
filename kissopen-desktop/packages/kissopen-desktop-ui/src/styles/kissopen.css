@@ -1,0 +1,663 @@
+.kissopen-shell {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    color: var(--text);
+    background: var(--surface);
+}
+.kissopen-brand {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+/* Stated as a height because the wordmark's width depends on the language it is
+   set in ("KissOpen" or "KissOpen"), while its height is what has to sit right over
+   the heading below it. */
+.kissopen-wordmark {
+    --kissopen-lockup-height: 30px;
+}
+.kissopen-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+.kissopen-workspace,
+/* Named for its split pane, not `.kissopen-conversation`, which is the chat
+   conversation component's own root class. */
+.kissopen-split-pane__conversation {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+}
+.kissopen-split-pane {
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+}
+/* Named for the split pane it belongs to. It was once `.kissopen-sidebar`, the
+   same class as the app's own Sidebar, and pinned that one at 320px with a
+   border of its own — a second edge beside the one the resize handle drags. */
+.kissopen-split-pane__sidebar {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 clamp(250px, 25vw, 320px);
+    min-width: 0;
+    min-height: 0;
+    border-right: 1px solid var(--divider);
+}
+.kissopen-scroll {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+.kissopen-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+    width: 100%;
+    max-width: 800px;
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+.kissopen-notice {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.kissopen-notice[data-error] {
+    color: var(--text-destructive);
+}
+.kissopen-shell [hidden] {
+    display: none;
+}
+
+.kissopen-split-pane__sidebar > [data-kissopen-desktop-ui="sidebar"] {
+    width: 100%;
+    min-width: 0;
+}
+
+/*
+Remote control: the account's machines, and the projects on them.
+
+Cards rather than a list, in the shape the Providers page already uses for the
+same kind of page: a thing the account has, with what it holds listed inside
+it. The machine is the card, its projects are the rows, and a row is what the
+reader picks — this computer is one card among peers, so a list would have had
+to rank them.
+*/
+.kissopen-relay-machines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0 40px 40px;
+    align-items: flex-start;
+}
+.kissopen-relay-machines-scroll {
+    flex: 1;
+    min-height: 0;
+}
+.kissopen-relay-machine {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1 1 320px;
+    max-width: 520px;
+    min-width: 0;
+    padding: 24px;
+    background: var(--home-card);
+    border: 1px solid var(--home-border);
+    border-radius: 20px;
+}
+/* A machine that is asleep still lists its work, muted: what is there reads as
+   out of reach rather than as absent. */
+.kissopen-relay-machine[data-active="false"] .kissopen-relay-machine__projects {
+    opacity: 0.55;
+}
+.kissopen-relay-machine__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.kissopen-relay-machine__glyph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+.kissopen-relay-machine[data-active="true"] .kissopen-relay-machine__glyph {
+    color: var(--home-accent);
+}
+.kissopen-relay-machine__naming {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.kissopen-relay-machine__name {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.kissopen-relay-machine__meta {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+.kissopen-relay-machine__projects {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px;
+    background: var(--home-card-soft);
+    border: 0;
+    border-radius: 12px;
+}
+.kissopen-relay-machine__empty {
+    padding: 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+.kissopen-relay-project {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 12px;
+    text-align: start;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+}
+.kissopen-relay-project:first-child {
+    border-top: 0;
+}
+.kissopen-relay-project:hover {
+    background: var(--home-accent-soft);
+}
+.kissopen-relay-project__name {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.kissopen-relay-project__meta {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+/* A project's conversations are its pages, in the strip the local window gives
+   a project; the body under them owns its own scrolling. */
+.kissopen-relay-pages {
+    /* Size from the available pane, never from a conversation's history. */
+    flex: 1 1 0%;
+    min-height: 0;
+}
+/* The way back sits at the page gutter; the pages under it run full width. */
+.kissopen-relay-place > button {
+    align-self: flex-start;
+    margin-inline-start: 16px;
+}
+/* A project on another machine: its header, then its tabs, laid out as a
+   project on this computer is. */
+.kissopen-relay-place {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+/*
+Scheduled tasks and plugins: two pages the host supplies.
+
+Both sit in the content region beside the window's own destinations, so they
+take their surfaces from the same tokens everything else here uses rather than
+bringing a look of their own.
+*/
+.kissopen-relay-pending {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* The list half of the split: one row per plan, picked from. */
+.kissopen-relay-schedules {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    overflow-y: auto;
+}
+.kissopen-relay-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    text-align: start;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+}
+.kissopen-relay-schedule:hover {
+    background: var(--surface);
+}
+.kissopen-relay-schedule[data-open="true"] {
+    border-color: var(--divider);
+    background: var(--surface-high);
+}
+.kissopen-relay-schedule__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.kissopen-relay-schedule__name {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.kissopen-relay-schedule__meta {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+/* The detail half: one plan, and everything it has done. */
+.kissopen-relay-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+    overflow-y: auto;
+}
+.kissopen-relay-detail__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.kissopen-relay-detail__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+}
+.kissopen-relay-detail__meta {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+/* What the plan tells the assistant to do, shown as written: it is the one
+   thing on this page the person typed. */
+.kissopen-relay-detail__instruction {
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    background: var(--surface);
+    font-size: 13px;
+    line-height: 20px;
+    white-space: pre-wrap;
+}
+.kissopen-relay-detail__actions {
+    display: flex;
+    gap: 8px;
+}
+.kissopen-relay-detail__section {
+    margin: 8px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+.kissopen-relay-runs {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    background: var(--surface);
+}
+.kissopen-relay-run {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--divider);
+    font-size: 13px;
+}
+.kissopen-relay-run:first-child {
+    border-top: 0;
+}
+.kissopen-relay-run__when {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+.kissopen-relay-run__status {
+    flex: none;
+}
+/* Whatever the run had to say, which is often nothing. It takes the rest of
+   the row so a long failure reads as a sentence, not a column. */
+.kissopen-relay-run__said {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Plugins: what the workspace has, then what it could have. */
+/* The scrolling part of the plugins page, under its heading. */
+.kissopen-relay-plugins {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding: 24px;
+    overflow-y: auto;
+}
+.kissopen-relay-plugins__section {
+    margin: 8px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+.kissopen-relay-plugin-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    background: var(--surface);
+}
+.kissopen-relay-plugin {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--divider);
+}
+.kissopen-relay-plugin:first-child {
+    border-top: 0;
+}
+.kissopen-relay-plugin__glyph {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--surface-high);
+    border: 1px solid var(--divider);
+    color: var(--text-secondary);
+}
+.kissopen-relay-plugin__naming {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.kissopen-relay-plugin__name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.kissopen-relay-plugin__meta {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* An account-backed server: its state on the left, the one control on the right. */
+.kissopen-relay-plugin__connection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* The draft, shown whole before anything is saved. */
+.kissopen-relay-draft {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--divider);
+    border-radius: 10px;
+    background: var(--surface-high);
+}
+.kissopen-relay-draft__name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/*
+A remote project's panel: the window's own column, so the divider that sizes
+it is the window's own too. What is left here is only what goes inside it.
+*/
+/* Two pictures, before and after, rather than a diff of their bytes. */
+.kissopen-relay-image {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    overflow: auto;
+}
+.kissopen-relay-image img {
+    max-width: 50%;
+    height: auto;
+    border: 1px solid var(--divider);
+    border-radius: 6px;
+}
+
+/* Page-level headings share the library's title, inset and rounded mark.
+   Conversation/panel headers remain compact; these name full destinations. */
+.kissopen-page-heading {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 36px 40px 24px;
+    background: var(--home-bg);
+    font-family: var(--kissopen-font-ui);
+}
+.kissopen-page-heading__band {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 16px;
+    min-width: 0;
+}
+.kissopen-page-heading__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 14px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+.kissopen-page-heading__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+.kissopen-page-heading__title {
+    margin: 0;
+    color: var(--text);
+    font-size: 28px;
+    font-weight: 650;
+    line-height: 36px;
+    letter-spacing: -0.6px;
+}
+/* A destination's own heading, drawn like 计划任务's (see work-library.css):
+   the tagline in the accent, the title and its description, on the width the
+   library pages keep. */
+.kissopen-page-heading[data-variant="library"] {
+    max-width: 1440px;
+    margin-inline: auto;
+}
+.kissopen-page-heading__eyebrow {
+    color: var(--home-accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.1px;
+}
+.kissopen-page-heading[data-variant="library"] .kissopen-page-heading__description {
+    line-height: 1.6;
+}
+.kissopen-page-heading__description {
+    color: var(--home-muted);
+    font-size: 14px;
+    line-height: 22px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1000px) {
+    .kissopen-page-heading {
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 24px 24px 20px;
+    }
+    .kissopen-page-heading__band {
+        flex-basis: 100%;
+    }
+    .kissopen-relay-machines {
+        padding: 0 24px 24px;
+    }
+}
+
+/* A cloud page: its title, then whatever the page is. */
+.kissopen-relay-page {
+    background: var(--home-bg);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+}
+
+/* A new conversation on another computer, written before it exists: the
+   invitation fills the page and the composer sits where a conversation's does. */
+.kissopen-relay-new {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
+    padding: 24px 24px 16px;
+}
+
+.kissopen-relay-new > .kissopen-composer,
+.kissopen-relay-new > [data-kissopen-desktop-ui="composer"] {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* A project's conversations on another computer, archived ones included. */
+.kissopen-relay-history {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.kissopen-relay-history__title {
+    margin: 16px 0 4px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kissopen-relay-history__empty {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.kissopen-relay-history__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.kissopen-relay-history__row:hover {
+    background: var(--surface-pressed);
+}
+
+.kissopen-relay-history__row time {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+}

@@ -1,0 +1,83 @@
+/* Settled summaries share the message body's 16px/24px type measure. */
+.kissopen-turn-summary,
+.kissopen-turn-summary * {
+    box-sizing: border-box;
+}
+
+.kissopen-turn-summary {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 32px;
+    background: transparent;
+    font-family: var(--kissopen-font-ui);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--text-secondary);
+}
+
+/* The settled status closes the prose above it, so it keeps that prose's
+ * 16px/24px measure and only the 4px of leading a line needs — the same box the
+ * live footer it replaces occupies. Anything more reads as a gap between the
+ * answer and the line that ends it.
+ *
+ * Closing a run of tool rows is the one boundary that opens: those rows are
+ * tight, so the status takes the same 8px above it that prose resuming under a
+ * run takes, and a turn that ends on a tool reads exactly like one that ends on
+ * a sentence. The row centres a 24px line, so 4px of padding lands on the 4px of
+ * slack the 36px box leaves. The following status owns this boundary; tool rows
+ * never change because a later sibling appeared or disappeared. */
+.kissopen-turn-summary.kissopen-conversation-turn-status.kissopen-turn-status--after-trace {
+    min-height: 36px;
+    padding-top: 4px;
+}
+
+.kissopen-turn-summary__label {
+    flex: none;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* The token detail hangs off the label, not the whole row: the row runs the
+   full width of the transcript and is mostly empty, so anchoring the hover to
+   the words themselves keeps the pointer from opening it in passing. The
+   wrapper stands in for the label as a flex item and must not shrink either. */
+.kissopen-turn-summary__detail {
+    flex: none;
+}
+
+/* The copy action leads the settled line. Its 20px hit box carries 2px around a
+   16px glyph, so the negative margin is what puts the glyph's own left edge on
+   the transcript's text column instead of the button's padding box. */
+.kissopen-turn-summary__copy {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin: 0 0 0 -2px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    color: inherit;
+    appearance: none;
+    cursor: pointer;
+    transition: background-color 100ms ease;
+}
+
+.kissopen-turn-summary__copy:hover {
+    background: var(--surface-pressed);
+}
+
+.kissopen-turn-summary__copy:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+.kissopen-turn-summary__copy[data-copied] {
+    color: var(--success);
+}

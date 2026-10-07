@@ -1,0 +1,65 @@
+/*
+ * Retyping text for live agent activity labels. When a tool row's verb or
+ * subject changes, the new text is typed out one character at a time instead of
+ * swapping in place, so a working row reads like a terminal writing its next
+ * line. The label is monospace, which lets one reveal stepped by character count
+ * stand in for per-character markup: every glyph is the same width, so an even
+ * split of the label into `--kissopen-typed-chars` steps lands each one on a glyph
+ * boundary with a single element.
+ *
+ * The animation is only applied to text that replaced earlier text; the first
+ * label a row ever shows is already there when the row appears.
+ *
+ * The reveal is a clip rather than a growing width. A label that changed its own
+ * box fifty times a second made every ancestor lay out again on each step, and
+ * the tool rows this animates sit inside a `ScrollingText` that watches its
+ * content for exactly that — so a run of tool calls typing their subjects spent
+ * the frame in layout instead of paint. Clipping paints the same reveal and
+ * leaves the box alone.
+ */
+
+.kissopen-typed-text {
+    /* Typing rate, in time per character. The duration below is this multiplied
+       by the character count, so every label — one word or a long path — is
+       typed at the same speed and only takes longer for being longer. */
+    --kissopen-typed-char-duration: 18ms;
+
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- the label is one inline text run that is revealed by clipping: as a flex box the text would become an anonymous, shrinkable item that squeezes instead of being clipped */
+    display: inline-block;
+    /* The label is one unwrapped run; nothing overflows its natural box, and
+       what the reveal has not reached yet is clipped by `clip-path` below. */
+    overflow: hidden;
+    vertical-align: bottom;
+    white-space: nowrap;
+    font-family: var(--kissopen-font-mono);
+}
+
+.kissopen-typed-text[data-typing] {
+    /* No fill mode: once typed, the label is unclipped again and stops
+       depending on the `ch` estimate for what it reveals.
+
+       The reveal is a clip, not a width. The label keeps its natural box for
+       the whole animation, so a row typing its subject repaints instead of
+       relaying out fifty times a second — which, inside a `ScrollingText`
+       watching its content with a ResizeObserver, was fifty measurements and
+       fifty layouts of the transcript around it per typing label. */
+    animation: kissopen-typed-text-type
+        calc(var(--kissopen-typed-chars) * var(--kissopen-typed-char-duration))
+        steps(var(--kissopen-typed-chars), end);
+}
+
+@keyframes kissopen-typed-text-type {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-typed-text[data-typing] {
+        animation: none;
+    }
+}

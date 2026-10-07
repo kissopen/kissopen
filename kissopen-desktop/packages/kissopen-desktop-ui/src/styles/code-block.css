@@ -1,0 +1,22 @@
+/*
+ * C-174 CodeBlock — code with syntax highlighting, wherever code is read.
+ *
+ * Pierre Diffs renders inside Shadow DOM, so its typography and material are set
+ * through inherited custom properties rather than descendant selectors. These
+ * are the same declarations the working-tree diff carries, which is the point:
+ * one code type, one code surface, everywhere code appears. Token colors follow
+ * `color-scheme`, which the theme sets and the shadow tree inherits.
+ */
+
+.kissopen-code-block {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    --diffs-font-family: var(--kissopen-font-mono);
+    --diffs-header-font-family: var(--kissopen-font-ui);
+    --diffs-font-size: 12px;
+    --diffs-line-height: 20px;
+    --diffs-gap-inline: 10px;
+    --diffs-light-bg: var(--surface);
+    --diffs-dark-bg: var(--surface);
+}

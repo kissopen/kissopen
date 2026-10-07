@@ -1,0 +1,96 @@
+.kissopen-agent-client {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+}
+
+.kissopen-agent-client__empty-header {
+    display: block;
+    flex: none;
+    width: 100%;
+    height: 56px;
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+.kissopen-agent-client__sidebar-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+}
+
+.kissopen-agent-client__state {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
+.kissopen-agent-panel-files {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+/*
+ * The changed-file panel's two switches: which files are listed, and whether
+ * they nest. They sit above the panel's own header so the header keeps naming
+ * what is below it rather than competing with the controls that choose it.
+ */
+.kissopen-agent-file-controls {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-agent-panel-files > .kissopen-file-panel {
+    flex: 1 1 0%;
+    height: auto;
+}
+
+.kissopen-agent-client__banner {
+    display: flex;
+    padding: 8px 12px 0;
+}
+
+.kissopen-agent-client__requests {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: var(--kissopen-chat-measure);
+    margin: 0 auto;
+    padding: 0 20px 8px 12px;
+    background: var(--surface);
+}
+
+.kissopen-agent-client__create {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/*
+ * The user-input prompt is styled once, in kissopen-agent-chat.css. An older button-based
+ * prompt (`__heading`, `__options button[aria-pressed]`) used to be described
+ * here too; nothing renders that markup any more, and because this file is
+ * imported first its container declarations silently overrode the prompt's own
+ * `flat` variant. It is deleted rather than kept as a duplicate.
+ */

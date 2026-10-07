@@ -1,0 +1,415 @@
+/*
+ * C-236 VideoViewer — one recording, played properly.
+ *
+ * A frame that fills whatever region the viewer is given, and one opaque
+ * instrument panel that floats at the bottom of it. The panel is opaque rather
+ * than a gradient scrim so it is legible over any frame of any recording without
+ * inventing a colour to darken it with; it leaves when the recording is playing
+ * and nobody is touching it, and comes straight back for a pointer, a key, or
+ * focus. Colours and type are theme tokens only, and the frame is the same room
+ * the picture viewer hangs its images in.
+ */
+
+.kissopen-video-viewer,
+.kissopen-video-viewer * {
+    box-sizing: border-box;
+}
+
+.kissopen-video-viewer {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    /* The control panel and the announcement region are both measured against
+       this box: the panel floats over the recording rather than taking room
+       from it, so the frame's declared box is the whole of the picture. */
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    background: var(--surface);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    color: var(--text);
+}
+
+/* ---- Frame ------------------------------------------------------------- */
+
+/* The room the recording plays in: one centered child, clipped at the frame
+   edge. The room is plain, and its colour is what letterboxing looks like — a
+   recording that does not share the frame's proportions rests on the same
+   surface a picture that does not fill its frame rests on. */
+.kissopen-video-viewer__frame {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background-color: var(--groupped-background);
+}
+
+.kissopen-video-viewer__frame:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/* While the controls are away the pointer goes with them: it is the same
+   gesture that brings both back. */
+.kissopen-video-viewer[data-idle] .kissopen-video-viewer__frame {
+    cursor: none;
+}
+
+/* The recording is fitted to the frame rather than held at its own size: a
+   video is watched, not inspected pixel by pixel, and a capture made on a small
+   display is still meant to be looked at. `contain` keeps its proportions
+   exactly, and the frames themselves are scaled by the compositor at the
+   device's own resolution — nothing is drawn through a canvas on the way. */
+.kissopen-video-viewer__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: var(--groupped-background);
+}
+
+/* The picture is also the play button. It carries no appearance of its own: the
+   recording underneath is the whole of what it looks like. */
+.kissopen-video-viewer__surface {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.kissopen-video-viewer__surface:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/* ---- Notices ----------------------------------------------------------- */
+
+/* Centred over the frame rather than in it, so a notice that has a recording
+   behind it — playback refused, playing elsewhere — sits in the same place as
+   one that has nothing behind it at all. */
+.kissopen-video-viewer__notice {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.kissopen-video-viewer__notice[data-tone="danger"] {
+    color: var(--text-destructive);
+}
+
+.kissopen-video-viewer__notice-title {
+    max-width: 320px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    color: var(--text);
+}
+
+.kissopen-video-viewer__notice[data-tone="danger"] .kissopen-video-viewer__notice-title {
+    color: var(--text-destructive);
+}
+
+.kissopen-video-viewer__notice-detail {
+    max-width: 320px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+/* Waiting for data is not a failure and does not get a notice: it gets the one
+   mark that says the recording is still coming. */
+.kissopen-video-viewer__buffering {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    /* Centred on the frame's middle by its own size, which is the one thing a
+       flex parent cannot do for an overlay that must not affect the layout. */
+    transform: translate(-50%, -50%);
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+/* ---- Control panel ------------------------------------------------------ */
+
+/* Floated over the bottom of the recording, inset on the grid. Absolute because
+   it is an overlay: taking room from the frame would make the picture change
+   size every time the controls came and went. */
+.kissopen-video-viewer__bar {
+    display: flex;
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    flex-direction: column;
+    gap: 8px;
+    /* 8px of padding plus the hairline puts every child's corner 9px inside a
+       6px corner, which is outside it: the rows and the track are independent
+       shapes rather than curves that must run parallel to the panel's. */
+    padding: 8px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--surface);
+    box-shadow: 0 4px 16px var(--shadow-subtle);
+    container-type: inline-size;
+    transition: opacity 160ms ease;
+}
+
+/* Away while the recording plays and nothing is being done to it. Opacity
+   rather than visibility, so the controls stay in the tab order and the rule
+   below can bring them back the instant one of them takes focus. */
+.kissopen-video-viewer[data-idle] .kissopen-video-viewer__bar {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kissopen-video-viewer[data-idle] .kissopen-video-viewer__bar:focus-within {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-video-viewer__bar {
+        transition: none;
+    }
+}
+
+.kissopen-video-viewer__transport {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 28px;
+}
+
+.kissopen-video-viewer__group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+/* ---- Timeline ----------------------------------------------------------- */
+
+/* A 16px band to aim at, holding a 4px track: the thing worth hitting with a
+   pointer is bigger than the thing worth drawing. */
+.kissopen-video-viewer__timeline {
+    display: flex;
+    position: relative;
+    flex: none;
+    align-items: center;
+    height: 16px;
+    cursor: pointer;
+    touch-action: none;
+}
+
+.kissopen-video-viewer__timeline[aria-disabled="true"] {
+    cursor: default;
+}
+
+.kissopen-video-viewer__timeline:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+    border-radius: var(--kissopen-radius-pill);
+}
+
+.kissopen-video-viewer__track {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    height: 4px;
+    overflow: hidden;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-selected);
+}
+
+/* How much of the recording has arrived, and how much of it has been watched.
+   Both are laid over the track from its left edge, which is what a track is. */
+.kissopen-video-viewer__buffered,
+.kissopen-video-viewer__played {
+    display: block;
+    position: absolute;
+    top: 0;
+    height: 100%;
+}
+
+/* What has arrived, which is a run somewhere in the recording rather than a
+   length from the start: its left edge is placed, not assumed. */
+.kissopen-video-viewer__buffered {
+    background: var(--surface-highest);
+}
+
+.kissopen-video-viewer__played {
+    left: 0;
+}
+
+.kissopen-video-viewer__played {
+    background: var(--text);
+}
+
+/* Where the recording is, as a mark that can be aimed at rather than only read. */
+.kissopen-video-viewer__handle {
+    display: block;
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    /* Sat exactly on the position rather than beside it: the offset is half the
+       handle on each axis, which no flow can express. */
+    transform: translate(-50%, -50%);
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--text);
+    pointer-events: none;
+}
+
+.kissopen-video-viewer__timeline[aria-disabled="true"] .kissopen-video-viewer__handle {
+    display: none;
+}
+
+.kissopen-video-viewer__timeline[data-scrubbing] .kissopen-video-viewer__handle {
+    width: 12px;
+    height: 12px;
+}
+
+/* ---- Readouts ----------------------------------------------------------- */
+
+/* Lining, tabular digits so the clock does not shuffle its own width once a
+   second, and the same mono face the picture viewer states its zoom in. */
+.kissopen-video-viewer__clock {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    padding: 0 4px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums lining-nums;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+.kissopen-video-viewer__elapsed {
+    color: var(--text);
+}
+
+.kissopen-video-viewer__elapsed::after {
+    content: "/";
+    padding: 0 4px;
+    color: var(--text-secondary);
+}
+
+button.kissopen-video-viewer__total {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: none;
+    font: inherit;
+    font-variant-numeric: inherit;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+button.kissopen-video-viewer__total:hover {
+    color: var(--text);
+}
+
+button.kissopen-video-viewer__total:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* ---- Volume ------------------------------------------------------------- */
+
+.kissopen-video-viewer__volume {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+}
+
+/* The one native control in the viewer, tinted by the theme rather than rebuilt
+   from three engines' worth of vendor pseudo-elements. A level is exactly what
+   a range input is, and the browser's own keyboard handling of one is better
+   than any reimplementation of it. */
+.kissopen-video-viewer__level {
+    flex: none;
+    width: 56px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--text);
+    cursor: pointer;
+}
+
+.kissopen-video-viewer__level:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* In a panel this narrow the level is the first thing to go. Mute and the up
+   and down keys still carry all of it, so nothing becomes unreachable. */
+@container (max-width: 400px) {
+    .kissopen-video-viewer__level {
+        display: none;
+    }
+}
+
+/* ---- Speed -------------------------------------------------------------- */
+
+.kissopen-video-viewer__rate {
+    display: flex;
+    position: relative;
+    flex: none;
+    align-items: center;
+}
+
+/* Opened upwards, because the panel it belongs to is already at the bottom of
+   the frame and a list below it would leave the viewer entirely. */
+.kissopen-video-viewer__rates {
+    display: block;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    z-index: 1;
+}
+
+/* ---- Announcement ------------------------------------------------------- */
+
+/* Said out loud, never drawn: the region reports what a key changed, and must
+   not take any of the viewer's room to do it. */
+.kissopen-video-viewer__announcement {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

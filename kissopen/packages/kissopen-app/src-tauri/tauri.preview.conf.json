@@ -1,0 +1,21 @@
+{
+  "$schema": "../../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "KISSOPEN",
+  "identifier": "com.kissopen.desktop.preview",
+  "app": {
+    "windows": [
+      {
+        "title": "WorPar (preview)",
+        "width": 1680,
+        "height": 1050,
+        "titleBarStyle": "Overlay",
+        "trafficLightPosition": {
+          "x": 22,
+          "y": 22
+        },
+        "hiddenTitle": true
+      }
+    ]
+  },
+  "version": "0.2.0"
+}

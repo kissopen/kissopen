@@ -1,0 +1,134 @@
+/*
+ * C-175 CodeEditor — a real code editor for one file.
+ *
+ * CodeMirror renders in the light DOM, so its chrome is styled here rather than
+ * through a JavaScript theme. The token colors are the `--code-*` theme tokens,
+ * which carry Pierre's own palette — the one the file viewer and the diff
+ * tokenize with — so the editor switches with the theme like everything else and
+ * has nothing to reconfigure when it does.
+ */
+
+.kissopen-code-editor {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    /* Writing happens on the page itself — plain white, plain black — not on a
+       tinted code panel. A editor that paints its own background is a second
+       material to explain, and the one thing every editor agrees on is that
+       text sits on the surface. */
+    background: var(--surface);
+}
+
+.kissopen-code-editor__mount {
+    display: flex;
+    flex: 1 1 0%;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-code-editor .cm-editor {
+    flex: 1 1 0%;
+    width: 100%;
+    min-height: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+    line-height: 20px;
+    tab-size: 4;
+}
+
+/* The editor owns the scrollport: the file scrolls inside the pane it was given
+   rather than growing the pane to the height of its text. Its bar is the
+   product's shared custom track — see styles/scrollbar.css. */
+.kissopen-code-editor .cm-scroller {
+    overflow: auto;
+    font-family: inherit;
+    line-height: inherit;
+}
+
+/* The first line sits against the header above it. The header already names the
+   file, so surface between it and line 1 only reads as the file starting late —
+   and the active line's shading, which runs the full width, has to begin where
+   the file begins. The room at the bottom is scroll-past-end, which is a
+   different thing and stays. */
+.kissopen-code-editor .cm-content {
+    padding: 0 0 32px;
+}
+
+.kissopen-code-editor .cm-line {
+    padding: 0 12px;
+}
+
+.kissopen-code-editor .cm-editor.cm-focused {
+    outline: none;
+}
+
+/* ---- Gutter ------------------------------------------------------------ */
+
+.kissopen-code-editor .cm-gutters {
+    border: none;
+    /* CodeMirror keeps the gutter sticky while the content scrolls beneath it.
+       It must therefore paint the exact editor surface: seamless at rest,
+       fully opaque once a long line moves behind the line numbers. */
+    background: var(--surface);
+    color: var(--code-gutter);
+    font-family: inherit;
+    user-select: none;
+}
+
+.kissopen-code-editor .cm-lineNumbers .cm-gutterElement {
+    min-width: 40px;
+    padding: 0 10px 0 12px;
+}
+
+.kissopen-code-editor .cm-activeLineGutter {
+    background: transparent;
+    color: var(--code-gutter-active);
+}
+
+/* ---- Selection, caret, active line ------------------------------------- */
+
+.kissopen-code-editor .cm-activeLine {
+    background: var(--code-active-line);
+}
+
+.kissopen-code-editor .cm-cursor,
+.kissopen-code-editor .cm-dropCursor {
+    border-left-color: var(--code-caret);
+    border-left-width: 2px;
+}
+
+/* CodeMirror draws the selection and the caret itself and turns the browser's
+   own off to do it, so this colors its layer. Restating `::selection` here would
+   switch the native highlight back on and paint it over the drawn one. */
+.kissopen-code-editor .cm-editor .cm-selectionLayer .cm-selectionBackground,
+.kissopen-code-editor .cm-editor.cm-focused .cm-selectionLayer .cm-selectionBackground {
+    background: var(--code-selection);
+}
+
+.kissopen-code-editor .cm-matchingBracket,
+.kissopen-code-editor .cm-editor.cm-focused .cm-matchingBracket {
+    outline: 1px solid var(--divider);
+    background: transparent;
+    color: inherit;
+}
+
+.kissopen-code-editor .cm-nonmatchingBracket {
+    color: var(--text-destructive);
+}
+
+.kissopen-code-editor .cm-placeholder {
+    color: var(--text-secondary);
+}
+
+/* A file being read rather than written says so by going quiet, the way the
+   plain field it replaced did. */
+.kissopen-code-editor[data-read-only] .cm-activeLine,
+.kissopen-code-editor[data-read-only] .cm-activeLineGutter {
+    background: transparent;
+}

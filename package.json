@@ -1,0 +1,11 @@
+{
+  "name": "kissopen",
+  "private": true,
+  "scripts": {
+    "agent:import": "node scripts/import-agent-artifacts.mjs",
+    "agent:stage": "node scripts/stage-kissopen-agent.mjs",
+    "desktop": "node scripts/check-desktop-isolation.mjs && pnpm agent:stage darwin arm64 && pnpm --dir kissopen-desktop dev",
+    "desktop:package": "node scripts/check-desktop-isolation.mjs && pnpm agent:stage darwin arm64 && pnpm --dir kissopen-desktop desktop:mac:release --flavor=standard --arch=arm64",
+    "mobile": "pnpm --dir kissopen/packages/kissopen-app start"
+  }
+}

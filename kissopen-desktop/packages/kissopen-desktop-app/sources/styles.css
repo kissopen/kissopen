@@ -1,0 +1,27 @@
+@import "tailwindcss" source(".");
+
+/* The AppShell fills its host; both hosts mount into #root, which must own
+ * the window height for `height: 100%` to resolve. The neutral chrome surface
+ * is painted on the root so there is no bright flash before the React tree
+ * mounts and the auth / app surfaces (which share this base) fade in. */
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+    background: var(--header-background);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+html,
+body {
+    color-scheme: light dark;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* The scrollbar treatment lives in the design system, beside the panel inset
+   contract it is the other half of — see kissopen-desktop-ui/src/styles/scrollbar.css. */

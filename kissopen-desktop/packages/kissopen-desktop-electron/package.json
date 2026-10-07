@@ -1,0 +1,184 @@
+{
+    "name": "kissopen-desktop-electron",
+    "version": "0.3.0",
+    "private": true,
+    "description": "KissOpen · Local open-source Agent workspace",
+    "author": "KissOpen",
+    "files": [
+        "dist",
+        "assets/app-icon/generated/app-icon.png"
+    ],
+    "type": "module",
+    "main": "dist/main.js",
+    "exports": {
+        "./renderer": "./sources/renderer/renderer.tsx",
+        "./vite": "./vite.config.ts"
+    },
+    "scripts": {
+        "dev": "VITE_KISSOPEN_BROWSER_LOCAL=1 vite --host 127.0.0.1 --port ${PORT:-5174} --strictPort",
+        "predev:electron": "node ../../scripts/name-dev-electron.mjs",
+        "dev:electron": "PORT=${PORT:-5174}; concurrently --kill-others-on-fail --names main,preload,renderer,electron \"vite build --config vite.main.config.ts --watch\" \"vite build --config vite.preload.config.ts --watch\" \"vite --host 127.0.0.1 --port $PORT --strictPort\" \"wait-on dist/main.js dist/preload.cjs tcp:$PORT && VITE_DEV_SERVER_URL=http://127.0.0.1:$PORT electron ./dist/main.js\"",
+        "dev:electron:profile": "export KISSOPEN_DESKTOP_PROFILE=1 KISSOPEN_DESKTOP_PROFILE_MODE=development; pnpm run dev:electron",
+        "build": "vite build && vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts",
+        "build:profile": "KISSOPEN_DESKTOP_PROFILE=1 vite build && vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts",
+        "build:profile:optimized": "KISSOPEN_DESKTOP_PROFILE=1 KISSOPEN_DESKTOP_PROFILE_MODE=optimized pnpm run build:profile",
+        "prebuild:local-shell": "rm -rf dist",
+        "build:local-shell": "KISSOPEN_DESKTOP_FLAVOR=local-web KISSOPEN_LOCAL_WEB_ORIGIN=https://local.app.happy.engineering vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts",
+        "build:local-web-ui": "KISSOPEN_LOCAL_WEB_SITE=1 vite build --outDir release/local-web-site",
+        "predist:mac": "pnpm --dir ../.. desktop:assets",
+        "dist:mac": "pnpm build && electron-builder --mac",
+        "dist:linux": "pnpm build && electron-builder --linux --publish never",
+        "dist:win": "pnpm build && electron-builder --win --publish never",
+        "prerelease:mac": "pnpm --dir ../.. desktop:assets",
+        "release:mac": "pnpm build && electron-builder --mac --arm64 --x64",
+        "prestart": "node ../../scripts/name-dev-electron.mjs",
+        "start": "electron .",
+        "start:profile": "pnpm run start:profile:optimized",
+        "start:profile:optimized": "KISSOPEN_DESKTOP_PROFILE=1 KISSOPEN_DESKTOP_PROFILE_MODE=optimized electron .",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "typecheck": "tsc --project tsconfig.json",
+        "format": "oxfmt --write .",
+        "format:check": "oxfmt --check .",
+        "lint": "node ../../scripts/check-react-boundaries.mjs && oxlint .",
+        "clean": "rm -rf dist release"
+    },
+    "dependencies": {
+        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz",
+        "@kissopen/kissopen-sync": "link:../../../kissopen/packages/kissopen-sync",
+        "electron-updater": "^6.8.9",
+        "libsodium-wrappers": "^0.7.15",
+        "playwright-core": "1.61.1",
+        "smol-toml": "1.7.0",
+        "socket.io-client": "^4.8.1",
+        "ws": "^8.21.1",
+        "yjs": "^13.6.31"
+    },
+    "devDependencies": {
+        "@slopus/ghostty-web": "0.1.3",
+        "@tailwindcss/vite": "^4.3.2",
+        "@tanstack/react-router": "^1.170.18",
+        "@testing-library/react": "^16.3.2",
+        "@types/node": "^26.1.1",
+        "@types/react": "19.2.14",
+        "@types/react-dom": "19.2.3",
+        "@types/ws": "^8.18.1",
+        "@vitejs/plugin-react": "^6.0.3",
+        "concurrently": "^10.0.3",
+        "dom-accessibility-api": "0.7.1",
+        "electron": "^43.1.0",
+        "electron-builder": "^26.15.3",
+        "jsdom": "^29.1.1",
+        "kissopen-desktop-app": "workspace:*",
+        "kissopen-desktop-state": "workspace:*",
+        "kissopen-desktop-ui": "workspace:*",
+        "react": "19.2.7",
+        "react-devtools-core": "6.1.5",
+        "react-dom": "19.2.7",
+        "tailwindcss": "^4.3.2",
+        "typescript": "^7.0.2",
+        "vite": "^8.1.4",
+        "vitest": "^4.1.10",
+        "wait-on": "^9.0.10"
+    },
+    "packageManager": "pnpm@10.28.1",
+    "build": {
+        "appId": "com.kissopen.opensource.desktop",
+        "productName": "KissOpen",
+        "asar": true,
+        "npmRebuild": false,
+        "asarUnpack": [
+            "node_modules/**/*"
+        ],
+        "directories": {
+            "buildResources": "build",
+            "output": "release"
+        },
+        "files": [
+            "dist/**/*",
+            "assets/app-icon/generated/app-icon.png",
+            "assets/app-icon/generated/dock-light.png",
+            "assets/app-icon/generated/dock-dark.png",
+            "assets/tray/generated/*.png",
+            "package.json"
+        ],
+        "protocols": [
+            {
+                "name": "Kissopen Auth",
+                "schemes": [
+                    "kissopen-oss-auth"
+                ]
+            }
+        ],
+        "mac": {
+            "category": "public.app-category.developer-tools",
+            "extendInfo": {
+                "CFBundleDisplayName": "KissOpen",
+                "NSMicrophoneUsageDescription": "语音输入需要使用麦克风。"
+            },
+            "entitlements": "build/entitlements.mac.plist",
+            "entitlementsInherit": "build/entitlements.mac.plist",
+            "hardenedRuntime": true,
+            "icon": "assets/app-icon/generated/app-icon.icns",
+            "notarize": true,
+            "target": [
+                {
+                    "target": "dmg",
+                    "arch": [
+                        "arm64",
+                        "x64"
+                    ]
+                },
+                {
+                    "target": "zip",
+                    "arch": [
+                        "arm64",
+                        "x64"
+                    ]
+                }
+            ]
+        },
+        "dmg": {
+            "sign": false
+        },
+        "linux": {
+            "category": "Development",
+            "icon": "assets/app-icon/generated/app-icon.png",
+            "target": [
+                {
+                    "target": "AppImage",
+                    "arch": [
+                        "x64",
+                        "arm64"
+                    ]
+                }
+            ]
+        },
+        "win": {
+            "icon": "assets/app-icon/generated/app-icon.ico",
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ]
+        },
+        "artifactName": "kissopen-${version}-${arch}.${ext}",
+        "publish": {
+            "provider": "generic",
+            "url": "https://kissopen.com/downloads/desktop/stable/",
+            "channel": "latest"
+        },
+        "extraResources": [
+            {
+                "from": "build/kissopen-agent/${arch}",
+                "to": "kissopen-agent",
+                "filter": [
+                    "**/*"
+                ]
+            }
+        ]
+    }
+}

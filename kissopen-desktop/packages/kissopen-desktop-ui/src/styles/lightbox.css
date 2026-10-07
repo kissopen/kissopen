@@ -1,0 +1,130 @@
+/*
+ * C-046 Lightbox — full image or video preview inside a web modal.
+ *
+ * Not a card: hosted on ModalOverlay's `fill` placement it takes the whole app
+ * window and paints one flat dark over it. The root .kissopen-lightbox declares
+ * no scrim and no fixed position of its own — it fills whatever box it is given,
+ * so it still renders as a screenshot-safe specimen — and the measured surface
+ * is the inner .kissopen-lightbox__dialog: a chrome-less caption/actions header
+ * floating on the dark above the shared ImageViewer in its immersive tone. The
+ * dark is the theme's own dark surface, pinned in either appearance by the
+ * ThemeScope the component wraps itself in. Its frame hosts the product's
+ * shared ImageViewer or VideoViewer rather than drawing either medium itself.
+ */
+
+.kissopen-lightbox,
+.kissopen-lightbox__dialog,
+.kissopen-lightbox__header,
+.kissopen-lightbox__caption,
+.kissopen-lightbox__tools,
+.kissopen-lightbox__frame {
+    box-sizing: border-box;
+}
+
+/* Fills the box it is given — the whole window under ModalOverlay's `fill`
+   placement, the specimen frame in the blueprint — rather than sizing itself
+   to any one picture. */
+.kissopen-lightbox {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: stretch;
+    justify-content: stretch;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* One flat dark room, edge to edge: no radius, no hairline, and no shadow,
+   because there is nothing for it to be raised above — everything the app was
+   showing is behind this surface, not beside it. */
+.kissopen-lightbox__dialog {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--surface-high);
+}
+
+/* ---- Header ---------------------------------------------------------- */
+
+/* Chrome-less: the name of the picture and the controls for it float on the
+   dark with no bar and no rule under them, so the room stays one surface. */
+.kissopen-lightbox__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 10px 12px 10px 16px;
+}
+
+.kissopen-lightbox__caption {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-lightbox__caption-title {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-lightbox__caption-detail {
+    flex: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+.kissopen-lightbox__tools {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+}
+
+/* "3 of 7" between the step controls. Tabular so the count does not shuffle the
+   controls beside it as the reader moves through the set. */
+.kissopen-lightbox__position {
+    flex: none;
+    padding: 0 2px;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+/* ---- Frame ----------------------------------------------------------- */
+
+.kissopen-lightbox__frame {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: stretch;
+    justify-content: stretch;
+    min-width: 0;
+    min-height: 0;
+}

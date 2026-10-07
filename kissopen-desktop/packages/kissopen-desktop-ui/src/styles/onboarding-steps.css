@@ -1,0 +1,34 @@
+.kissopen-onboarding-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 560px;
+    color: var(--button-primary-tint);
+    font-family: var(--kissopen-font-ui);
+}
+
+.kissopen-onboarding-steps__summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+.kissopen-onboarding-steps__branch {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.kissopen-onboarding-steps__branch-label {
+    flex: none;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+.kissopen-onboarding-steps__branch > .kissopen-segmented-progress {
+    flex: 1 1 0;
+    min-width: 0;
+}

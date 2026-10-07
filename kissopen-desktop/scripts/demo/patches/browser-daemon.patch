@@ -1,0 +1,130 @@
+diff --git a/packages/kissopen-desktop-electron/sources/renderer/browserDevBridge.ts b/packages/kissopen-desktop-electron/sources/renderer/browserDevBridge.ts
+--- a/packages/kissopen-desktop-electron/sources/renderer/browserDevBridge.ts
++++ b/packages/kissopen-desktop-electron/sources/renderer/browserDevBridge.ts
+@@ -1,5 +1,6 @@
+ import type {
+     DesktopConfig,
++    DesktopDaemonSnapshot,
+     DesktopDebugSnapshot,
+     DesktopRuntimeSnapshot,
+     DesktopStartRequest,
+@@ -12,6 +13,31 @@ import type {
+     DesktopReactDevtoolsMessage,
+ } from "../shared/desktopProfiler";
+ 
++/**
++ * The demo recorder's scripted local daemon, installed on `window` before the
++ * page's own scripts run.
++ *
++ * Browser-local development has no machine-local daemon lifecycle to report,
++ * so this bridge normally answers with a static unmanaged snapshot. The demo
++ * recorder, which drives this window to film the real update and restart
++ * surfaces, scripts that lifecycle instead: it publishes genuine
++ * `DesktopDaemonSnapshot` progressions (update available, downloaded,
++ * draining, restarting) while performing the actual daemon restart out of
++ * band. Only the snapshot source is scripted — every store, surface, and the
++ * retained application and reconnection are the production code paths.
++ */
++export interface BrowserDemoDaemon {
++    get(): DesktopDaemonSnapshot;
++    subscribe(listener: (snapshot: DesktopDaemonSnapshot) => void): () => void;
++    install(): Promise<void>;
++}
++
++declare global {
++    interface Window {
++        kissopenDemoDaemon?: BrowserDemoDaemon;
++    }
++}
++
+ const endpoint = "/__kissopen_local_kissopen_agent";
+ const cloudAuthCallbackPath = "/cloud-auth/callback";
+ let cloudAuthCallback =
+@@ -129,17 +155,23 @@ export function browserDevBridgeCreate(): KissopenDesktopBridge {
+         daemonDownload: async () => {
+             throw new Error("Kissopen Agent downloads are available in the Electron desktop window.");
+         },
+-        daemonGet: async () => ({
+-            install: { phase: "idle" },
+-            installation: "installed",
+-            managed: false,
+-            operation: "idle",
+-            runtime: "ready",
+-            updateAvailable: false,
+-            versions: [],
+-        }),
++        daemonGet: async () =>
++            window.kissopenDemoDaemon?.get() ?? {
++                install: { phase: "idle" },
++                installation: "installed",
++                managed: false,
++                operation: "idle",
++                runtime: "ready",
++                updateAvailable: false,
++                versions: [],
++            },
+         daemonInstall: async () => {
+-            throw new Error("Kissopen Agent updates are installed in the Electron desktop window.");
++            const demo = window.kissopenDemoDaemon;
++            if (!demo)
++                throw new Error(
++                    "Kissopen Agent updates are installed in the Electron desktop window.",
++                );
++            await demo.install();
+         },
+         daemonInstallDismiss: async () => undefined,
+         daemonInstallKill: async () => undefined,
+@@ -149,7 +181,8 @@ export function browserDevBridgeCreate(): KissopenDesktopBridge {
+         daemonStart: async () => {
+             throw new Error("Kissopen Agent is started from the Electron desktop window.");
+         },
+-        daemonSubscribe: () => () => undefined,
++        daemonSubscribe: (listener) =>
++            window.kissopenDemoDaemon?.subscribe(listener) ?? (() => undefined),
+         daemonUpgrade: async () => {
+             throw new Error("Kissopen Agent updates are available in the Electron desktop window.");
+         },
+diff --git a/packages/kissopen-desktop-electron/sources/renderer/renderer.tsx b/packages/kissopen-desktop-electron/sources/renderer/renderer.tsx
+--- a/packages/kissopen-desktop-electron/sources/renderer/renderer.tsx
++++ b/packages/kissopen-desktop-electron/sources/renderer/renderer.tsx
+@@ -1008,6 +1008,13 @@ if (mediaPreviewBridge) {
+                 const snapshot = created.get();
+                 preferences.appearanceChanged(snapshot.mode, snapshot.scrollbarVisibility);
+             });
+-            const store = browserLocal ? undefined : desktopDaemonStoreCreate(desktopBridge);
++            // Browser-local development has no machine-local daemon lifecycle,
++            // so it gets no daemon store — unless the demo recorder is driving,
++            // in which case the dev bridge serves a scripted lifecycle and the
++            // real update and restart surfaces run their production paths.
++            const store =
++                browserLocal && !window.kissopenDemoDaemon
++                    ? undefined
++                    : desktopDaemonStoreCreate(desktopBridge);
+             return { appearance: created, ...(store ? { daemon: store } : {}) };
+         })();
+diff --git a/packages/kissopen-desktop-electron/vite.config.ts b/packages/kissopen-desktop-electron/vite.config.ts
+--- a/packages/kissopen-desktop-electron/vite.config.ts
++++ b/packages/kissopen-desktop-electron/vite.config.ts
+@@ -12,6 +12,8 @@ const unavailableReactDevtoolsCore = fileURLToPath(
+     new URL("./sources/renderer/reactDevtoolsCoreUnavailable.ts", import.meta.url),
+ );
+ const profileBuild = process.env.KISSOPEN_DESKTOP_PROFILE === "1";
++const demoDependencyRoot = process.env.KISSOPEN_DEMO_DEPENDENCY_ROOT;
++const rendererWorkspace = fileURLToPath(new URL("../../", import.meta.url));
+ const localWebSite = process.env.KISSOPEN_LOCAL_WEB_SITE === "1";
+ const localWebBuild = localWebSite
+     ? {
+@@ -59,7 +61,12 @@ export default defineConfig({
+     // optimized profile build has no preamble either). This keeps the hook
+     // ownership boundary explicit instead of silently replacing a refresh
+     // runtime or reporting attribution that never attached.
+-    ...(profileBuild ? { server: { hmr: false } } : {}),
++    server: {
++        ...(profileBuild ? { hmr: false } : {}),
++        ...(demoDependencyRoot
++            ? { fs: { allow: [rendererWorkspace, demoDependencyRoot] } }
++            : {}),
++    },
+     define: {
+         __KISSOPEN_DESKTOP_PROFILE__: JSON.stringify(profileBuild),
+         __KISSOPEN_LOCAL_WEB_BUILD_ID__: JSON.stringify(localWebBuild?.buildId ?? null),

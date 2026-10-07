@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>一起卷 WorPar app icon</title>
+  <defs>
+    <linearGradient id="tile" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#3A3C50"/>
+      <stop offset="1" stop-color="#1B1D2C"/>
+    </linearGradient>
+    <clipPath id="frame"><rect x="0" y="0" width="120" height="120" rx="27"/></clipPath>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#9184D9" flood-opacity="0.5"/>
+      <feComposite in2="blur" operator="in" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="0" y="0" width="120" height="120" rx="27" fill="url(#tile)"/>
+  <g clip-path="url(#frame)" fill="none" stroke-linecap="round" stroke-width="5">
+    <path d="M0,86 H52" stroke="#6E7084"/>
+    <path d="M0,34 H70 A26,26 0 0 1 70,86 A19,19 0 0 1 70,48 A14,14 0 0 1 70,76 A9,9 0 0 1 70,58" stroke="#9184D9" filter="url(#glow)"/>
+  </g>
+</svg>

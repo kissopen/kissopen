@@ -1,0 +1,28 @@
+/*
+ * C-237 LottieScene — the canvas one vector animation is drawn onto by a
+ * worker.
+ *
+ * There is deliberately almost nothing here. The artwork is transparent and
+ * sits on whatever surface hosts it: no background, no border, no radius, no
+ * shadow. Its size comes from the `size` prop, because the same number also
+ * sizes the bitmap the worker rasterises into, and the two must not be able to
+ * disagree.
+ */
+
+.kissopen-lottie-scene {
+    /* A canvas is inline by default, so a text line box would add a few pixels
+       under it and the declared square would not be the rendered square. */
+    display: block;
+}
+
+/* It is a control only where it can be replayed — under reduced motion it is
+   not a button at all, and must not look like one. */
+.kissopen-lottie-scene[role="button"] {
+    cursor: pointer;
+}
+
+.kissopen-lottie-scene:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+    border-radius: var(--kissopen-radius-sm);
+}

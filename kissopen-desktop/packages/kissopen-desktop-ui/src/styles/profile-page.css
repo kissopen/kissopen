@@ -1,0 +1,348 @@
+/*
+ * C-286 KissopenAgentProfilePage — identity, headline figures, a year of
+ * activity, then the detail behind it.
+ *
+ * The calendar's levels are relative to this account's own busiest day. An
+ * absolute scale would make a quiet account look broken and a busy one look
+ * saturated, and neither reading is about the reader.
+ */
+
+.kissopen-profile,
+.kissopen-profile__stat,
+.kissopen-profile__day {
+    box-sizing: border-box;
+}
+
+.kissopen-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    /* One centred column, however wide the settings pane is: the figures read
+       as a card, not as a table stretched to the window's edges. */
+    max-width: 1100px;
+    margin: 0 auto;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+}
+
+/* Invite, the privacy state and edit, in the page's top-right corner. */
+.kissopen-profile__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-bottom: -16px;
+}
+
+.kissopen-profile__private {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 10px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: default;
+}
+
+.kissopen-profile__picker {
+    display: none;
+}
+
+/* The avatar is the way to change it: a pencil appears on hover and focus. */
+.kissopen-profile-avatar {
+    position: relative;
+    display: inline-flex;
+    padding: 0;
+    color: inherit;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.kissopen-profile-avatar:focus-visible {
+    outline: 2px solid var(--surface-selected);
+    outline-offset: 3px;
+}
+
+.kissopen-profile__identity .kissopen-avatar,
+.kissopen-profile-edit .kissopen-avatar {
+    width: 112px;
+    height: 112px;
+    font-size: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+}
+
+.kissopen-profile-avatar__pencil {
+    position: absolute;
+    right: 0;
+    bottom: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--text);
+    background: var(--surface-high);
+    border: 1px solid var(--divider);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+.kissopen-profile-avatar:hover .kissopen-profile-avatar__pencil,
+.kissopen-profile-avatar:focus-visible .kissopen-profile-avatar__pencil,
+.kissopen-profile-avatar[data-size="large"] .kissopen-profile-avatar__pencil {
+    opacity: 1;
+}
+
+/* C-289 ProfileEditDialog ------------------------------------------------ */
+
+.kissopen-profile-edit__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 8px 0;
+}
+
+.kissopen-profile-edit__fields {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+}
+
+.kissopen-profile-edit__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+}
+
+.kissopen-profile-edit__row + .kissopen-profile-edit__row {
+    border-top: 1px solid var(--divider);
+}
+
+.kissopen-profile-edit__label {
+    flex: none;
+    font-size: 14px;
+}
+
+.kissopen-profile-edit__row > :last-child {
+    flex: 0 1 260px;
+    min-width: 0;
+}
+
+.kissopen-profile-edit__error,
+.kissopen-avatar-crop__error {
+    margin-right: auto;
+    color: var(--warning-critical);
+    font-size: 13px;
+}
+
+/* C-288 AvatarCropDialog -------------------------------------------------- */
+
+.kissopen-avatar-crop__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 0;
+}
+
+.kissopen-avatar-crop__stage {
+    position: relative;
+    overflow: hidden;
+    background: #000;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.kissopen-avatar-crop__stage:active {
+    cursor: grabbing;
+}
+
+.kissopen-avatar-crop__image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-width: none;
+    pointer-events: none;
+}
+
+/* Everything outside the circle is dimmed: the circle is the avatar. */
+.kissopen-avatar-crop__mask {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 999px rgb(0 0 0 / 55%);
+    pointer-events: none;
+}
+
+.kissopen-avatar-crop__zoom {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-secondary);
+    font-size: 18px;
+}
+
+.kissopen-avatar-crop__zoom input {
+    width: 300px;
+    accent-color: var(--text);
+}
+
+.kissopen-profile__identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding-top: 8px;
+}
+
+.kissopen-profile__name {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+}
+
+.kissopen-profile__handle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* Headline figures ------------------------------------------------------- */
+
+.kissopen-profile__stats {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface-high);
+}
+
+.kissopen-profile__stat {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.kissopen-profile__stat + .kissopen-profile__stat {
+    box-shadow: inset 1px 0 0 var(--divider);
+}
+
+.kissopen-profile__stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    font-variant-numeric: tabular-nums;
+}
+
+.kissopen-profile__stat-label {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+/* A year of days --------------------------------------------------------- */
+
+.kissopen-profile__activity {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kissopen-profile__heading {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.kissopen-profile__calendar,
+.kissopen-profile__months {
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.kissopen-profile__week {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.kissopen-profile__day {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 2px;
+    background: var(--surface-pressed);
+}
+
+/* Four steps, mixed from the accent so the scale reads as one colour getting
+   stronger rather than four unrelated swatches. */
+.kissopen-profile__day[data-level="1"] {
+    background: color-mix(in srgb, var(--button-primary-background) 28%, var(--surface-pressed));
+}
+
+.kissopen-profile__day[data-level="2"] {
+    background: color-mix(in srgb, var(--button-primary-background) 52%, var(--surface-pressed));
+}
+
+.kissopen-profile__day[data-level="3"] {
+    background: color-mix(in srgb, var(--button-primary-background) 76%, var(--surface-pressed));
+}
+
+.kissopen-profile__day[data-level="4"] {
+    background: var(--button-primary-background);
+}
+
+.kissopen-profile__month {
+    flex: 1 1 0;
+    min-width: 0;
+    color: var(--text-secondary);
+    font-size: 10px;
+    line-height: 14px;
+    white-space: nowrap;
+}
+
+/* Detail ----------------------------------------------------------------- */
+
+.kissopen-profile__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+    box-shadow: inset 0 -1px 0 var(--divider);
+}
+
+.kissopen-profile__row-value {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,257 @@
+.kissopen-chat-conversation {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/*
+ * Center the scrolling column at a readable measure. The scrollport itself
+ * stays full-bleed (DESIGN → full-bleed scrollports): only its inner content
+ * wrapper caps its width and centers, so message rows, dividers, and the intro
+ * share one centered column while the scrollbar runs edge to edge.
+ */
+.kissopen-chat-conversation .kissopen-message-list__content {
+    width: 100%;
+    max-width: var(--kissopen-chat-measure);
+    margin-inline: auto;
+}
+
+.kissopen-terminal-panel {
+    box-sizing: border-box;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    min-height: 160px;
+    max-height: 70%;
+    overflow: hidden;
+    /*
+     * The terminal is a surface of the application, not a quoted code block, so
+     * it takes the same `--surface` every other panel and pane takes. The
+     * diff/code tint it used to carry read as a different, bluer material than
+     * the column it sits in.
+     */
+    background: var(--surface);
+    border-top: 1px solid var(--divider);
+}
+
+/* A collapsed (dead, frameless) panel is exactly its notice line. */
+.kissopen-terminal-panel[data-collapsed] {
+    min-height: 0;
+    height: auto;
+}
+
+/*
+ * A terminal that owns its whole column takes the box its parent gives it. It
+ * keeps no minimum and no ceiling: those exist to stop a bottom-docked terminal
+ * from crowding out the conversation above it, and here there is nothing above.
+ * The top border goes with them — the column's own edge already divides it.
+ */
+.kissopen-terminal-panel[data-fill] {
+    flex: 1 1 0%;
+    min-height: 0;
+    max-height: none;
+    border-top: none;
+}
+
+.kissopen-terminal-panel__resize {
+    flex: none;
+    height: 5px;
+    cursor: ns-resize;
+    background: transparent;
+}
+
+/* The splitter idiom the shell and the column handles already use: a line
+   inside the grab lane thickens under the pointer, rather than the whole lane
+   filling with a colour. Drawn in secondary ink because this handle has no
+   hairline of its own at rest, so the hover state is the only thing a person
+   has to see. */
+.kissopen-terminal-panel__resize:hover {
+    box-shadow: inset 0 2px 0 0 var(--text-secondary);
+}
+
+/*
+ * A running terminal has no chrome: the tab already names it, and its own first
+ * line says where it is, so a title bar above the grid only repeated both. What
+ * remains is a line that appears when the session is dead or its KissopenAgent is
+ * degraded — the one thing the grid cannot say for itself — carrying the
+ * Reconnect control with it.
+ */
+.kissopen-terminal-panel__notice {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    flex: none;
+    gap: 8px;
+    min-height: 32px;
+    padding: 0 8px 0 12px;
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-terminal-panel__notice-text {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * The grid states its own surface rather than showing the panel's through it.
+ * A running terminal carries the appearance it was started in — the panel may
+ * be handed the other one by a theme switch — and a cell left on the default
+ * background has to land on the background its program was told about. In the
+ * ordinary case the two tokens resolve to the same colour and nothing changes.
+ */
+.kissopen-terminal-panel__screen {
+    position: relative;
+    box-sizing: border-box;
+    flex: 1 1 0%;
+    min-height: 0;
+    width: 100%;
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.kissopen-terminal-panel__screen-viewport {
+    position: relative;
+    overflow: auto;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+}
+
+.kissopen-terminal-panel__rows {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: max-content;
+    padding: 8px 12px;
+}
+
+.kissopen-terminal-panel__row {
+    display: flex;
+    flex: none;
+    height: var(--kissopen-terminal-cell-height, 18px);
+    white-space: pre;
+}
+
+/* Each cell reserves exactly its declared column width so sparse and wide cells
+ * land on the right columns; glyph ink may exceed the box without shifting flow. */
+.kissopen-terminal-panel__cell {
+    flex: none;
+    white-space: pre;
+}
+
+/*
+ * One highlight colour for everything a drag covers. The browser's default
+ * selection colour is translucent, so it composited differently over the cell
+ * the selection is anchored in than over the cells after it: the first column
+ * of every drag came out a visibly lighter blue than the rest of the run. An
+ * opaque colour, stated for the scrollport and everything inside it, paints
+ * every selected column identically. Ink is left alone so ANSI colours survive
+ * being selected, as they do in a native terminal.
+ */
+.kissopen-terminal-panel__screen::selection,
+.kissopen-terminal-panel__screen ::selection {
+    background-color: var(--terminal-selection);
+}
+
+.kissopen-terminal-panel__cell[data-terminal-link] {
+    cursor: pointer;
+    text-decoration-line: underline;
+    text-decoration-color: var(--text-link);
+    text-underline-offset: 2px;
+}
+
+/*
+ * A terminal owned by a reconnecting or unavailable KissopenAgent retains the exact same
+ * grid DOM and scrollport. Solid secondary ink and the ordinary surface token
+ * remove live ANSI emphasis without opacity/filter tricks, so selection, copy,
+ * history, and links stay fully usable in either appearance.
+ */
+.kissopen-terminal-panel[data-kissopen-agent-availability] .kissopen-terminal-panel__rows {
+    color: var(--text-secondary);
+}
+
+.kissopen-terminal-panel[data-kissopen-agent-availability] .kissopen-terminal-panel__cell {
+    color: inherit !important;
+    background: var(--surface) !important;
+}
+
+.kissopen-terminal-panel[data-kissopen-agent-availability] .kissopen-terminal-panel__cursor {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--text-secondary);
+    opacity: 1;
+}
+
+/*
+ * The cursor is an overlay positioned in cell coordinates, outside text flow,
+ * and it is the terminal's entire focus indicator: a hollow box when the
+ * terminal does not own the keyboard, a blinking solid block when it does. This
+ * is how a native terminal states the same thing, and it keeps the panel out of
+ * an accent color — the caret is text, so it is drawn in `--text`.
+ *
+ * The ring is an inset shadow rather than an outline or border because the box
+ * is sized in exact cell geometry; anything that occupies layout would push the
+ * caret off the column it is marking.
+ */
+.kissopen-terminal-panel__cursor {
+    position: absolute;
+    box-shadow: inset 0 0 0 1px var(--text);
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.kissopen-terminal-panel__screen[data-focused] .kissopen-terminal-panel__cursor {
+    background: var(--text);
+    box-shadow: none;
+    opacity: 1;
+}
+
+/*
+ * A focused caret blinks on a one-second cycle, which is both the convention and
+ * what makes the glyph underneath readable half the time — a permanently solid
+ * block would simply cover it. It starts on, so a caret is never invisible the
+ * moment it appears.
+ */
+@media (prefers-reduced-motion: no-preference) {
+    .kissopen-terminal-panel__screen[data-focused] .kissopen-terminal-panel__cursor {
+        animation: kissopen-terminal-cursor-blink 1s linear infinite;
+    }
+}
+
+@keyframes kissopen-terminal-cursor-blink {
+    0%,
+    49.99% {
+        opacity: 1;
+    }
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
+.kissopen-terminal-panel__input {
+    position: absolute;
+    top: 0;
+    left: -9999px;
+    box-sizing: border-box;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    color: transparent;
+    caret-color: transparent;
+    pointer-events: none;
+    resize: none;
+    background: transparent;
+    border: 0;
+    outline: none;
+}

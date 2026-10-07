@@ -1,0 +1,62 @@
+.kissopen-community-login__content,
+.kissopen-community-login__providers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-community-login__content {
+    align-self: center;
+    max-width: 360px;
+    gap: 24px;
+}
+
+.kissopen-community-login__status {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+}
+
+.kissopen-account-security {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.kissopen-account-security__form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 480px;
+}
+
+.kissopen-account-security__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.kissopen-account-security__note {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+}
+
+.kissopen-account-security__secret {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--divider);
+    border-radius: 12px;
+    overflow-wrap: anywhere;
+}

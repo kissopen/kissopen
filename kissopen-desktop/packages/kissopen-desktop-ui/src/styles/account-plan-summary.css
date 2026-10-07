@@ -1,0 +1,33 @@
+.account-plan-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    padding: 20px 24px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface);
+    color: var(--text);
+}
+.account-plan-summary__identity {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+.account-plan-summary__identity > span,
+.account-plan-summary p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+}
+.account-plan-summary strong {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+.account-plan-summary p {
+    margin: 0;
+}

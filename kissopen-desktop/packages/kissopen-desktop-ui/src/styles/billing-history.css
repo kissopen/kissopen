@@ -1,0 +1,172 @@
+.billing-history {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    container-type: inline-size;
+}
+.billing-history__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.billing-history__viewport {
+    overflow: auto;
+    overscroll-behavior: contain;
+}
+.billing-history__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 40px 32px;
+    box-sizing: border-box;
+}
+.billing-history__intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+.billing-history__intro h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    color: var(--text);
+}
+.billing-history__intro p,
+.billing-history__note {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 20px;
+}
+.billing-history__filters {
+    display: flex;
+    gap: 8px;
+}
+.billing-history__table {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    line-height: 20px;
+}
+.billing-history__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    border-bottom: 1px solid var(--divider);
+    padding: 20px 0;
+    color: var(--text);
+}
+.billing-history__head {
+    padding: 12px 0;
+    color: var(--text-secondary);
+}
+.billing-history__date {
+    flex: 0 0 100px;
+    color: var(--text-secondary);
+}
+.billing-history__item {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+    overflow-wrap: anywhere;
+}
+.billing-history__item strong {
+    font-weight: 600;
+}
+.billing-history__item > span {
+    color: var(--text-secondary);
+}
+.billing-history__order {
+    font-size: 11px;
+}
+.billing-history__method {
+    flex: 0 0 110px;
+    color: var(--text-secondary);
+}
+.billing-history__amount {
+    flex: 0 0 100px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.billing-history__status {
+    flex: 0 0 130px;
+    text-align: right;
+}
+.billing-history__badge {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--surface-highest);
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+.billing-history__badge[data-paid="true"] {
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+.billing-history__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.billing-history__pagination > span {
+    margin-right: auto;
+}
+.billing-history__skeleton {
+    display: flex;
+    flex-direction: column;
+}
+.billing-history__skeleton > div {
+    display: flex;
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--divider);
+}
+.billing-history__skeleton span {
+    height: 16px;
+    width: 100px;
+    background: var(--surface-highest);
+    border-radius: var(--kissopen-radius-sm);
+}
+.billing-history__skeleton span:nth-child(2) {
+    flex: 1;
+}
+@container (max-width: 680px) {
+    .billing-history__content {
+        padding: 24px 20px;
+    }
+    .billing-history__intro {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    .billing-history__head {
+        display: none;
+    }
+    .billing-history__row {
+        flex-wrap: wrap;
+        gap: 8px 16px;
+    }
+    .billing-history__date {
+        flex-basis: 100%;
+    }
+    .billing-history__item {
+        flex-basis: calc(100% - 120px);
+    }
+    .billing-history__amount {
+        flex-basis: 100px;
+    }
+    .billing-history__method {
+        flex: 1;
+    }
+}

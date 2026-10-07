@@ -1,0 +1,43 @@
+{
+    "name": "kissopen-desktop-gym",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./sources/index.ts",
+        "./playwright": "./sources/playwright/index.ts",
+        "./electron": "./sources/electron/index.ts"
+    },
+    "scripts": {
+        "test": "pnpm test:playwright",
+        "test:playwright": "node ../../scripts/run-ui-alignment-tests.mjs --config vitest.playwright.config.ts",
+        "test:playwright:artifacts": "VITE_KISSOPEN_DESKTOP_WRITE_SCREENSHOTS=1 node ../../scripts/run-ui-alignment-tests.mjs --config vitest.playwright.config.ts",
+        "test:watch": "node ../../scripts/run-ui-alignment-tests.mjs --watch --config vitest.playwright.config.ts",
+        "gym:electron": "node --import tsx sources/electron/cli.ts",
+        "gym:electron:build-profile": "pnpm --dir ../kissopen-desktop-electron build:profile:optimized",
+        "gym:electron:prepare": "node --import tsx sources/electron/cli.ts prepare --profile smoke",
+        "gym:electron:run": "pnpm run gym:electron:build-profile && node --import tsx sources/electron/cli.ts run --profile smoke --workload all",
+        "gym:electron:clean": "node --import tsx sources/electron/cli.ts clean",
+        "typecheck": "tsc --project tsconfig.json",
+        "format": "oxfmt --write .",
+        "format:check": "oxfmt --check .",
+        "lint": "oxlint ."
+    },
+    "dependencies": {
+        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz"
+    },
+    "devDependencies": {
+        "@fontsource-variable/jetbrains-mono": "^5.2.8",
+        "@types/node": "^26.1.1",
+        "@vitest/browser-playwright": "^4.1.10",
+        "oxfmt": "^0.57.0",
+        "oxlint": "^1.73.0",
+        "playwright": "^1.61.1",
+        "typescript": "^7.0.2",
+        "vite": "^8.1.4",
+        "vitest": "^4.1.10"
+    },
+    "engines": {
+        "node": ">=22.16.0"
+    }
+}

@@ -1,0 +1,629 @@
+/* Everything here is scoped to the workbench shell: the same stylesheet loads in
+   the standalone Blueprint page and inside the application's development-only
+   Blueprint screen, where document-level rules would repaint the whole app.
+
+   The workbench has no palette of its own. Every surface, hairline, label, and
+   annotation resolves to a Kissopen theme role, so the drafting surface follows the
+   system appearance — and the header's appearance override — instead of holding a
+   second, separately maintained set of colours. Drawing ink is derived from
+   `--text` so one rule paints dark lines on light paper and light lines on dark
+   paper. Nothing here animates or depends on a platform font: the workbench is a
+   measurement surface first, and its captures must be reproducible. */
+
+.workbench-shell {
+    /* Drafting ink. The minor grid is mixed to land on the hairline divider's own
+       weight in both appearances, and the major grid one step above it, so the
+       canvas never draws harder than the edge of a specimen sitting on it. The
+       stage repeats the pair a step quieter: it is read underneath a component,
+       not beside one. */
+    --workbench-grid-minor: color-mix(in srgb, var(--text) 4%, transparent);
+    --workbench-grid-major: color-mix(in srgb, var(--text) 9%, transparent);
+    --workbench-stage-grid-minor: color-mix(in srgb, var(--text) 3%, transparent);
+    --workbench-stage-grid-major: color-mix(in srgb, var(--text) 7%, transparent);
+    /* Rules, ticks, and drawn outlines: darker than a hairline divider because
+       they are notation the reader is meant to follow, not panel separation. */
+    --workbench-rule: color-mix(in srgb, var(--text) 45%, transparent);
+    --workbench-fill: color-mix(in srgb, var(--text) 5%, transparent);
+    --workbench-hatch: color-mix(in srgb, var(--text) 10%, transparent);
+
+    min-width: 900px;
+    /* The shell is its own scroll container so an embedded workbench scrolls
+       inside the panel that hosts it, with the header still sticking to its top. */
+    height: 100%;
+    overflow: auto;
+    background: var(--groupped-background);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.workbench-shell * {
+    box-sizing: border-box;
+}
+
+/* Workbench chrome
+   ------------------------------------------------------------------------- */
+
+.workbench-header {
+    position: sticky;
+    z-index: 20;
+    top: 0;
+    display: flex;
+    height: 42px;
+    align-items: stretch;
+    border-bottom: 1px solid var(--divider);
+    background: var(--header-background);
+    color: var(--text);
+}
+
+/* The mark is a link in the standalone Blueprint and a button when the workbench
+   is embedded and the address belongs to the app's router; both must read and
+   focus identically. */
+.workbench-brand {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-right: 1px solid var(--divider);
+    background: none;
+    padding: 0 16px;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.workbench-brand:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/* The mark takes the inverted action role rather than the primary-button black,
+   which would sink into the dark header. */
+.workbench-brand > span {
+    display: flex;
+    width: 24px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--fab-background);
+    color: var(--fab-icon);
+}
+
+.workbench-brand strong {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.workbench-brand i {
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+    font-style: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* The grid legend: a rule ticked at the canvas' own 16px minor period, so the
+   header states the measurement contract the field below it draws. */
+.header-axis {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.header-axis i {
+    height: 1px;
+    flex: 1 1 auto;
+    background-image: repeating-linear-gradient(
+        90deg,
+        var(--workbench-rule) 0 1px,
+        transparent 1px 16px
+    );
+}
+
+.workbench-appearance,
+.component-select {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+    border-left: 1px solid var(--divider);
+    padding: 0 14px;
+}
+
+.workbench-appearance > span,
+.component-select > span {
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Appearance is switched while review captures are being taken, so the control's
+   selection transition must not leave an intermediate frame in a screenshot of
+   the workbench. */
+.workbench-appearance .kissopen-segmented-control__segment {
+    transition: none;
+}
+
+.component-select-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.component-select select {
+    width: 232px;
+    height: 28px;
+    appearance: none;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--input-background);
+    padding: 0 30px 0 10px;
+    color: var(--input-text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.component-select select:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+/* The chevron is painted over the native control, which owns the whole hit
+   area; it deliberately leaves the flow rather than reserving a column. */
+.component-select-chevron {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    inset-block: 0;
+    right: 9px;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+/* Drafting canvas
+   ------------------------------------------------------------------------- */
+
+.blueprint-field {
+    min-height: calc(100vh - 42px);
+    background-color: var(--groupped-background);
+    background-image:
+        linear-gradient(var(--workbench-grid-major) 1px, transparent 1px),
+        linear-gradient(90deg, var(--workbench-grid-major) 1px, transparent 1px),
+        linear-gradient(var(--workbench-grid-minor) 1px, transparent 1px),
+        linear-gradient(90deg, var(--workbench-grid-minor) 1px, transparent 1px);
+    background-position: -1px -1px;
+    background-size:
+        80px 80px,
+        80px 80px,
+        16px 16px,
+        16px 16px;
+    padding: 48px 48px 80px;
+}
+
+.component-page {
+    width: min(1160px, calc(100vw - 96px));
+    min-width: 800px;
+    margin: 0 auto;
+}
+
+/* Plan header
+   ------------------------------------------------------------------------- */
+
+.component-title {
+    display: flex;
+    min-height: 128px;
+    align-items: stretch;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface);
+    color: var(--text);
+}
+
+.component-title-mark {
+    display: flex;
+    width: 96px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.component-number {
+    display: flex;
+    width: 60px;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--workbench-rule);
+    border-radius: var(--kissopen-radius-pill);
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+}
+
+.component-title-text {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px 24px 20px 0;
+}
+
+.component-title p,
+.component-title h1,
+.component-title span,
+.component-title dl,
+.component-title dd {
+    margin: 0;
+}
+
+.component-title p {
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.component-title h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 32px;
+}
+
+.component-title-text > span {
+    max-width: 560px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.component-title-meta {
+    display: flex;
+    flex: 0 0 336px;
+    align-self: stretch;
+    border-left: 1px solid var(--divider);
+}
+
+.component-title-meta > div {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px;
+}
+
+.component-title-meta > div + div {
+    border-left: 1px solid var(--divider);
+}
+
+.component-title dt {
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.component-title dd {
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    /* One step under the drawing's other mono notation: the widest value has to
+       stay on one line inside a third of the meta strip. */
+    font-size: 10px;
+}
+
+/* Specimens
+   ------------------------------------------------------------------------- */
+
+.specimen-grid {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- specimen matrix: cards wrap into equal-width columns and content-sized rows, and a row's cards must share one height */
+    display: grid;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.specimen-grid--sizes {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.specimen {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface);
+}
+
+.specimen > header {
+    display: flex;
+    height: 40px;
+    flex: 0 0 auto;
+    align-items: stretch;
+    border-bottom: 1px solid var(--divider);
+    color: var(--text);
+}
+
+.specimen > header span {
+    display: flex;
+    width: 48px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--divider);
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+}
+
+.specimen > header strong {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.specimen > header small {
+    display: flex;
+    min-width: 0;
+    flex: 0 1 auto;
+    align-items: center;
+    padding: 0 12px 0 0;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+    text-align: right;
+}
+
+/* The stage paints the real Kissopen surface a component sits on, at half the
+   canvas ink so 16px steps stay countable underneath it. Its 32px inset puts
+   every fixture origin on a visible minor-grid intersection rather than at an
+   arbitrary mathematical centre between grid lines. */
+.specimen-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 192px;
+    padding: 32px;
+    overflow: hidden;
+    /* Parallel inner curve: the 10px card radius less the 1px border inset. */
+    border-radius: 0 0 9px 9px;
+    background-color: var(--groupped-background);
+    background-image:
+        linear-gradient(var(--workbench-stage-grid-major) 1px, transparent 1px),
+        linear-gradient(90deg, var(--workbench-stage-grid-major) 1px, transparent 1px),
+        linear-gradient(var(--workbench-stage-grid-minor) 1px, transparent 1px),
+        linear-gradient(90deg, var(--workbench-stage-grid-minor) 1px, transparent 1px);
+    background-size:
+        80px 80px,
+        80px 80px,
+        16px 16px,
+        16px 16px;
+}
+
+.specimen-stage[data-stage="app"] {
+    background-color: var(--groupped-background);
+}
+
+.specimen-stage[data-stage="chrome"] {
+    background-color: var(--header-background);
+}
+
+.specimen-stage[data-stage="surface"] {
+    background-color: var(--surface);
+}
+
+/* Full-screen specimens
+   ------------------------------------------------------------------------- */
+
+.full-screen-specimen {
+    margin-top: 32px;
+}
+
+.full-screen-stage {
+    display: flex;
+    overflow: auto;
+    border-radius: 0 0 9px 9px;
+    background-color: var(--groupped-background);
+    background-image:
+        linear-gradient(var(--workbench-stage-grid-minor) 1px, transparent 1px),
+        linear-gradient(90deg, var(--workbench-stage-grid-minor) 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+
+/* The scrollport spans its whole region; the gutter around the viewport lives
+   on this wrapper so it survives scrolling in both axes. */
+.full-screen-inset {
+    display: flex;
+    width: max-content;
+    min-width: 100%;
+    /* Never shrink: shrinking to the scrollport would drop the trailing gutter
+       once the 1024px viewport is wider than the card. */
+    flex: 0 0 auto;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 24px;
+}
+
+.full-screen-viewport {
+    display: flex;
+    width: 1024px;
+    min-width: 1024px;
+    height: 704px;
+    min-height: 704px;
+    align-items: stretch;
+    justify-content: stretch;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--divider);
+}
+
+.full-screen-viewport > * {
+    width: 100%;
+    height: 100%;
+}
+
+/* Annotations
+   ------------------------------------------------------------------------- */
+
+.dimension-rule {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+}
+
+.dimension-rule i {
+    position: relative;
+    height: 1px;
+    flex: 1 1 auto;
+    background: var(--workbench-rule);
+}
+
+.dimension-rule i::before {
+    position: absolute;
+    top: -3px;
+    width: 1px;
+    height: 7px;
+    background: var(--workbench-rule);
+    content: "";
+}
+
+.dimension-rule i:last-child::before {
+    right: 0;
+}
+
+.dimension-rule b {
+    padding: 0 6px;
+    font-weight: 500;
+}
+
+.dimensioned-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 24px;
+}
+
+/* The rule is drawn over the stage above the specimen it measures, so it never
+   shifts the measured control off the stage centre. */
+.dimensioned-button > .dimension-rule {
+    position: absolute;
+    top: 4px;
+}
+
+/* Box specimens
+   ------------------------------------------------------------------------- */
+
+.box-plans {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- specimen matrix: two equal columns with a full-width final row */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.box-plans .specimen:last-child {
+    grid-column: 1 / -1;
+}
+
+.box-demo {
+    position: relative;
+}
+
+.box-demo--fixed {
+    padding-top: 20px;
+}
+
+.box-demo--fixed > .dimension-rule {
+    position: absolute;
+    top: 2px;
+}
+
+.box-demo--fluid {
+    width: 82%;
+}
+
+.blueprint-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--workbench-rule);
+    background: var(--workbench-fill);
+    color: var(--text);
+}
+
+.blueprint-box span {
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.blueprint-box small {
+    margin-top: 6px;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.blueprint-box--light {
+    border-style: dashed;
+    background: transparent;
+}
+
+.blueprint-box--frame {
+    align-items: flex-end;
+    justify-content: flex-end;
+    background: transparent;
+    padding: 16px;
+}
+
+.blueprint-box--nested {
+    background-image: repeating-linear-gradient(
+        135deg,
+        var(--workbench-hatch) 0 4px,
+        transparent 4px 8px
+    );
+}
+
+/* The zoom read-out takes itself away after a second, which is right in a window
+   and wrong in a specimen. Held at its first frame, the chip stays long enough
+   to be judged and a screenshot of it is the same one every run. */
+.blueprint-zoom-frame .kissopen-zoom-indicator {
+    animation-play-state: paused;
+}

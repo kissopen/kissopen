@@ -1,0 +1,219 @@
+/* C-003 Button — Kissopen control. 28/36/44 contract heights, five variants. */
+
+.kissopen-button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: var(--kissopen-radius-pill);
+    margin: 0;
+    background: transparent;
+    font-family: var(--kissopen-font-ui);
+    font-size: 13px;
+    font-synthesis: none;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-button[data-shortcut-hint] {
+    position: relative;
+}
+
+/*
+ * Line boxes are taller than the font size (≥1.2em) so every ascender and
+ * descender paints inside the label's own box: element captures clip to the
+ * box, and the optical measurements in Button.test.tsx must see all the ink.
+ */
+.kissopen-button[data-size="small"] {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-button[data-size="medium"] {
+    height: 36px;
+    padding: 0 14px;
+    line-height: 18px;
+}
+
+.kissopen-button[data-size="large"] {
+    height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.kissopen-button[data-icon-only][data-size="small"] {
+    width: 28px;
+    padding: 0;
+}
+
+.kissopen-button[data-icon-only][data-size="medium"] {
+    width: 36px;
+    padding: 0;
+}
+
+.kissopen-button[data-icon-only][data-size="large"] {
+    width: 44px;
+    padding: 0;
+}
+
+.kissopen-button[data-variant="primary"] {
+    background: var(--button-primary-background);
+    color: var(--button-primary-tint);
+}
+
+/* Lifted with a translucent overlay rather than swapped to a surface colour.
+   The primary button is black in every theme while its label stays white, so
+   hovering it onto `--surface-pressed` turned it near-white in the light theme
+   and took the label with it — white on #f0f0f2, which is a button that reads
+   as empty exactly while the pointer is on it. An overlay lifts the black it
+   actually has, so the label keeps its contrast in both themes. */
+.kissopen-button[data-variant="primary"]:hover:not(:disabled) {
+    background-image: linear-gradient(var(--button-primary-ripple), var(--button-primary-ripple));
+}
+
+.kissopen-button[data-variant="secondary"] {
+    border-color: var(--divider);
+    background-color: var(--surface-high);
+    color: var(--text);
+}
+
+.kissopen-button[data-variant="secondary"]:hover:not(:disabled) {
+    background-image: linear-gradient(var(--surface-ripple), var(--surface-ripple));
+}
+
+.kissopen-button[data-variant="ghost"] {
+    background: transparent;
+    color: var(--button-secondary-tint);
+}
+
+.kissopen-button[data-variant="ghost"]:hover:not(:disabled) {
+    background: var(--surface-ripple);
+    color: var(--text);
+}
+
+.kissopen-button[data-variant="danger"] {
+    background-color: var(--box-error-background);
+    color: var(--box-error-text);
+}
+
+.kissopen-button[data-variant="danger"]:hover:not(:disabled) {
+    background-image: linear-gradient(var(--surface-ripple), var(--surface-ripple));
+}
+
+.kissopen-button[data-variant="success"] {
+    background-color: var(--success);
+    color: var(--button-primary-tint);
+}
+
+.kissopen-button[data-variant="success"]:hover:not(:disabled) {
+    background-image: linear-gradient(var(--surface-ripple), var(--surface-ripple));
+}
+
+.kissopen-button:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-button[data-variant="primary"]:disabled {
+    background-color: var(--button-primary-disabled);
+}
+
+.kissopen-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+.kissopen-button__content {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+}
+
+.kissopen-button__icon {
+    display: flex;
+    flex: none;
+}
+
+/*
+ * The label optical correction is a translateY: every engine rasterizes the
+ * label's vertical ink position in whole device pixels (0.5px steps at 2×),
+ * and Blink/Gecko additionally snap margin offsets to whole CSS pixels, so a
+ * transform declared in exact 0.5px multiples is the only mechanism all three
+ * engines apply verbatim (measured with a 0.1..1px probe ladder per engine).
+ */
+.kissopen-button__label {
+    display: block;
+    flex: none;
+    transform: translateY(var(--kissopen-button-label-y, 0px));
+}
+
+/*
+ * Optical vertical corrections, measured per engine at true 2× with
+ * alpha-weighted visible-pixel centroids on zeroed vars (see Button.test.tsx).
+ * Figtree 700 sits low in the line box, worst in Gecko. Each correction is
+ * the midpoint of the ink-centroid range across the realistic label set
+ * (descender-heavy "Approve & merge" through ascender-only "Full width"),
+ * rounded to the engines' 0.5px raster step. That keeps balanced-ink labels
+ * within ±0.27px; descender/ascender-skewed words stay within ±0.64px, and
+ * that remaining spread (~0.85px between extremes) is inherent to word ink,
+ * not a layout defect. The label is corrected independently of the icon: raw
+ * icon glyph centroids measure |dy| ≤ 0.09px in all engines, so icons get no
+ * correction and a shared content-span nudge would only knock them off-center.
+ */
+.kissopen-button[data-size="small"] {
+    --kissopen-button-label-y: -0.5px;
+}
+
+.kissopen-button[data-size="medium"] {
+    --kissopen-button-label-y: 0px;
+}
+
+.kissopen-button[data-size="large"] {
+    --kissopen-button-label-y: 0px;
+}
+
+/*
+ * Firefox — only Gecko parses -moz-appearance. (@-moz-document is stripped by
+ * the CSS pipeline, and @supports (font: -apple-system-body) also matches
+ * Blink on macOS, so neither is a usable engine scope.)
+ */
+@supports (-moz-appearance: none) {
+    .kissopen-button[data-size="small"] {
+        --kissopen-button-label-y: -1px;
+    }
+
+    .kissopen-button[data-size="medium"] {
+        --kissopen-button-label-y: -0.5px;
+    }
+
+    .kissopen-button[data-size="large"] {
+        --kissopen-button-label-y: -1px;
+    }
+}
+
+/* WebKit — Blink and Gecko do not parse -webkit-named-image(). */
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-button[data-size="small"] {
+        --kissopen-button-label-y: -0.5px;
+    }
+
+    .kissopen-button[data-size="medium"] {
+        --kissopen-button-label-y: -0.5px;
+    }
+
+    .kissopen-button[data-size="large"] {
+        --kissopen-button-label-y: -1px;
+    }
+}

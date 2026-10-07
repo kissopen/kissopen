@@ -1,0 +1,336 @@
+/*
+ * AgentDesk — right-panel overview of agent activity.
+ *
+ * Contract: fluid width (designed for the 340px AppShell panel), fills its
+ * container's height, body scrolls. Header 48px with 14px x-padding; running
+ * tiles on --surface-pressed with a 3px brand-gradient progress bar; queued rows
+ * 36px with a dashed strong hairline; done rows 32px with a quiet wash.
+ */
+
+.kissopen-agent-desk,
+.kissopen-agent-desk * {
+    box-sizing: border-box;
+}
+
+.kissopen-agent-desk {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* ---- Header ----------------------------------------------------------- */
+
+.kissopen-agent-desk__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--divider);
+}
+
+/* The header's leading glyph. It is decoration on a title, and the desk below
+   it spends its colour on run state, which is the part worth looking at. */
+.kissopen-agent-desk__spark {
+    color: var(--text-secondary);
+    translate: 0 var(--kissopen-agent-desk-spark-ty, 0px);
+}
+
+.kissopen-agent-desk__title {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-top: var(--kissopen-agent-desk-header-title-y, 0px);
+    margin-bottom: calc(-1 * var(--kissopen-agent-desk-header-title-y, 0px));
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 800;
+    translate: 0 var(--kissopen-agent-desk-header-title-ty, 0px);
+    line-height: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kissopen-agent-desk__count {
+    flex: none;
+}
+
+/* ---- Scrolling body --------------------------------------------------- */
+
+/* Scrollport: edge-to-edge, no padding/gap of its own. */
+.kissopen-agent-desk__body {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.kissopen-agent-desk__body-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Inner content wrapper owns the 8px row gap and the 12/14/16px inset. */
+.kissopen-agent-desk__body-content {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px 16px;
+}
+
+/* ---- Running tiles ----------------------------------------------------- */
+
+.kissopen-agent-desk__run {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: var(--surface-pressed);
+    border-radius: var(--kissopen-radius-md);
+}
+
+.kissopen-agent-desk__run-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-agent-desk__run-title {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-top: var(--kissopen-agent-desk-run-title-y, 0px);
+    margin-bottom: calc(-1 * var(--kissopen-agent-desk-run-title-y, 0px));
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    translate: 0 var(--kissopen-agent-desk-run-title-ty, 0px);
+}
+
+.kissopen-agent-desk__run-eta {
+    display: block;
+    flex: none;
+    margin-top: var(--kissopen-agent-desk-run-eta-y, 0px);
+    margin-bottom: calc(-1 * var(--kissopen-agent-desk-run-eta-y, 0px));
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    white-space: nowrap;
+    translate: 0 var(--kissopen-agent-desk-run-eta-ty, 0px);
+}
+
+.kissopen-agent-desk__run-detail {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kissopen-agent-desk__run-track {
+    flex: none;
+    height: 3px;
+    overflow: hidden;
+    background: var(--groupped-background);
+    border-radius: var(--kissopen-radius-pill);
+}
+
+.kissopen-agent-desk__run-fill {
+    height: 100%;
+    background: var(--text-link);
+    border-radius: var(--kissopen-radius-pill);
+}
+
+/* ---- Section labels ---------------------------------------------------- */
+
+.kissopen-agent-desk__section-label {
+    display: flex;
+    flex: none;
+    align-items: flex-end;
+    height: 24px;
+    margin-top: 4px;
+    padding: 0 2px;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 12px;
+    text-transform: uppercase;
+}
+
+/* ---- Queued and done rows ---------------------------------------------- */
+
+.kissopen-agent-desk__queued,
+.kissopen-agent-desk__done {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin: 0;
+    padding: 0 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+    appearance: none;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
+}
+
+.kissopen-agent-desk__queued:focus-visible,
+.kissopen-agent-desk__done:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-agent-desk__queued {
+    height: 36px;
+    border: 1px dashed var(--divider);
+    border-radius: 8px;
+}
+
+.kissopen-agent-desk__queued:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-agent-desk__done {
+    height: 32px;
+    background: var(--surface-ripple);
+    border-radius: 8px;
+}
+
+.kissopen-agent-desk__done:hover {
+    background: var(--groupped-background);
+}
+
+.kissopen-agent-desk__row-icon {
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-desk__done .kissopen-agent-desk__row-icon {
+    color: var(--success);
+}
+
+.kissopen-agent-desk__row-title {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-top: var(--kissopen-agent-desk-row-title-y, 0px);
+    margin-bottom: calc(-1 * var(--kissopen-agent-desk-row-title-y, 0px));
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    translate: 0 var(--kissopen-agent-desk-row-title-ty, 0px);
+}
+
+.kissopen-agent-desk__row-meta {
+    display: block;
+    flex: none;
+    margin-top: var(--kissopen-agent-desk-row-meta-y, 0px);
+    margin-bottom: calc(-1 * var(--kissopen-agent-desk-row-meta-y, 0px));
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    white-space: nowrap;
+    translate: 0 var(--kissopen-agent-desk-row-meta-ty, 0px);
+}
+
+/* ---- Optical corrections ------------------------------------------------ */
+
+/*
+ * Measured at 2x with alpha-weighted visible-pixel centroids on zeroed CSS
+ * (see AgentDesk.test.tsx). Each text correction zeroes the midpoint between
+ * a descender-free and a descender-heavy fixture, so any real string keeps
+ * its vertical ink centroid within +-0.75px of its lane center (symmetric
+ * content within +-0.4px). Two mechanisms are needed: Blink snaps painted
+ * text to whole CSS pixels, ignoring fractional margins, but honors
+ * fractional `translate`; WebKit is the reverse (subpixel margins work,
+ * `translate` on these inline blocks does not repaint subpixel); Gecko
+ * honors both. So the base rule carries Blink translate corrections and the
+ * Gecko/WebKit scopes zero them and set margin corrections instead. The
+ * spark glyph box lands on a half pixel (header lane is 47px), which Blink
+ * and Gecko rasterize 0.5px low; WebKit centers it raw. Icons in queued/done
+ * rows, the header badge, and the bottom-anchored section labels measured
+ * centered raw and carry no correction.
+ */
+.kissopen-agent-desk {
+    --kissopen-agent-desk-spark-ty: -0.5px;
+    --kissopen-agent-desk-header-title-ty: -1px;
+    --kissopen-agent-desk-run-title-ty: -0.5px;
+    --kissopen-agent-desk-run-eta-ty: -0.6px;
+    --kissopen-agent-desk-row-title-ty: -0.5px;
+    --kissopen-agent-desk-row-meta-ty: -0.4px;
+}
+
+/*
+ * Firefox — only Gecko parses -moz-appearance. (@-moz-document is stripped by
+ * the CSS pipeline, and @supports (font: -apple-system-body) also matches
+ * Blink on macOS, so neither is a usable engine scope.)
+ */
+@supports (-moz-appearance: none) {
+    .kissopen-agent-desk {
+        --kissopen-agent-desk-header-title-y: -1px;
+        --kissopen-agent-desk-run-title-y: -1px;
+        --kissopen-agent-desk-run-eta-y: -0.6px;
+        --kissopen-agent-desk-row-title-y: -1px;
+        --kissopen-agent-desk-row-meta-y: -0.4px;
+    }
+
+    /*
+     * Gecko keeps its text-baseline device-pixel snapping only when no
+     * transform applies at all — even a zero-valued `translate` turns the
+     * snapping off and moves fractional-margin text by half a device pixel.
+     * The spark (an SVG, not snapped text) keeps its translate correction.
+     */
+    .kissopen-agent-desk__title,
+    .kissopen-agent-desk__run-title,
+    .kissopen-agent-desk__run-eta,
+    .kissopen-agent-desk__row-title,
+    .kissopen-agent-desk__row-meta {
+        translate: none;
+    }
+}
+
+/* WebKit — Blink and Gecko do not parse -webkit-named-image(). */
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-agent-desk {
+        --kissopen-agent-desk-spark-ty: 0px;
+        --kissopen-agent-desk-header-title-ty: 0px;
+        --kissopen-agent-desk-run-title-ty: 0px;
+        --kissopen-agent-desk-run-eta-ty: 0px;
+        --kissopen-agent-desk-row-title-ty: 0px;
+        --kissopen-agent-desk-row-meta-ty: 0px;
+        --kissopen-agent-desk-header-title-y: -1px;
+        --kissopen-agent-desk-run-title-y: -1px;
+        --kissopen-agent-desk-run-eta-y: -0.6px;
+        --kissopen-agent-desk-row-title-y: -0.5px;
+        --kissopen-agent-desk-row-meta-y: -0.4px;
+    }
+}

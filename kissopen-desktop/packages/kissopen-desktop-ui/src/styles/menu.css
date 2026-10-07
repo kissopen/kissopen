@@ -1,0 +1,198 @@
+/*
+ * C-027 Menu — dropdown / context-menu popover on the high surface.
+ *
+ * Contract: a card on the plain surface with a 1px modal hairline, 10px card
+ * radius and a short, faint drop — it floats over arbitrary content, so it
+ * keeps a shadow, but a close one rather than a deep grey cast. Default 220px
+ * wide. Inside, a 4px-padded list of 28px
+ * item rows (8px side padding), optional 24px mono section labels, and 1px
+ * separators with 4px vertical breathing room. Every row corner is 5px — the
+ * card's 10px radius minus the uniform 5px border-box inset (1px border + 4px
+ * padding) — so each row is the true parallel curve of the card and no edge
+ * row needs a per-corner exception. Item labels are 13px Figtree; a 16px
+ * leading icon gutter (+8px gap) is reserved for every row when any item
+ * declares an icon, so labels line up. Shortcuts reuse KeyCap; danger rows
+ * paint in --text-destructive.
+ */
+
+.kissopen-menu,
+.kissopen-menu * {
+    box-sizing: border-box;
+}
+
+.kissopen-menu {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--modal-border);
+    border-radius: var(--kissopen-radius-md);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.kissopen-menu__list {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.kissopen-menu__rows {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    padding: 4px;
+}
+
+/* ---- Item rows -------------------------------------------------------- */
+
+.kissopen-menu__item {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 28px;
+    margin: 0;
+    padding: 0 8px;
+    border: none;
+    /* 10px card radius minus the 5px border-box inset (1px border + 4px list
+     * padding): the true parallel curve, worn on every corner of every row so
+     * edge rows and middle rows round identically. */
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+    appearance: none;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-menu__item:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-menu__item:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-menu__item:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.kissopen-menu__item:disabled:hover {
+    background: transparent;
+}
+
+.kissopen-menu__item[data-danger] {
+    color: var(--text-destructive);
+}
+
+/* Higher specificity than the base :hover, so danger keeps its hue on hover. */
+.kissopen-menu__item[data-danger]:hover:not(:disabled) {
+    background: var(--box-error-background);
+}
+
+.kissopen-menu__item-icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+/* An application's own artwork, sized to the same gutter as a house glyph and
+   rounded so it reads as an app tile rather than a loose bitmap. */
+.kissopen-menu__item-image {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    object-fit: contain;
+}
+
+.kissopen-menu__item[data-danger] .kissopen-menu__item-icon {
+    color: var(--text-destructive);
+}
+
+.kissopen-menu__item-label {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-menu__item-shortcut {
+    flex: none;
+    margin-left: 8px;
+}
+
+/* Account figures are prose, not fixed-width keyboard shortcut cells. Keep the
+   complete text run so Chinese glyphs retain their natural advance width. */
+.kissopen-menu__item-hint {
+    flex: none;
+    padding: 0 4px;
+    border-radius: 4px;
+    background: var(--input-background);
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: normal;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+/* ---- Section label --------------------------------------------------- */
+
+.kissopen-menu__header,
+.kissopen-menu__label {
+    display: block;
+    flex: none;
+    height: 24px;
+    padding: 0 8px;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 24px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.kissopen-menu__header {
+    margin: 4px 4px 0;
+}
+
+/* ---- Separator ------------------------------------------------------- */
+
+.kissopen-menu__separator {
+    flex: none;
+    height: 1px;
+    margin: 4px 0;
+    background: var(--divider);
+}

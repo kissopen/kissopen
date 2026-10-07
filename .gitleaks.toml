@@ -1,0 +1,10 @@
+title = "KissOpen client source secret scan"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Public deterministic test vectors derived from test seed/test usage"
+condition = "AND"
+paths = ['''kissopen/docs/plans/kissopen-agent\.md$''', '''kissopen/packages/kissopen-app/sources/encryption/deriveKey\.appspec\.ts$''']
+stopwords = ["E6E55652456F9FE47D6FF46CA3614E85B499F77E7B340FBBB1553307CEDC1E74", "D5EAE039FB9143E9433BB1ADC104C2FF5D7FA6751E680B4B1CBC7ADF1AF65BF3", "1011C097D2105D27362B987A631496BBF68B836124D1D072E9D1613C6028CF75"]

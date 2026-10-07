@@ -1,0 +1,72 @@
+/* Electron supplies the caption geometry in CSS pixels, including display
+   scaling and maximized/full-screen changes. Browsers without an overlay keep
+   the existing layout. Only the column touching the window's right edge needs
+   the reservation; rows below the title bar keep their full width. */
+:root {
+    --kissopen-window-caption-right: max(
+        0px,
+        calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw))
+    );
+}
+
+.kissopen-desktop-app-shell[data-window-controls] {
+    --kissopen-desktop-app-shell-caption-inset: var(--kissopen-window-caption-right);
+}
+
+.kissopen-desktop-app-shell__main:has(+ .kissopen-desktop-app-shell__panel) {
+    --kissopen-desktop-app-shell-caption-inset: 0px;
+}
+
+.kissopen-desktop-app-shell__panel {
+    --kissopen-desktop-app-shell-caption-inset: var(--kissopen-window-caption-right);
+}
+
+.kissopen-desktop-app-shell[data-window-controls]
+    .kissopen-desktop-app-shell__workspace
+    > .kissopen-channel-header:first-child,
+.kissopen-desktop-app-shell[data-window-controls]
+    .kissopen-desktop-app-shell__panel-content
+    > .kissopen-panel-header:first-child {
+    padding-right: calc(16px + var(--kissopen-desktop-app-shell-caption-inset, 0px));
+}
+
+.kissopen-desktop-app-shell[data-window-controls]
+    .kissopen-desktop-app-shell__panel-content
+    > .kissopen-panel-header[data-edge-control]:first-child {
+    padding-right: calc(12px + var(--kissopen-desktop-app-shell-caption-inset, 0px));
+}
+
+.kissopen-desktop-app-shell[data-window-controls]
+    .kissopen-desktop-app-shell__workspace
+    > .kissopen-tabbed-pane:first-child
+    > .kissopen-tabbed-pane__bar {
+    padding-right: var(--kissopen-desktop-app-shell-caption-inset, 0px);
+}
+
+/* A page heading is the first row of a page that fills the workspace (资料库,
+   远程控制, 计划任务, 插件): the band, and whatever it puts at its far end such as
+   the library's upload button, keeps clear of the caption buttons the same
+   way a channel header does. */
+.kissopen-desktop-app-shell[data-window-controls]
+    .kissopen-desktop-app-shell__workspace
+    > :first-child
+    > .kissopen-page-heading:first-child {
+    padding-right: calc(16px + var(--kissopen-desktop-app-shell-caption-inset, 0px));
+}
+
+/* Full-window headers and overlays own the whole native caption reservation. */
+.kissopen-desktop-app-shell[data-window-controls] .kissopen-lightbox__header {
+    padding-right: calc(16px + var(--kissopen-window-caption-right));
+}
+
+.kissopen-title-bar[data-window-controls] {
+    padding-right: calc(12px + var(--kissopen-window-caption-right));
+}
+
+.kissopen-title-bar__controls {
+    width: env(titlebar-area-x, 78px);
+}
+
+.kissopen-connection-header[data-window-controls]:not([data-window-full-screen]) {
+    padding-inline: max(78px, calc(12px + var(--kissopen-window-caption-right)));
+}

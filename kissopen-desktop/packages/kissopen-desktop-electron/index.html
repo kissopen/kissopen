@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: http: https:; media-src 'self' data: blob: http: https:; connect-src 'self' blob: http: https: ws: wss:; worker-src 'self' blob:; frame-src 'self' data: blob: http: https:"
+        />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>KissOpen</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/sources/renderer/renderer.tsx"></script>
+    </body>
+</html>

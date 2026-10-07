@@ -1,0 +1,82 @@
+/*
+ * C-058 ModalOverlay — the single backdrop for every modal-class surface.
+ *
+ * Fixed to the app window with one dim at one stacking level
+ * (--kissopen-z-overlay, above all app chrome and in-panel popovers). A flex box
+ * holds one card (Modal / Lightbox / editor panel / transient type-ahead)
+ * inside a 24px safe-area gutter. Dialogs center by default; transient
+ * type-ahead surfaces may use the adaptive top placement. The dim outside the
+ * card is the click target that dismisses the surface.
+ */
+
+.kissopen-modal-overlay {
+    /* Programmatic fallback focus target; the scrim itself never shows a ring. */
+    outline: none;
+    position: fixed;
+    inset: 0;
+    z-index: var(--kissopen-z-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 24px;
+    background: var(--overlay-backdrop);
+}
+
+.kissopen-modal-overlay[data-placement="top"] {
+    container-type: size;
+    align-items: flex-start;
+    padding: 0;
+}
+
+/* One immersive surface instead of a card: no gutter, and the hosted surface
+   stretches to every edge of the window. It paints its own dark over the dim,
+   so the app is the thing being covered rather than a card's neighbour. */
+.kissopen-modal-overlay[data-placement="fill"] {
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+}
+
+/* A container cannot resolve cqh units against itself. This top-only child
+   fills the overlay's size container and owns its flex-safe gutters, keeping
+   the default centered DOM and CSS path unchanged. */
+.kissopen-modal-overlay__top-layout {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding-top: min(128px, max(24px, calc(100cqh - 485px)));
+    padding-right: 24px;
+    padding-bottom: 24px;
+    padding-left: 24px;
+}
+
+/*
+ * Fit a hosted Modal card to the safe-area box. The Modal's own root is a
+ * transparent centering layer with an auto height, so a percentage cap on the
+ * dialog cannot resolve through it. Collapse that layer with display:contents
+ * so the dialog becomes a direct flex child of the overlay (still centered by
+ * the overlay's own align/justify) whose max-height resolves against the
+ * definite 24px-gutter content box. Cards that host themselves directly
+ * (Lightbox, the editor panel) bound their own height and are untouched.
+ *
+ * A tall card is capped at min(calc(100% - 80px), 760px) of that box, never
+ * the full height: it always keeps at least a 40px clear margin above and
+ * below inside the gutter box, so it reads as a floating dialog rather than
+ * a full-height panel, and its own body (overflow:auto) scrolls the overflow
+ * while the header and footer stay pinned. A short card is left at its
+ * content height and centered. The clearance form (rather than a percentage)
+ * keeps every resolved height on whole CSS pixels for integer window sizes,
+ * so the card's 1px hairlines land on physical pixels at 2×.
+ */
+.kissopen-modal-overlay > .kissopen-modal {
+    display: contents;
+}
+
+.kissopen-modal-overlay > .kissopen-modal > .kissopen-modal__dialog {
+    max-height: min(calc(100% - 80px), 760px);
+}

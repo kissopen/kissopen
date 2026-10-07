@@ -1,0 +1,189 @@
+/*
+ * C-235 ImageViewer — one picture, looked at properly.
+ *
+ * A frame that fills whatever region the viewer is given, and a tool bar beneath
+ * it that states the magnification and changes it. The bar is a real row rather
+ * than a floating overlay so it can never sit on top of the artwork, and so the
+ * frame's declared box is the whole of what the picture is measured against.
+ * Colors and type are theme tokens only.
+ */
+
+.kissopen-image-viewer,
+.kissopen-image-viewer * {
+    box-sizing: border-box;
+}
+
+.kissopen-image-viewer {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    /* Only so the 1px announcement region below is measured against this box
+       rather than against whatever ancestor happens to be positioned. */
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    background: var(--surface);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    color: var(--text);
+}
+
+/* Hung on a surface that is already the room — the full-window lightbox. The
+   viewer contributes no surface of its own so the picture and its controls sit
+   on one flat dark, rather than banding the window into frame, bar, and card. */
+.kissopen-image-viewer[data-tone="immersive"],
+.kissopen-image-viewer[data-tone="immersive"] .kissopen-image-viewer__frame,
+.kissopen-image-viewer[data-tone="immersive"] .kissopen-image-viewer__tools {
+    background: transparent;
+}
+
+.kissopen-image-viewer[data-tone="immersive"] .kissopen-image-viewer__tools {
+    border-top-color: transparent;
+}
+
+/* ---- Frame ------------------------------------------------------------- */
+
+/* The room the picture hangs in: one centered child, clipped at the frame edge
+   so a magnified picture is looked *through* this box rather than spilling past
+   it. The room itself is plain — the checker belongs to the picture, not to the
+   space around it, and a notice with no picture in it wants no texture at all. */
+.kissopen-image-viewer__frame {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background-color: var(--groupped-background);
+    touch-action: none;
+}
+
+.kissopen-image-viewer__frame:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-image-viewer__frame[data-pannable] {
+    cursor: grab;
+}
+
+.kissopen-image-viewer__frame[data-dragging] {
+    cursor: grabbing;
+}
+
+.kissopen-image-viewer__image {
+    display: block;
+    flex: none;
+    max-width: none;
+    max-height: none;
+    /* What transparency looks like, and only where the picture actually is: the
+       checker rides the element, so it marks the file's own empty pixels rather
+       than the room around it. Mixed from the grouped background and the
+       selected surface, the one pair that keeps a legible step in both
+       appearances — the plain surface is three levels from the background in
+       the dark theme, which reads as no checker at all. */
+    background-color: var(--groupped-background);
+    background-image: repeating-conic-gradient(
+        var(--surface-selected) 0% 25%,
+        var(--groupped-background) 0% 50%
+    );
+    background-size: 16px 16px;
+    background-position: 0 0;
+    /* The element is sized to the exact magnification and given the file itself
+       as its source, so the engine resamples once, from the original raster, at
+       whatever the device scale is. Nothing is drawn into a canvas and re-encoded
+       first, which is what would cost the picture detail it cannot get back. */
+    image-rendering: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* ---- Notices ----------------------------------------------------------- */
+
+.kissopen-image-viewer__notice {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    max-width: 320px;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.kissopen-image-viewer__notice[data-tone="danger"] {
+    color: var(--text-destructive);
+}
+
+.kissopen-image-viewer__notice-title {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    color: var(--text);
+}
+
+.kissopen-image-viewer__notice[data-tone="danger"] .kissopen-image-viewer__notice-title {
+    color: var(--text-destructive);
+}
+
+.kissopen-image-viewer__notice-detail {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+/* ---- Tools ------------------------------------------------------------- */
+
+.kissopen-image-viewer__tools {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 40px;
+    padding: 0 12px;
+    border-top: 1px solid var(--divider);
+    background: var(--surface);
+}
+
+/* Lining, tabular digits so the percentage does not shuffle its own width while
+   a pinch runs through it. */
+.kissopen-image-viewer__zoom {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums lining-nums;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+.kissopen-image-viewer__divider {
+    display: block;
+    flex: none;
+    width: 1px;
+    height: 16px;
+    background: var(--divider);
+}
+
+/* Said out loud, never drawn: the region reports the magnification a command
+   settled on, and must not take any of the viewer's room to do it. */
+.kissopen-image-viewer__announcement {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

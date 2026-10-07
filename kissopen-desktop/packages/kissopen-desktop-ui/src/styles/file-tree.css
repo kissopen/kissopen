@@ -1,0 +1,432 @@
+/*
+ * C-052 FileTree — code-editor file/folder explorer.
+ *
+ * A column of 28px rows. Each row is a fixed 16px disclosure slot (chevron for
+ * directories) followed by a flexible entry button: a 14px file-type icon
+ * coloured by its family, the file's name at full contrast with its directory
+ * dimmed beside it, then the row's diff stat and a single-letter git decoration.
+ * Depth is expressed as left padding on the row (8px base + 16px per level), so
+ * nested names align under their parent's name.
+ *
+ * The name is never tinted by git state. A column where every changed file's
+ * name is orange or green is a column with no ordinary text left to read against
+ * — the state belongs on the small parts that exist to carry it. Colors and type
+ * are theme tokens only.
+ */
+
+.kissopen-file-tree,
+.kissopen-file-tree * {
+    box-sizing: border-box;
+}
+
+.kissopen-file-tree {
+    width: 100%;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    color: var(--text);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.kissopen-file-tree__viewport {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* ---- Virtualized listing ---------------------------------------------- */
+
+/* A checkout listing owns its own scrolling, because only the rows on screen
+   exist and something has to be told how far the ones that do not would reach.
+   Scrollport: edge to edge, with no spacing of its own. */
+.kissopen-file-tree[data-virtualized] {
+    flex: 1 1 0%;
+    min-height: 0;
+}
+
+.kissopen-file-tree[data-virtualized] > .kissopen-file-tree__viewport {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* The inner wrapper carries the listing's inset, so the scrollport above it
+   stays flush with the panel and its scrollbar runs the full height. It is the
+   shared panel inset — see --kissopen-panel-inset. */
+.kissopen-file-tree__virtual {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 var(--kissopen-panel-inset) var(--kissopen-panel-inset);
+}
+
+.kissopen-file-tree__virtual-sizer {
+    position: relative;
+    flex: none;
+    width: 100%;
+}
+
+/* Rows leave the flow deliberately: their position is the virtualizer's answer
+   to where the row would be if every row existed, which no flow can express
+   while most of them do not. */
+.kissopen-file-tree__virtual-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 28px;
+}
+
+/* ---- Row -------------------------------------------------------------- */
+
+.kissopen-file-tree__row {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 28px;
+    border-radius: var(--kissopen-radius-sm);
+}
+
+/* The row is the tab stop, and its ring is drawn inside its own box: a listing
+   this dense sits hard against the edge of a narrow panel, where an outset ring
+   is clipped by the scrollport on one side and overlaps its neighbours on the
+   others. */
+.kissopen-file-tree__row:focus-visible,
+.kissopen-file-tree__more:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-file-tree__row:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-file-tree__row[data-selected] {
+    background: var(--surface-selected);
+}
+
+.kissopen-file-tree__row[data-unavailable] {
+    color: var(--text-secondary);
+    cursor: default;
+}
+
+/* Picked as part of a set, which is a different fact from being the row that is
+   open: both can be true of the same row at once. Both file tabs use this same
+   neutral fill so selection never changes vocabulary with the listing. */
+.kissopen-file-tree__row[data-picked] {
+    background: var(--surface-selected);
+}
+
+/* ---- Disclosure ------------------------------------------------------- */
+
+.kissopen-file-tree__disc {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 28px;
+}
+
+.kissopen-file-tree__chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.kissopen-file-tree__chevron:hover {
+    color: var(--text);
+}
+
+/* ---- Entry ------------------------------------------------------------ */
+
+/* The trailing padding is the shared row padding, so a row's last mark lands
+   where a sidebar row's does. The leading side is 2px because the fixed
+   disclosure slot ahead of it already carries the row's left inset. */
+.kissopen-file-tree__entry {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    height: 28px;
+    padding: 0 var(--kissopen-panel-row-padding) 0 2px;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.kissopen-file-tree__icon {
+    display: flex;
+    flex: none;
+    color: var(--file-other);
+}
+
+/* ---- File families ---------------------------------------------------- */
+
+.kissopen-file-tree__row[data-family="archive"] .kissopen-file-tree__icon {
+    color: var(--file-archive);
+}
+
+.kissopen-file-tree__row[data-family="audio"] .kissopen-file-tree__icon {
+    color: var(--file-audio);
+}
+
+.kissopen-file-tree__row[data-family="code"] .kissopen-file-tree__icon {
+    color: var(--file-code);
+}
+
+.kissopen-file-tree__row[data-family="config"] .kissopen-file-tree__icon {
+    color: var(--file-config);
+}
+
+.kissopen-file-tree__row[data-family="data"] .kissopen-file-tree__icon {
+    color: var(--file-data);
+}
+
+.kissopen-file-tree__row[data-family="directory"] .kissopen-file-tree__icon {
+    color: var(--file-directory);
+}
+
+.kissopen-file-tree__row[data-family="image"] .kissopen-file-tree__icon {
+    color: var(--file-image);
+}
+
+.kissopen-file-tree__row[data-family="prose"] .kissopen-file-tree__icon {
+    color: var(--file-prose);
+}
+
+.kissopen-file-tree__row[data-family="secret"] .kissopen-file-tree__icon {
+    color: var(--file-secret);
+}
+
+.kissopen-file-tree__row[data-family="shell"] .kissopen-file-tree__icon {
+    color: var(--file-shell);
+}
+
+.kissopen-file-tree__row[data-family="style"] .kissopen-file-tree__icon {
+    color: var(--file-style);
+}
+
+.kissopen-file-tree__row[data-family="video"] .kissopen-file-tree__icon {
+    color: var(--file-video);
+}
+
+/* ---- Label ------------------------------------------------------------ */
+
+/* The directory and the name are one continuous path with no gap between them,
+   but they shrink independently: the name keeps its width until the directory
+   ahead of it has nothing left to give. */
+.kissopen-file-tree__label {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    min-width: 0;
+}
+
+/* Last to give up width, because it is the word being looked for: the path
+   beside it shrinks a thousand times faster and is gone before the name loses
+   its first character. */
+.kissopen-file-tree__name {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: -0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A joined directory row's name is a path, so it elides in its middle like one:
+   the leading run collapses first and the segment that names this directory
+   survives at full length. */
+.kissopen-file-tree__name[data-joined] {
+    display: flex;
+    align-items: baseline;
+    overflow: visible;
+}
+
+.kissopen-file-tree__name-head {
+    display: block;
+    flex: 0 1000 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kissopen-file-tree__name-tail {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* A directory row is a container rather than a destination, so its name reads
+   at the same weight as a file's without the file's full-contrast ink. */
+.kissopen-file-tree__row[data-kind="directory"] .kissopen-file-tree__name {
+    color: var(--text-secondary);
+}
+
+/* The directory yields to the name: it is context, not the thing being looked
+   for, so it collapses to nothing before the name loses a character. It keeps
+   the name's size and line so the two still read as one path, and separates
+   itself by weight and colour — sharing both made the pair one grey run in
+   which the file being looked for was no longer the thing standing out. */
+.kissopen-file-tree__path {
+    display: flex;
+    flex: 0 1000 auto;
+    align-items: baseline;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--file-path-text);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+}
+
+/* Only the leading run elides, so the elision opens in the middle of the path
+   and its last segment — the part that says where the file actually lives —
+   survives at full length. */
+.kissopen-file-tree__path-head {
+    display: block;
+    flex: 0 1000 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Holds its whole width while the head still has any to give, then elides in
+   turn. Refusing to shrink at all let it overflow the path and print on top of
+   the file name once the panel was narrow enough. */
+.kissopen-file-tree__path-tail {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Diff stat -------------------------------------------------------- */
+
+.kissopen-file-tree__stat {
+    display: flex;
+    flex: none;
+    align-items: baseline;
+    gap: 4px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    font-feature-settings: "tnum" 1;
+}
+
+.kissopen-file-tree__stat-added {
+    color: var(--git-added-text);
+}
+
+.kissopen-file-tree__stat-deleted {
+    color: var(--git-removed-text);
+}
+
+/* ---- Git status decorations ------------------------------------------ */
+
+.kissopen-file-tree__status {
+    display: block;
+    flex: none;
+    min-width: 14px;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    font-feature-settings: "tnum" 1;
+}
+
+.kissopen-file-tree__row[data-tone="new"] .kissopen-file-tree__status {
+    color: var(--git-status-new);
+}
+
+.kissopen-file-tree__row[data-tone="modified"] .kissopen-file-tree__status {
+    color: var(--git-status-modified);
+}
+
+.kissopen-file-tree__row[data-tone="renamed"] .kissopen-file-tree__status {
+    color: var(--git-status-renamed);
+}
+
+.kissopen-file-tree__row[data-tone="deleted"] .kissopen-file-tree__status {
+    color: var(--git-status-deleted);
+}
+
+/* A deleted file is the one case the name itself carries, because the row is
+   naming something that is no longer there. */
+.kissopen-file-tree__row[data-tone="deleted"] .kissopen-file-tree__name {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+.kissopen-file-tree__row[data-tone="ignored"] .kissopen-file-tree__icon,
+.kissopen-file-tree__row[data-tone="ignored"] .kissopen-file-tree__name {
+    color: var(--text-secondary);
+}
+
+/* ---- Paging, loading, and empty affordances -------------------------- */
+
+/* On the same 28px grid as every other row, because it is one: the virtualizer
+   places rows by counting them, and one row of a different height would put
+   every row after it in the wrong place. */
+.kissopen-file-tree__more {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 28px;
+    padding-right: 10px;
+    border-radius: var(--kissopen-radius-sm);
+    color: var(--text-link);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.kissopen-file-tree__more:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-file-tree__loading,
+.kissopen-file-tree__status-line {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: 28px;
+    padding-right: 10px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+/* The whole-tree note stands on its own rather than in the row grid, so it is
+   not indented to a level it does not belong to. */
+.kissopen-file-tree__status-line {
+    height: auto;
+    min-height: 28px;
+    padding: 8px 12px;
+}

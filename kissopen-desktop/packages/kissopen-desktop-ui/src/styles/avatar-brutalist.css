@@ -1,0 +1,31 @@
+/*
+ * AvatarBrutalist — generated identity mark. The box paints the background and
+ * the inner span paints the tint through the tile's alpha as a mask, which is
+ * how a single monochrome PNG becomes a two-color mark at any size.
+ */
+
+.kissopen-avatar-brutalist,
+.kissopen-avatar-brutalist__ink {
+    box-sizing: border-box;
+}
+
+.kissopen-avatar-brutalist {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.kissopen-avatar-brutalist__ink {
+    display: block;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+}

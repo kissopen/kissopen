@@ -1,0 +1,349 @@
+/*
+ * The Usage settings category: one section per provider account, each holding
+ * the windows that vendor reports, read down a single column. There is no card
+ * around an account — the rule between two sections is the only shape here,
+ * which is why this category is a run of rules where Providers is a run of
+ * cards.
+ *
+ * Beneath the windows an account lists what it spent, by model and by rolling
+ * window. That reading is a table because it is the one shape here with two
+ * dimensions; everything else on the page is a row of fixed cells.
+ *
+ * A window is one row of four cells: name, measure, share, reset. The measure
+ * cell is the only elastic one, so every bar starts and ends at the same two
+ * edges and two accounts can be compared by eye. That is why the reset cell
+ * keeps its width even when a vendor reports no reset: a cell that collapsed
+ * would move the bar beside it and break the comparison.
+ *
+ * The column and its measure are the settings body's own: this file styles what
+ * sits inside one category and owns no scrollport, header, or page width.
+ * Layout is flexbox throughout; colors and type come only from theme roles.
+ */
+
+/* The run of accounts is its own flex parent and owns the space between them, so
+   the rule below is a fixed edge every account carries rather than spacing
+   conjured between particular siblings. */
+.kissopen-agent-usage-settings__providers {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* One account is told apart from the next by a rule above it, not by a box
+   around either; on the first that rule closes the header. */
+.kissopen-agent-usage-settings__provider {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    border-top: 1px solid var(--divider);
+}
+
+.kissopen-agent-usage-settings__provider-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 24px;
+}
+
+.kissopen-agent-usage-settings__identity {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+/*
+ * One mark per account saying which state it is in, so a list of accounts can
+ * be scanned for the one in trouble without reading any of the numbers. It
+ * carries the whole account's worst window, which is the reading that decides
+ * whether work can continue.
+ */
+.kissopen-agent-usage-settings__dot {
+    display: block;
+    flex: 0 0 auto;
+    /* The identity row aligns its text on one baseline; a circle has no
+       baseline to share, so it centres on the row's height instead. */
+    align-self: center;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--status-default);
+}
+
+.kissopen-agent-usage-settings__provider[data-tone="ample"] .kissopen-agent-usage-settings__dot {
+    background: var(--success);
+}
+
+.kissopen-agent-usage-settings__provider[data-tone="warning"] .kissopen-agent-usage-settings__dot {
+    background: var(--box-warning-text);
+}
+
+.kissopen-agent-usage-settings__provider[data-tone="critical"] .kissopen-agent-usage-settings__dot,
+.kissopen-agent-usage-settings__provider[data-tone="spent"] .kissopen-agent-usage-settings__dot,
+.kissopen-agent-usage-settings__provider[data-tone="error"] .kissopen-agent-usage-settings__dot {
+    background: var(--status-error);
+}
+
+.kissopen-agent-usage-settings__name {
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The action sits with the plan name rather than under the windows: it acts on
+   the plan, and a button parked below the bars reads as acting on those. */
+.kissopen-agent-usage-settings__identity .kissopen-button {
+    flex: none;
+    margin-left: 4px;
+}
+
+.kissopen-agent-usage-settings__plan {
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 24px;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-usage-settings__provider-meta {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-agent-usage-settings__taken {
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* An account with nothing to show says why on one line, with the tone carried
+   by the glyph so the sentence itself stays as readable as the rest. */
+.kissopen-agent-usage-settings__note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text);
+}
+
+.kissopen-agent-usage-settings__note-icon {
+    flex: 0 0 auto;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-usage-settings__note[data-note="error"] .kissopen-agent-usage-settings__note-icon {
+    color: var(--status-error);
+}
+
+.kissopen-agent-usage-settings__windows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.kissopen-agent-usage-settings__window {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 20px;
+}
+
+.kissopen-agent-usage-settings__window-label {
+    flex: 0 0 auto;
+    width: 72px;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-usage-settings__track {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: stretch;
+    overflow: hidden;
+    min-width: 0;
+    height: 4px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-selected);
+}
+
+/* The fill is a width, not a transform: the track is four pixels tall and a
+ * scaled fill would smear its end. It is the same ink as the text until the
+ * share is worth colouring, so a healthy page stays monochrome. */
+.kissopen-agent-usage-settings__fill {
+    display: block;
+    min-width: 0;
+    border-radius: inherit;
+    background: var(--text);
+}
+
+.kissopen-agent-usage-settings__window[data-tone="warning"] .kissopen-agent-usage-settings__fill {
+    background: var(--box-warning-text);
+}
+
+.kissopen-agent-usage-settings__window[data-tone="critical"] .kissopen-agent-usage-settings__fill {
+    background: var(--status-error);
+}
+
+.kissopen-agent-usage-settings__percent {
+    flex: 0 0 auto;
+    width: 44px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--text);
+    text-align: right;
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+.kissopen-agent-usage-settings__window[data-tone="warning"]
+    .kissopen-agent-usage-settings__percent {
+    color: var(--box-warning-text);
+}
+
+.kissopen-agent-usage-settings__window[data-tone="critical"]
+    .kissopen-agent-usage-settings__percent {
+    color: var(--status-error);
+}
+
+/* Wide enough for the longest reset this can produce ("resets in 30d 12h"), so
+   the sentence is never cut: an elided reset would read as a different time. */
+.kissopen-agent-usage-settings__reset {
+    flex: 0 0 auto;
+    width: 128px;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text-secondary);
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* What the account actually spent, by model and rolling window. This is a real
+   two-dimensional matrix — four numeric columns measured once and held down
+   every model row — which is the one case a table earns over a flex row each.
+   The window columns are fixed so the numbers line up between two accounts, and
+   the model column takes whatever is left. */
+.kissopen-agent-usage-settings__models {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+.kissopen-agent-usage-settings__models thead th {
+    padding: 0 0 8px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+.kissopen-agent-usage-settings__models thead th:first-child {
+    text-align: left;
+}
+
+/* Wide enough for the largest count this reports ("123.4M") at the row's size,
+   so a busy month never widens the column and shifts the account below it. */
+.kissopen-agent-usage-settings__models thead th[data-column="window"] {
+    width: 76px;
+}
+
+.kissopen-agent-usage-settings__model-row:not(:last-child) th,
+.kissopen-agent-usage-settings__model-row:not(:last-child) td {
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-agent-usage-settings__model {
+    overflow: hidden;
+    padding: 6px 12px 6px 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--text);
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-usage-settings__tokens {
+    padding: 6px 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text);
+    text-align: right;
+}
+
+/* A window with nothing spent in it is a dash, and the dash steps back so the
+   counts that exist are what the column reads as. */
+.kissopen-agent-usage-settings__tokens[data-empty] {
+    color: var(--text-secondary);
+}
+
+/* Credits have no share to draw, so they read as a labelled value on one line
+   in the same column the window names occupy. */
+.kissopen-agent-usage-settings__credits {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    width: 100%;
+    min-height: 20px;
+}
+
+.kissopen-agent-usage-settings__credits-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--text);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* KISSOPEN points sit under the plan's own usage: they are spent only after it. */
+.kissopen-agent-usage-settings__points {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--divider);
+}
+
+.kissopen-agent-usage-settings__points-label {
+    font-weight: 600;
+}
+
+.kissopen-agent-usage-settings__points-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.kissopen-agent-usage-settings__points-note {
+    flex: 1 1 auto;
+    color: var(--text-secondary);
+    font-size: 12px;
+}

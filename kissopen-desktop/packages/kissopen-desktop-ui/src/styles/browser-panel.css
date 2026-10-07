@@ -1,0 +1,182 @@
+.kissopen-browser-panel {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+}
+
+.kissopen-browser-panel[hidden] {
+    display: none;
+}
+
+.kissopen-browser-panel__toolbar {
+    box-sizing: border-box;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    height: 40px;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--divider);
+    background: var(--surface);
+}
+
+.kissopen-browser-panel__address {
+    flex: 1 1 0%;
+    min-width: 0;
+}
+
+.kissopen-browser-panel__unavailable {
+    box-sizing: border-box;
+    flex: none;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--divider);
+    color: var(--text-secondary);
+    background: color-mix(in srgb, var(--text-secondary) 8%, var(--surface));
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-browser-panel__content {
+    position: relative;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.kissopen-browser-panel__content > webview {
+    display: flex;
+    flex: 1 1 0%;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+
+.kissopen-browser-panel__error {
+    /*
+     * A failed navigation leaves the guest blank, so the error page covers it
+     * completely instead of floating over emptiness. It overlays rather than
+     * replaces the guest, so the guest keeps its size and process while the
+     * next attempt loads.
+     */
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    background: var(--surface);
+}
+
+.kissopen-browser-panel__error-code {
+    margin: 0;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+}
+
+/* Guest-relative overlay; it must not alter page geometry or intercept a human's input. */
+.kissopen-browser-agent-pointer {
+    position: absolute;
+    z-index: 1;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+    transition:
+        left 100ms ease-out,
+        top 100ms ease-out;
+    color: var(--text-link);
+}
+
+.kissopen-browser-agent-pointer__activity {
+    position: relative;
+    display: flex;
+    width: 24px;
+    height: 24px;
+}
+
+.kissopen-browser-agent-pointer__arrow {
+    transform: rotate(-90deg);
+    filter: drop-shadow(0 1px 1px var(--surface));
+}
+
+.kissopen-browser-agent-pointer__ring {
+    /* Center the target ring on the action coordinate, independently of the arrow's box. */
+    position: absolute;
+    left: -12px;
+    top: -12px;
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--text-link);
+    border-radius: 50%;
+    animation: kissopen-browser-pointer-pulse 900ms ease-out infinite;
+}
+
+/* Keep the pointer at its last position between AI actions; only the pulse stops. */
+.kissopen-browser-agent-pointer__activity[data-phase="end"] .kissopen-browser-agent-pointer__ring {
+    animation: none;
+    opacity: 0.45;
+}
+
+.kissopen-browser-agent-pointer__label {
+    /* The label follows the target without affecting the underlying guest's layout. */
+    position: absolute;
+    left: 24px;
+    top: 20px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--surface);
+    background: var(--text-link);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.kissopen-browser-agent-pointer[data-edge-x="left"] .kissopen-browser-agent-pointer__label {
+    left: auto;
+    right: 24px;
+}
+
+.kissopen-browser-agent-pointer[data-edge-y="above"] .kissopen-browser-agent-pointer__label {
+    top: auto;
+    bottom: 12px;
+}
+
+.kissopen-browser-agent-pointer[data-static] .kissopen-browser-agent-pointer__activity,
+.kissopen-browser-agent-pointer[data-static] .kissopen-browser-agent-pointer__ring {
+    animation: none;
+}
+
+@keyframes kissopen-browser-pointer-pulse {
+    from {
+        opacity: 0.8;
+        transform: scale(0.6);
+    }
+    to {
+        opacity: 0;
+        transform: scale(1.4);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-browser-agent-pointer {
+        transition: none;
+    }
+    .kissopen-browser-agent-pointer__ring {
+        animation: none;
+    }
+}

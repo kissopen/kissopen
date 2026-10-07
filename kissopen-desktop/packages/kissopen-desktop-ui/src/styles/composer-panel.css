@@ -1,0 +1,96 @@
+/*
+ * C-249 ComposerPanel — the bounded, dismissible card above the composer.
+ *
+ * A card rather than a surface: hairline, soft fill, and the card radius, so it
+ * reads as one more thing the write end is carrying rather than as a screen
+ * that arrived. A slim 40px band names the reading and holds the only way out
+ * of it; everything below is a full-bleed scrollport whose inner wrapper owns
+ * the gutter. Header and reading are one uninterrupted surface.
+ */
+
+.kissopen-composer-panel,
+.kissopen-composer-panel * {
+    box-sizing: border-box;
+}
+
+.kissopen-composer-panel {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+    /* Capped so a long reading never pushes the transcript off the surface it
+       is a reading about. The viewport term keeps the same promise in the
+       720x480 Electron minimum, where 320px would be most of the window. */
+    max-height: min(320px, 45vh);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface-high);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-composer-panel__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    /* 6px at the trailing edge centres the 28px close control in the band's
+       own 40px height, against 12px of ordinary text inset at the leading one. */
+    padding: 0 6px 0 12px;
+    border-bottom: 0;
+}
+
+.kissopen-composer-panel__heading {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* The close control sits 7px inside the card's top/right curve (1px border +
+   6px header inset), so its 3px corner remains parallel to the card's 10px
+   corner instead of drawing a second, unrelated curve. */
+.kissopen-composer-panel__header > .kissopen-button {
+    border-radius: 3px;
+}
+
+.kissopen-composer-panel__title {
+    flex: none;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+}
+
+.kissopen-composer-panel__status {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-composer-panel__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.kissopen-composer-panel__body-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.kissopen-composer-panel__content {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+    padding: 12px;
+}

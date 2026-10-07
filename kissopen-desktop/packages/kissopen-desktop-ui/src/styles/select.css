@@ -1,0 +1,243 @@
+/*
+ * C-019 Select — styled single-select dropdown (native overlay pattern).
+ *
+ * Contract: three control heights (28 / 36 / 44) on the 4px grid, an inset
+ * well with a hairline border and 6px radius, a real transparent `<select>`
+ * filling the control for native open/keyboard/click, a measurable value
+ * `<span>`, and a tuned chevron Icon. The value span and chevron are separate,
+ * non-overlapping flex items so each paints in its own box. Tokens only — every
+ * color, radius, and font is a `var(--*)`; the chevron glyph mass is owned
+ * and corrected by the Icon path data, so this file only pins its box.
+ */
+
+.kissopen-select,
+.kissopen-select * {
+    box-sizing: border-box;
+}
+
+.kissopen-select {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-select[data-full-width] {
+    display: flex;
+    width: 100%;
+}
+
+.kissopen-select[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+/* ---- Label ------------------------------------------------------------- */
+
+.kissopen-select__label {
+    display: block;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0;
+    font-synthesis: none;
+}
+
+/* ---- Control well ------------------------------------------------------ */
+
+.kissopen-select__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: var(--input-background);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    transition: border-color 120ms ease;
+}
+
+.kissopen-select[data-error] .kissopen-select__control {
+    border-color: var(--box-error-border);
+}
+
+.kissopen-select__control:focus-within {
+    border-color: var(--divider);
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+/* ---- Visible value text ------------------------------------------------ */
+
+.kissopen-select__value {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--input-text);
+    font-family: var(--kissopen-font-ui);
+    font-weight: 500;
+    letter-spacing: 0;
+    font-synthesis: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-select__value[data-placeholder] {
+    color: var(--input-placeholder);
+}
+
+/* ---- Chevron ----------------------------------------------------------- */
+
+.kissopen-select__chevron {
+    flex: none;
+    display: flex;
+    align-items: center;
+    color: var(--input-placeholder);
+    pointer-events: none;
+}
+
+/* ---- Trigger overlay (transparent, owns interaction) ----------------- */
+
+.kissopen-select__trigger {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    opacity: 0;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.kissopen-select[data-disabled] .kissopen-select__trigger {
+    cursor: not-allowed;
+}
+
+.kissopen-select[data-open] .kissopen-select__control {
+    border-color: var(--radio-active);
+}
+
+.kissopen-select[data-open] .kissopen-select__chevron {
+    color: var(--text);
+}
+
+/* ---- Open list: the house Menu card, fixed to the viewport ------------- */
+
+.kissopen-select__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--kissopen-z-overlay) - 1);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
+.kissopen-select__list {
+    position: fixed;
+    z-index: var(--kissopen-z-overlay);
+    min-width: 160px;
+}
+
+.kissopen-select__option {
+    gap: 12px;
+}
+
+.kissopen-select__list[data-size="small"] .kissopen-menu__item-label {
+    font-size: 12px;
+}
+
+.kissopen-select__option[data-selected] .kissopen-menu__item-label {
+    font-weight: 600;
+}
+
+/* The focused row is the one Enter would choose, so it wears the hover fill
+   whether the pointer or the arrow keys put it there. */
+.kissopen-select__list .kissopen-select__option:focus,
+.kissopen-select__list .kissopen-select__option:focus-visible {
+    outline: none;
+    background: var(--surface-ripple);
+}
+
+.kissopen-select__check {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    color: var(--text);
+}
+
+/* ---- Sizes (heights on the 4px grid) ----------------------------------- */
+
+.kissopen-select[data-size="small"] .kissopen-select__control {
+    height: 28px;
+}
+
+.kissopen-select[data-size="small"] .kissopen-select__value {
+    padding: 0 8px 0 10px;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-select[data-size="small"] .kissopen-select__chevron {
+    margin-right: 9px;
+}
+
+.kissopen-select[data-size="medium"] .kissopen-select__control {
+    height: 36px;
+}
+
+.kissopen-select[data-size="medium"] .kissopen-select__value {
+    padding: 0 8px 0 12px;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-select[data-size="medium"] .kissopen-select__chevron {
+    margin-right: 11px;
+}
+
+.kissopen-select[data-size="large"] .kissopen-select__control {
+    height: 44px;
+}
+
+.kissopen-select[data-size="large"] .kissopen-select__value {
+    padding: 0 8px 0 14px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.kissopen-select[data-size="large"] .kissopen-select__chevron {
+    margin-right: 13px;
+}
+
+/* ---- Hint / error message ---------------------------------------------- */
+
+.kissopen-select__message {
+    display: block;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    letter-spacing: 0;
+    font-synthesis: none;
+}
+
+.kissopen-select[data-error] .kissopen-select__message {
+    color: var(--box-error-text);
+}

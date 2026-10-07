@@ -1,0 +1,843 @@
+/*
+ * Kissopen's desktop theme, flattened for CSS consumers.
+ *
+ * Every colour property below corresponds directly to a property in
+ * packages/kissopen-app/sources/theme.ts. Do not add aliases, gradients, or
+ * derived palette values here: components should name the Kissopen role they use.
+ */
+
+@font-face {
+    font-family: "kissopen Figtree";
+    font-style: normal;
+    font-display: block;
+    font-weight: 300 900;
+    src: url("@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2")
+        format("woff2-variations");
+}
+
+/* The logo face: 站酷小薇 (ZCOOL XiaoWei, SIL OFL 1.1), subset to the three
+   ideographs of KissOpen for the wordmark. Nothing else is set in it. */
+@font-face {
+    font-family: "kissopen Logo";
+    font-style: normal;
+    font-display: block;
+    font-weight: 400;
+    src: url("./assets/fonts/ZCOOLXiaoWei-yiqijuan.woff2") format("woff2");
+    unicode-range: U+4E00, U+8D77, U+5377;
+}
+
+@font-face {
+    font-family: "kissopen Mono";
+    font-style: normal;
+    font-display: block;
+    font-weight: 100 800;
+    src: url("@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2")
+        format("woff2-variations");
+}
+
+:root,
+.kissopen-theme-light {
+    color-scheme: light;
+    --kissopen-brand-logo-source: url("./assets/brand/logo-black.png");
+    /* The VI's fixed identity colours (theme.ts brand.accent / brand.mark). */
+    --brand-accent: #9184d9;
+    --brand-mark: #1b1d29;
+    /* The 卷 mark (Nocturne palette). The purple line is --brand-accent in every
+       appearance; the paper's back is neutral-500, the glow is dark-only,
+       and the app-icon tile runs neutral-700 → neutral-900.
+       The design has no light variant of the mark itself, so only the
+       thinking animation's dim track, second pulse and back line change with
+       appearance: on a light surface the dark design's dim track (accent-800)
+       becomes accent-200 and its back neutral-300, and the second pulse — a
+       pale accent-200 in the dark — is the accent itself, since a pale pulse
+       would vanish into a pale track. */
+    --brand-back: #6e7084;
+    /* The back line over a photograph or the night sky, where neutral-500
+       sinks into the picture: neutral-300 keeps the sheet readable. */
+    --brand-back-sky: #b4b5c2;
+    --brand-glow: transparent;
+    --brand-animation-glow: transparent;
+    --brand-frame-top: #262a60;
+    --brand-frame-bottom: #262a60;
+    --kissopen-brand-icon-ground: #262a60;
+    --kissopen-brand-icon-ink: #f3f5fe;
+    --kissopen-lockup-source: url("./assets/brand/lockup-light.svg");
+    /* The thinking mark. The design is drawn on the night background; on a
+       light surface the same relations hold — a track barely off the page,
+       the second point of light the stronger of the two. */
+    --brand-thinking-track: #e9e6f8;
+    --brand-thinking-back: #dcdde4;
+    --brand-thinking-pulse: #6f63c9;
+    --brand-thinking-glow: rgb(145 132 217 / 0.55);
+
+    /* File tabs, their mode bars, and the path rows below them are one piece
+       of chrome. Keep the containing row and its inset controls on one shared
+       geometry so adjacent layers cannot drift as components evolve. */
+    --kissopen-subheader-height: 32px;
+    --kissopen-subheader-control-height: 24px;
+    --kissopen-subheader-inset: 4px;
+
+    /* Every scrolling list panel — the sidebar, the file listings, any column
+       of rows — is inset from both of its edges by the same number, so the gap
+       from the panel's left edge to a row equals the gap from a row to the
+       scrollbar. The custom track sits in the scroll area's adjoining grid
+       cell, so the promise holds whether or not overflow makes that cell 8px
+       wide.
+
+       A row's own horizontal padding is stated here too, because the two
+       together are what a reader sees on the trailing side: a row's last mark
+       lands `calc(var(--kissopen-panel-inset) + var(--kissopen-panel-row-padding))`
+       from the scrollbar, and a panel header padded by that same sum stands
+       over the rows it names. The leading side reads that way only in a flat
+       list — a tree puts its disclosure slot and its depth on top of the inset,
+       which is the indent doing its job.
+
+       A sidebar row spaces the marks at its trailing edge by this number too,
+       so the distance between a row's last marks is the distance the row keeps
+       from the panel edge. It states that gap in script rather than reading the
+       token, because the width it reserves there is a sum the script computes
+       (see SIDEBAR_TRAILING_GAP) — so changing this number is a decision to
+       make there as well as here.
+
+       This governs panels, not cards. A rounded modal — the command palette,
+       the command picker — sets its own inset and derives an inner corner from
+       it, because a nested curve is only parallel when the radius drops by the
+       inset it sits inside (see DESIGN.md, "Nested rounded corners"). Those
+       insets happen to be near this one; they are not this one, and pointing
+       them at this token would silently bend the corners derived from them the
+       day it changes. */
+    --kissopen-panel-inset: 6px;
+    --kissopen-panel-row-padding: 10px;
+
+    /* The bar a panel of rows reserves room for — see styles/scrollbar.css, and
+       note that code/content surfaces use the same track as an overlay and
+       reserve nothing at all.
+
+       The ink is the bar the reader sees. The edge inset is clear space on the
+       far side of it alone — between the ink and the panel's outer edge — so the
+       track is the sum of those two and nothing more. On the near side the bar
+       sits straight against the rows, which means the gap a reader sees there is
+       the scrollport's own inset and not a second number competing with it. */
+    --kissopen-scrollbar-ink: 6px;
+    --kissopen-scrollbar-edge-inset: 2px;
+    --kissopen-scrollbar-track: calc(
+        var(--kissopen-scrollbar-ink) + var(--kissopen-scrollbar-edge-inset)
+    );
+    --kissopen-scrollbar-color: transparent;
+    --kissopen-scrollbar-quiet-color: rgb(128 128 128 / 0.32);
+    --kissopen-scrollbar-active-color: rgb(128 128 128 / 0.5);
+    --kissopen-scrollbar-interaction-color: rgb(128 128 128 / 0.68);
+    --kissopen-scrollbar-rest-color: transparent;
+    --kissopen-scrollbar-surface-color: transparent;
+
+    --text: #000000;
+    --text-destructive: #f44336;
+    --text-secondary: #49454f;
+    --text-link: var(--home-accent);
+    --delete-action: #ff6b6b;
+    --warning-critical: #ff3b30;
+    --warning: #8e8e93;
+    --success: #34c759;
+    --surface: #ffffff;
+    --surface-ripple: rgb(0 0 0 / 0.08);
+    --surface-pressed: #f0f0f2;
+    --surface-selected: #eaeaea;
+    --surface-pressed-overlay: transparent;
+    --surface-high: #f8f8f8;
+    --surface-highest: #f0f0f0;
+    /* The surface turned inside out: near-black on a light appearance and
+       near-white on a dark one, always the opposite of what surrounds it. It is
+       for the rare band that has to be seen without claiming anything is wrong —
+       a colour would say error or warning, and neutral at full contrast says
+       only "read this". Not a container: it carries one line and no controls. */
+    --surface-inverse: #1c1c1e;
+    --text-inverse: #ffffff;
+    /* The paper a rendered web page sits on. It is the browser's canvas rather
+       than one of our surfaces, so it stays white in both appearances: a page
+       that sets no background of its own was written expecting white, and
+       darkening it under black text would only make the page unreadable. */
+    --page-canvas: #ffffff;
+    --divider: #eaeaea;
+    --shadow-color: rgb(0 0 0 / 0.1);
+    --shadow-opacity: 0.1;
+    --shadow-subtle: rgb(0 0 0 / 0.24);
+    --shadow-rail: rgb(0 0 0 / 28%);
+    --shadow-floating: rgb(0 0 0 / 0.45);
+    --shadow-elevated: rgb(0 0 0 / 0.5);
+    --overlay-backdrop: rgb(15 15 15 / 0.75);
+    --overlay-panel: rgb(0 0 0 / 0.48);
+    --groupped-background: #f5f5f5;
+    /* The connection rail: one step darker than the grouped sidebar beside it,
+       so the two read as separate strips without a divider between them. */
+    --rail-background: #e3e3e6;
+    --groupped-chevron: #49454f;
+    --groupped-section-title: #49454f;
+    --header-background: #ffffff;
+    --header-tint: #18171c;
+    --header-tint-secondary: #666666;
+    --switch-track-active: var(--home-accent);
+    --switch-track-inactive: #dddddd;
+    --switch-thumb-active: #ffffff;
+    --switch-thumb-inactive: #767577;
+    --fab-background: var(--home-accent);
+    --fab-background-pressed: var(--home-accent-strong);
+    --fab-icon: #ffffff;
+    --radio-active: var(--home-accent);
+    --radio-inactive: #c0c0c0;
+    --radio-dot: var(--home-accent);
+    --modal-border: rgb(0 0 0 / 0.1);
+    --button-primary-background: var(--home-accent);
+    --button-primary-tint: var(--home-on-accent);
+    --button-primary-ripple: rgb(255 255 255 / 0.16);
+    --button-primary-disabled: #c0c0c0;
+    /* The first-run and status-page backdrop: a gradient deep enough to carry white words. */
+    --onboarding-backdrop-start: #4338ca;
+    --onboarding-backdrop-middle: #6d28d9;
+    --onboarding-backdrop-end: #be185d;
+    --onboarding-backdrop-glow: rgb(255 255 255 / 0.14);
+    --onboarding-backdrop-bloom: rgb(244 114 182 / 0.3);
+    --onboarding-backdrop-ink: #ffffff;
+    --onboarding-backdrop-action-ink: #312e81;
+    --button-secondary-tint: #666666;
+    --input-background: #f5f5f5;
+    --input-text: #000000;
+    --input-placeholder: #999999;
+    --box-warning-background: #fff8f0;
+    --box-warning-border: #ff9500;
+    --box-warning-text: #ff9500;
+    --box-error-background: #fff0f0;
+    --box-error-border: #ff3b30;
+    --box-error-text: #ff3b30;
+    /* A reviewed action is worth noticing, not worth alarming over: a burnt
+       amber, muted well below the warning orange so a transcript full of
+       reviewed calls still reads as prose rather than as a wall of alerts. */
+    --review-accent: #a3690f;
+    /* A whole line of colour is far louder than a two-word mark, so an
+       activity row that turns entirely stays mostly text ink with the accent
+       stirred in: same weight as the prose around it, tinted enough to say
+       which line it is. Written as a mix rather than a pair of hex values so
+       it holds in both themes from the ink each one already defines — and so
+       the row's status dot stays the one full-strength colour. */
+    --activity-elevated-line: color-mix(in srgb, var(--review-accent) 40%, var(--text));
+    --activity-failed-line: color-mix(in srgb, var(--status-error) 40%, var(--text));
+
+    --status-connected: #34c759;
+    --status-connecting: #007aff;
+    --status-disconnected: #999999;
+    --status-error: #ff3b30;
+    --status-default: #8e8e93;
+    --permission-default: #8e8e93;
+    --permission-accept-edits: #007aff;
+    --permission-bypass: #ff9500;
+    --permission-plan: #34c759;
+    --permission-read-only: #8b8b8d;
+    --permission-safe-yolo: #ff6b35;
+    --permission-yolo: #dc143c;
+    --permission-button-allow-background: #34c759;
+    --permission-button-allow-text: #ffffff;
+    --permission-button-deny-background: #ff3b30;
+    --permission-button-deny-text: #ffffff;
+    --permission-button-allow-all-background: #007aff;
+    --permission-button-allow-all-text: #ffffff;
+    --permission-button-inactive-background: #e5e5ea;
+    --permission-button-inactive-border: #d1d1d6;
+    --permission-button-inactive-text: #8e8e93;
+    --permission-button-selected-background: #f2f2f7;
+    --permission-button-selected-border: #d1d1d6;
+    --permission-button-selected-text: #3c3c43;
+
+    --diff-outline: #e0e0e0;
+    --diff-success: #28a745;
+    --diff-error: #dc3545;
+    --diff-added-bg: #e6ffed;
+    --diff-added-border: #34d058;
+    --diff-added-text: #24292e;
+    --diff-removed-bg: #ffeef0;
+    --diff-removed-border: #d73a49;
+    --diff-removed-text: #24292e;
+    /* Code tokens — Pierre's own palette, which is what the file viewer and the
+       working-tree diff tokenize with, so an edited file matches a read one. */
+    --code-comment: #737373;
+    --code-string: #199f43;
+    --code-number: #1ca1c7;
+    --code-keyword: #d32a61;
+    --code-type: #a631be;
+    --code-function: #693acf;
+    --code-variable: #d47628;
+    --code-constant: #d5a910;
+    --code-operator: #08c0ef;
+    --code-punctuation: #636363;
+    --code-gutter: #737373;
+    --code-gutter-active: #525252;
+    --code-caret: #000000;
+    --code-selection: rgb(0 0 0 / 0.14);
+    --code-active-line: rgb(0 0 0 / 0.04);
+    /* Terminal selection is opaque on purpose. A translucent highlight takes
+       the colour of whatever it lands on, so a cell carrying an ANSI background
+       — the first column of a coloured prompt, the padding beside it — came out
+       a different shade from the plain cells in the same drag. */
+    --terminal-selection: #d4d4d8;
+    --diff-context-bg: #f6f8fa;
+    --diff-context-text: #586069;
+    --diff-line-number-bg: #f6f8fa;
+    --diff-line-number-text: #959da5;
+    --diff-hunk-header-bg: #f1f8ff;
+    --diff-hunk-header-text: #005cc5;
+    --diff-leading-space-dot: #e8e8e8;
+    --diff-inline-added-bg: #acffa6;
+    --diff-inline-added-text: #0a3f0a;
+    --diff-inline-removed-bg: #ffcecb;
+    --diff-inline-removed-text: #5a0a05;
+
+    --user-message-background: #f0eee6;
+    --user-message-text: #000000;
+    --agent-message-text: #000000;
+    --agent-event-text: #666666;
+    --syntax-keyword: #1d4ed8;
+    --syntax-string: #059669;
+    --syntax-comment: #6b7280;
+    --syntax-number: #0891b2;
+    --syntax-function: #9333ea;
+    --syntax-bracket-1: #ff6b6b;
+    --syntax-bracket-2: #4ecdc4;
+    --syntax-bracket-3: #45b7d1;
+    --syntax-bracket-4: #f7b731;
+    --syntax-bracket-5: #5f27cd;
+    --syntax-default: #374151;
+    --git-branch-text: #6b7280;
+    --git-file-count-text: #6b7280;
+    --git-added-text: #22c55e;
+    --git-removed-text: #ef4444;
+    --git-status-new: #2ea043;
+    --git-status-modified: #c2820a;
+    --git-status-renamed: #0969da;
+    --git-status-deleted: #cf222e;
+    --file-code: #2563eb;
+    --file-data: #b45309;
+    --file-style: #7c3aed;
+    --file-image: #0d9488;
+    --file-video: #db2777;
+    --file-audio: #c026d3;
+    --file-shell: #475569;
+    --file-secret: #b91c1c;
+    --file-archive: #a16207;
+    --file-prose: #0e7490;
+    --file-config: #6b7280;
+    --file-directory: #64748b;
+    --file-other: #6b7280;
+    /* The directory printed ahead of a file name. Lighter than ordinary
+       secondary text, because it sits immediately against the name and has to
+       read as its backdrop rather than as a second thing to read. */
+    --file-path-text: #9a969e;
+    --terminal-background: #1e1e1e;
+    --terminal-prompt: #34c759;
+    --terminal-command: #e0e0e0;
+    --terminal-stdout: #e0e0e0;
+    --terminal-stderr: #ffb86c;
+    --terminal-error: #ff5555;
+    --terminal-empty-output: #6272a4;
+
+    --kissopen-font-ui: "kissopen Figtree", system-ui, sans-serif;
+    --kissopen-chat-font-size: 14px;
+    --kissopen-chat-line-height: 22px;
+    --kissopen-font-mono: "kissopen Mono", ui-monospace, monospace;
+    --kissopen-font-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+    --kissopen-radius-sm: 6px;
+    --kissopen-radius-md: 10px;
+    --kissopen-radius-window: 8px;
+    --kissopen-radius-shell: 14px;
+    --kissopen-radius-pill: 999px;
+    /* A custom theme's background picture, behind the home page and the sidebar; none by default. */
+    --kissopen-wallpaper: none;
+    --kissopen-wallpaper-veil: transparent;
+    --kissopen-wallpaper-blur: 0px;
+    --kissopen-chat-measure: 880px;
+    /* The heading over a conversation may run wider than the transcript it names
+       — it is one line of chrome, not prose — but not to the window's full width,
+       where a long name and its path sprawl away from the column beneath them. */
+    --kissopen-chat-heading-measure: 1120px;
+    --kissopen-z-overlay: 1000;
+    /* Window chrome: what the window reports about itself, which has to be
+       legible over whatever the window is showing — including a modal. */
+    --kissopen-z-window-chrome: 1100;
+
+    --nl-kind-color: var(--text-link);
+    --nl-kind-soft: var(--surface-selected);
+
+    /* The home page and the first-run questions: a pale violet ground, white cards, one violet accent with a green and a peach beside it, and the landscape in the focus card. */
+    --home-bg: #f7f6fb;
+    --home-card: #ffffff;
+    --home-card-soft: #faf9fd;
+    --home-border: rgb(108 92 210 / 0.08);
+    --home-shadow: 0 1px 2px rgb(40 30 90 / 0.04), 0 10px 30px rgb(40 30 90 / 0.06);
+    --home-accent: #6b5bd2;
+    --home-accent-strong: #5646c0;
+    --home-accent-soft: #efecfd;
+    --home-hover: rgb(107 91 210 / 0.06);
+    --home-green: #3f9d67;
+    --home-green-soft: #e8f6ee;
+    --home-peach: #ee8a5e;
+    --home-peach-soft: #fff0e8;
+    --home-peach-text: #b5532b;
+    --home-muted: #6c6880;
+    --home-sky-top: #f6f1ff;
+    --home-sky-bottom: #fde9dc;
+    --home-hill-far: #d9d2f5;
+    --home-hill-mid: #c4bbee;
+    --home-hill-near: #aea3e3;
+    --home-trees: #8c80cf;
+    --home-sun: #f2b04a;
+    --home-on-accent: #ffffff;
+    --home-danger-soft: #fde7e7;
+    --home-danger-text: #b43c3c;
+    --home-shadow-accent: 0 6px 16px rgb(107 91 210 / 0.25);
+    --home-shadow-raised: 0 1px 2px rgb(40 30 90 / 0.04);
+    --home-shadow-hover: 0 8px 20px rgb(40 30 90 / 0.08);
+    --home-shadow-avatar: 0 2px 8px rgb(40 30 90 / 0.1);
+    --home-shadow-float: 0 12px 36px rgb(40 30 90 / 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+        --kissopen-brand-logo-source: url("./assets/brand/logo-white.png");
+        --kissopen-lockup-source: url("./assets/brand/lockup-dark.svg");
+        --brand-mark: #f3f5fe;
+        --brand-glow: rgb(145 132 217 / 0.5);
+        --brand-animation-glow: var(--brand-accent);
+        --brand-thinking-track: #2f2a52;
+        --brand-thinking-back: #3a3c50;
+        --brand-thinking-pulse: #cfc8f3;
+        --brand-thinking-glow: #9184d9;
+        --text: #ffffff;
+        --text-destructive: #f48fb1;
+        --text-secondary: #cac4d0;
+        --text-link: var(--home-accent);
+        --delete-action: #ff6b6b;
+        --warning-critical: #ff453a;
+        --warning: #8e8e93;
+        --success: #32d74b;
+        --surface: #212121;
+        --surface-ripple: rgb(255 255 255 / 0.08);
+        --surface-pressed: #2c2c2e;
+        --surface-selected: #2c2c2e;
+        --surface-pressed-overlay: transparent;
+        --surface-high: #171717;
+        --surface-highest: #292929;
+        --surface-inverse: #f2f2f7;
+        --text-inverse: #1c1c1e;
+        --divider: #292929;
+        --shadow-color: rgb(0 0 0 / 0.1);
+        --shadow-opacity: 0.1;
+        --shadow-subtle: rgb(0 0 0 / 0.24);
+        --shadow-rail: rgb(0 0 0 / 28%);
+        --shadow-floating: rgb(0 0 0 / 0.45);
+        --shadow-elevated: rgb(0 0 0 / 0.5);
+        --overlay-backdrop: rgb(15 15 15 / 0.75);
+        --overlay-panel: rgb(0 0 0 / 0.48);
+        --groupped-background: #1e1e1e;
+        --rail-background: #141416;
+        --groupped-chevron: #cac4d0;
+        --groupped-section-title: #cac4d0;
+        --header-background: #212121;
+        --header-tint: #ffffff;
+        --header-tint-secondary: #8e8e93;
+        --switch-track-active: var(--home-accent);
+        --switch-track-inactive: #3a393f;
+        --switch-thumb-active: #ffffff;
+        --switch-thumb-inactive: #767577;
+        --fab-background: var(--home-accent);
+        --fab-background-pressed: var(--home-accent-strong);
+        --fab-icon: #ffffff;
+        --radio-active: var(--home-accent);
+        --radio-inactive: #48484a;
+        --radio-dot: var(--home-accent);
+        --modal-border: rgb(255 255 255 / 0.1);
+        --button-primary-background: var(--home-accent);
+        --button-primary-tint: var(--home-on-accent);
+        --button-primary-ripple: rgb(255 255 255 / 0.16);
+        --button-primary-disabled: #c0c0c0;
+        /* The first-run and status-page backdrop: a gradient deep enough to carry white words. */
+        --onboarding-backdrop-start: #1e1b4b;
+        --onboarding-backdrop-middle: #3b0764;
+        --onboarding-backdrop-end: #500724;
+        --onboarding-backdrop-glow: rgb(255 255 255 / 0.08);
+        --onboarding-backdrop-bloom: rgb(244 114 182 / 0.16);
+        --onboarding-backdrop-ink: #ffffff;
+        --onboarding-backdrop-action-ink: #3b0764;
+        --button-secondary-tint: #8e8e93;
+        --input-background: #303030;
+        --input-text: #ffffff;
+        --input-placeholder: #8e8e93;
+        --box-warning-background: rgb(255 159 10 / 0.15);
+        --box-warning-border: #ff9f0a;
+        --box-warning-text: #ffab00;
+        --box-error-background: rgb(255 69 58 / 0.15);
+        --box-error-border: #ff453a;
+        --box-error-text: #ff6b6b;
+        --review-accent: #c8924e;
+        --status-connected: #34c759;
+        --status-connecting: #ffffff;
+        --status-disconnected: #8e8e93;
+        --status-error: #ff453a;
+        --status-default: #8e8e93;
+        --permission-default: #8e8e93;
+        --permission-accept-edits: #0a84ff;
+        --permission-bypass: #ff9f0a;
+        --permission-plan: #32d74b;
+        --permission-read-only: #98989d;
+        --permission-safe-yolo: #ff7a4c;
+        --permission-yolo: #ff453a;
+        --permission-button-allow-background: #32d74b;
+        --permission-button-allow-text: #ffffff;
+        --permission-button-deny-background: #ff453a;
+        --permission-button-deny-text: #ffffff;
+        --permission-button-allow-all-background: #0a84ff;
+        --permission-button-allow-all-text: #ffffff;
+        --permission-button-inactive-background: #2c2c2e;
+        --permission-button-inactive-border: #38383a;
+        --permission-button-inactive-text: #8e8e93;
+        --permission-button-selected-background: #1c1c1e;
+        --permission-button-selected-border: #38383a;
+        --permission-button-selected-text: #ffffff;
+        --diff-outline: #30363d;
+        --diff-success: #3fb950;
+        --diff-error: #f85149;
+        --diff-added-bg: #0d2e1f;
+        --diff-added-border: #3fb950;
+        --diff-added-text: #c9d1d9;
+        --diff-removed-bg: #3f1b23;
+        --diff-removed-border: #f85149;
+        --diff-removed-text: #c9d1d9;
+        --code-comment: #737373;
+        --code-string: #5ecc71;
+        --code-number: #68cdf2;
+        --code-keyword: #ff678d;
+        --code-type: #d568ea;
+        --code-function: #9d6afb;
+        --code-variable: #ffa359;
+        --code-constant: #ffd452;
+        --code-operator: #08c0ef;
+        --code-punctuation: #a3a3a3;
+        --code-gutter: #737373;
+        --code-gutter-active: #a3a3a3;
+        --code-caret: #ffffff;
+        --code-selection: rgb(255 255 255 / 0.18);
+        --code-active-line: rgb(255 255 255 / 0.05);
+        --terminal-selection: #45454b;
+        --diff-context-bg: #161b22;
+        --diff-context-text: #8b949e;
+        --diff-line-number-bg: #161b22;
+        --diff-line-number-text: #6e7681;
+        --diff-hunk-header-bg: #161b22;
+        --diff-hunk-header-text: #58a6ff;
+        --diff-leading-space-dot: #2a2a2a;
+        --diff-inline-added-bg: #2a5a2a;
+        --diff-inline-added-text: #7aff7a;
+        --diff-inline-removed-bg: #5a2a2a;
+        --diff-inline-removed-text: #ff7a7a;
+        --user-message-background: #2c2c2e;
+        --user-message-text: #ffffff;
+        --agent-message-text: #ffffff;
+        --agent-event-text: #8e8e93;
+        --syntax-keyword: #569cd6;
+        --syntax-string: #ce9178;
+        --syntax-comment: #6a9955;
+        --syntax-number: #b5cea8;
+        --syntax-function: #dcdcaa;
+        --syntax-bracket-1: #ffd700;
+        --syntax-bracket-2: #da70d6;
+        --syntax-bracket-3: #179fff;
+        --syntax-bracket-4: #ff8c00;
+        --syntax-bracket-5: #00ff00;
+        --syntax-default: #d4d4d4;
+        --git-branch-text: #8e8e93;
+        --git-file-count-text: #8e8e93;
+        --git-added-text: #34c759;
+        --git-removed-text: #ff453a;
+        --git-status-new: #3fb950;
+        --git-status-modified: #e3b341;
+        --git-status-renamed: #58a6ff;
+        --git-status-deleted: #f85149;
+        --file-code: #6ea8fe;
+        --file-data: #e0a458;
+        --file-style: #b794f6;
+        --file-image: #4dd4c0;
+        --file-video: #f472b6;
+        --file-audio: #e879f9;
+        --file-shell: #a3b3c7;
+        --file-secret: #ff7b72;
+        --file-archive: #d9a441;
+        --file-prose: #4cc9d9;
+        --file-config: #9ca3af;
+        --file-directory: #93a4b8;
+        --file-other: #9ca3af;
+        --file-path-text: #79747e;
+        --terminal-background: #1e1e1e;
+        --terminal-prompt: #32d74b;
+        --terminal-command: #e0e0e0;
+        --terminal-stdout: #e0e0e0;
+        --terminal-stderr: #ffb86c;
+        --terminal-error: #ff6b6b;
+        --terminal-empty-output: #7b7b93;
+
+        /* The home page and the first-run questions: a pale violet ground, white cards, one violet accent with a green and a peach beside it, and the landscape in the focus card. */
+        --home-bg: #151519;
+        --home-card: #1f1f25;
+        --home-card-soft: #25252c;
+        --home-border: rgb(255 255 255 / 0.06);
+        --home-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+        --home-accent: #a597f3;
+        --home-accent-strong: #b9aef7;
+        --home-accent-soft: #2c2945;
+        --home-hover: rgb(255 255 255 / 0.05);
+        --home-green: #6cc792;
+        --home-green-soft: #1c3226;
+        --home-peach: #f3a27d;
+        --home-peach-soft: #3a2a22;
+        --home-peach-text: #f5b393;
+        --home-muted: #a9a5b8;
+        --home-sky-top: #2a2744;
+        --home-sky-bottom: #3d2f3a;
+        --home-hill-far: #3b3761;
+        --home-hill-mid: #34305a;
+        --home-hill-near: #2c2850;
+        --home-trees: #4b4585;
+        --home-sun: #f5c26b;
+        --home-on-accent: #16131f;
+        --home-danger-soft: #3d2224;
+        --home-danger-text: #f19a9a;
+        --home-shadow-accent: 0 6px 16px rgb(0 0 0 / 0.35);
+        --home-shadow-raised: 0 1px 2px rgb(0 0 0 / 0.3);
+        --home-shadow-hover: 0 8px 20px rgb(0 0 0 / 0.35);
+        --home-shadow-avatar: 0 2px 8px rgb(0 0 0 / 0.35);
+        --home-shadow-float: 0 12px 36px rgb(0 0 0 / 0.45);
+    }
+}
+
+/* Explicit preview/test override. */
+.kissopen-theme-dark {
+    color-scheme: dark;
+    --kissopen-brand-logo-source: url("./assets/brand/logo-white.png");
+    --kissopen-lockup-source: url("./assets/brand/lockup-dark.svg");
+    --brand-mark: #f3f5fe;
+    --brand-glow: rgb(145 132 217 / 0.5);
+    --brand-animation-glow: var(--brand-accent);
+    --brand-thinking-track: #2f2a52;
+    --brand-thinking-back: #3a3c50;
+    --brand-thinking-pulse: #cfc8f3;
+    --brand-thinking-glow: #9184d9;
+    --text: #ffffff;
+    --text-destructive: #f48fb1;
+    --text-secondary: #cac4d0;
+    --text-link: var(--home-accent);
+    --delete-action: #ff6b6b;
+    --warning-critical: #ff453a;
+    --warning: #8e8e93;
+    --success: #32d74b;
+    --surface: #212121;
+    --surface-ripple: rgb(255 255 255 / 0.08);
+    --surface-pressed: #2c2c2e;
+    --surface-selected: #2c2c2e;
+    --surface-pressed-overlay: transparent;
+    --surface-high: #171717;
+    --surface-highest: #292929;
+    --surface-inverse: #f2f2f7;
+    --text-inverse: #1c1c1e;
+    --divider: #292929;
+    --shadow-color: rgb(0 0 0 / 0.1);
+    --shadow-opacity: 0.1;
+    --shadow-subtle: rgb(0 0 0 / 0.24);
+    --shadow-rail: rgb(0 0 0 / 28%);
+    --shadow-floating: rgb(0 0 0 / 0.45);
+    --shadow-elevated: rgb(0 0 0 / 0.5);
+    --overlay-backdrop: rgb(15 15 15 / 0.75);
+    --overlay-panel: rgb(0 0 0 / 0.48);
+    --groupped-background: #1e1e1e;
+    --rail-background: #141416;
+    --groupped-chevron: #cac4d0;
+    --groupped-section-title: #cac4d0;
+    --header-background: #212121;
+    --header-tint: #ffffff;
+    --header-tint-secondary: #8e8e93;
+    --switch-track-active: var(--home-accent);
+    --switch-track-inactive: #3a393f;
+    --switch-thumb-active: #ffffff;
+    --switch-thumb-inactive: #767577;
+    --fab-background: var(--home-accent);
+    --fab-background-pressed: var(--home-accent-strong);
+    --fab-icon: #ffffff;
+    --radio-active: var(--home-accent);
+    --radio-inactive: #48484a;
+    --radio-dot: var(--home-accent);
+    --modal-border: rgb(255 255 255 / 0.1);
+    --button-primary-background: var(--home-accent);
+    --button-primary-tint: var(--home-on-accent);
+    --button-primary-ripple: rgb(255 255 255 / 0.16);
+    --button-primary-disabled: #c0c0c0;
+    /* The first-run and status-page backdrop: a gradient deep enough to carry white words. */
+    --onboarding-backdrop-start: #1e1b4b;
+    --onboarding-backdrop-middle: #3b0764;
+    --onboarding-backdrop-end: #500724;
+    --onboarding-backdrop-glow: rgb(255 255 255 / 0.08);
+    --onboarding-backdrop-bloom: rgb(244 114 182 / 0.16);
+    --onboarding-backdrop-ink: #ffffff;
+    --onboarding-backdrop-action-ink: #3b0764;
+    --button-secondary-tint: #8e8e93;
+    --input-background: #303030;
+    --input-text: #ffffff;
+    --input-placeholder: #8e8e93;
+    --box-warning-background: rgb(255 159 10 / 0.15);
+    --box-warning-border: #ff9f0a;
+    --box-warning-text: #ffab00;
+    --box-error-background: rgb(255 69 58 / 0.15);
+    --box-error-border: #ff453a;
+    --box-error-text: #ff6b6b;
+    --review-accent: #c8924e;
+    --status-connected: #34c759;
+    --status-connecting: #ffffff;
+    --status-disconnected: #8e8e93;
+    --status-error: #ff453a;
+    --status-default: #8e8e93;
+    --permission-default: #8e8e93;
+    --permission-accept-edits: #0a84ff;
+    --permission-bypass: #ff9f0a;
+    --permission-plan: #32d74b;
+    --permission-read-only: #98989d;
+    --permission-safe-yolo: #ff7a4c;
+    --permission-yolo: #ff453a;
+    --permission-button-allow-background: #32d74b;
+    --permission-button-allow-text: #ffffff;
+    --permission-button-deny-background: #ff453a;
+    --permission-button-deny-text: #ffffff;
+    --permission-button-allow-all-background: #0a84ff;
+    --permission-button-allow-all-text: #ffffff;
+    --permission-button-inactive-background: #2c2c2e;
+    --permission-button-inactive-border: #38383a;
+    --permission-button-inactive-text: #8e8e93;
+    --permission-button-selected-background: #1c1c1e;
+    --permission-button-selected-border: #38383a;
+    --permission-button-selected-text: #ffffff;
+    --diff-outline: #30363d;
+    --diff-success: #3fb950;
+    --diff-error: #f85149;
+    --diff-added-bg: #0d2e1f;
+    --diff-added-border: #3fb950;
+    --diff-added-text: #c9d1d9;
+    --diff-removed-bg: #3f1b23;
+    --diff-removed-border: #f85149;
+    --diff-removed-text: #c9d1d9;
+    --code-comment: #737373;
+    --code-string: #5ecc71;
+    --code-number: #68cdf2;
+    --code-keyword: #ff678d;
+    --code-type: #d568ea;
+    --code-function: #9d6afb;
+    --code-variable: #ffa359;
+    --code-constant: #ffd452;
+    --code-operator: #08c0ef;
+    --code-punctuation: #a3a3a3;
+    --code-gutter: #737373;
+    --code-gutter-active: #a3a3a3;
+    --code-caret: #ffffff;
+    --code-selection: rgb(255 255 255 / 0.18);
+    --code-active-line: rgb(255 255 255 / 0.05);
+    --terminal-selection: #45454b;
+    --diff-context-bg: #161b22;
+    --diff-context-text: #8b949e;
+    --diff-line-number-bg: #161b22;
+    --diff-line-number-text: #6e7681;
+    --diff-hunk-header-bg: #161b22;
+    --diff-hunk-header-text: #58a6ff;
+    --diff-leading-space-dot: #2a2a2a;
+    --diff-inline-added-bg: #2a5a2a;
+    --diff-inline-added-text: #7aff7a;
+    --diff-inline-removed-bg: #5a2a2a;
+    --diff-inline-removed-text: #ff7a7a;
+    --user-message-background: #2c2c2e;
+    --user-message-text: #ffffff;
+    --agent-message-text: #ffffff;
+    --agent-event-text: #8e8e93;
+    --syntax-keyword: #569cd6;
+    --syntax-string: #ce9178;
+    --syntax-comment: #6a9955;
+    --syntax-number: #b5cea8;
+    --syntax-function: #dcdcaa;
+    --syntax-bracket-1: #ffd700;
+    --syntax-bracket-2: #da70d6;
+    --syntax-bracket-3: #179fff;
+    --syntax-bracket-4: #ff8c00;
+    --syntax-bracket-5: #00ff00;
+    --syntax-default: #d4d4d4;
+    --git-branch-text: #8e8e93;
+    --git-file-count-text: #8e8e93;
+    --git-added-text: #34c759;
+    --git-removed-text: #ff453a;
+    --git-status-new: #3fb950;
+    --git-status-modified: #e3b341;
+    --git-status-renamed: #58a6ff;
+    --git-status-deleted: #f85149;
+    --file-code: #6ea8fe;
+    --file-data: #e0a458;
+    --file-style: #b794f6;
+    --file-image: #4dd4c0;
+    --file-video: #f472b6;
+    --file-audio: #e879f9;
+    --file-shell: #a3b3c7;
+    --file-secret: #ff7b72;
+    --file-archive: #d9a441;
+    --file-prose: #4cc9d9;
+    --file-config: #9ca3af;
+    --file-directory: #93a4b8;
+    --file-other: #9ca3af;
+    --file-path-text: #79747e;
+    --terminal-background: #1e1e1e;
+    --terminal-prompt: #32d74b;
+    --terminal-command: #e0e0e0;
+    --terminal-stdout: #e0e0e0;
+    --terminal-stderr: #ffb86c;
+    --terminal-error: #ff6b6b;
+    --terminal-empty-output: #7b7b93;
+
+    /* The home page and the first-run questions: a pale violet ground, white cards, one violet accent with a green and a peach beside it, and the landscape in the focus card. */
+    --home-bg: #151519;
+    --home-card: #1f1f25;
+    --home-card-soft: #25252c;
+    --home-border: rgb(255 255 255 / 0.06);
+    --home-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+    --home-accent: #a597f3;
+    --home-accent-strong: #b9aef7;
+    --home-accent-soft: #2c2945;
+    --home-hover: rgb(255 255 255 / 0.05);
+    --home-green: #6cc792;
+    --home-green-soft: #1c3226;
+    --home-peach: #f3a27d;
+    --home-peach-soft: #3a2a22;
+    --home-peach-text: #f5b393;
+    --home-muted: #a9a5b8;
+    --home-sky-top: #2a2744;
+    --home-sky-bottom: #3d2f3a;
+    --home-hill-far: #3b3761;
+    --home-hill-mid: #34305a;
+    --home-hill-near: #2c2850;
+    --home-trees: #4b4585;
+    --home-sun: #f5c26b;
+    --home-on-accent: #16131f;
+    --home-danger-soft: #3d2224;
+    --home-danger-text: #f19a9a;
+    --home-shadow-accent: 0 6px 16px rgb(0 0 0 / 0.35);
+    --home-shadow-raised: 0 1px 2px rgb(0 0 0 / 0.3);
+    --home-shadow-hover: 0 8px 20px rgb(0 0 0 / 0.35);
+    --home-shadow-avatar: 0 2px 8px rgb(0 0 0 / 0.35);
+    --home-shadow-float: 0 12px 36px rgb(0 0 0 / 0.45);
+}
+
+/* ThemeScope intentionally has no layout box. */
+.kissopen-theme-scope {
+    display: contents;
+}
+
+.kissopen-box {
+    display: block;
+    box-sizing: border-box;
+}

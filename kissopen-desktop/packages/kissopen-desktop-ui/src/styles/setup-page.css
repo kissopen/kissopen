@@ -1,0 +1,556 @@
+/*
+ * C-252 SetupPage — one step of setup as one centred column.
+ *
+ * The column is capped at a readable measure and centred in the window on both
+ * axes, so a page carrying only a title looks deliberate rather than stranded
+ * at the top of an empty screen. It paints the same surface the welcome screen
+ * and the splash paint, so moving between them changes the words rather than
+ * the scenery.
+ *
+ * The body scrolls when a page is taller than the window — the install terminal
+ * is — and centres while it fits, using `safe center` so a tall page never has
+ * its head clipped above the scroll origin.
+ *
+ * The drag lane is an absolutely positioned overlay outside the flow: the column
+ * is laid out as if it were not there, and it stays pinned to the window's top
+ * rather than scrolling away with the content. Every dimension is on the 4px
+ * grid.
+ */
+
+.kissopen-setup-page,
+.kissopen-setup-page__body,
+.kissopen-setup-page__stage,
+.kissopen-setup-page__title,
+.kissopen-setup-page__copy,
+.kissopen-setup-page__command,
+.kissopen-setup-page__progress,
+.kissopen-setup-page__progress-track,
+.kissopen-setup-page__progress-fill,
+.kissopen-setup-page__progress-line,
+.kissopen-setup-page__slot,
+.kissopen-local-onboarding__machine-status,
+.kissopen-local-onboarding__machine-progress,
+.kissopen-local-onboarding__machine-assistants {
+    box-sizing: border-box;
+}
+
+.kissopen-local-onboarding__mobile .kissopen-setup-page__body {
+    gap: 16px;
+}
+
+.kissopen-setup-handoff,
+.kissopen-setup-handoff__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+}
+
+.kissopen-setup-handoff {
+    height: 100%;
+    background: var(--surface);
+}
+
+.kissopen-local-onboarding__mobile-actions,
+.kissopen-local-onboarding__mobile-pairing-body,
+.kissopen-local-onboarding__mobile-waiting {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.kissopen-local-onboarding__mobile-actions,
+.kissopen-local-onboarding__mobile-pairing-body {
+    flex-direction: column;
+    width: 100%;
+}
+
+.kissopen-local-onboarding__mobile-actions {
+    gap: 4px;
+}
+
+.kissopen-local-onboarding__mobile-pairing-body {
+    gap: 12px;
+}
+
+.kissopen-local-onboarding__mobile-waiting {
+    gap: 8px;
+    color: color-mix(in srgb, var(--onboarding-backdrop-ink) 78%, transparent);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-local-onboarding__profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 24px;
+    align-self: center;
+}
+
+.kissopen-setup-page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-setup-page > .kissopen-window-drag-region {
+    z-index: 2;
+}
+
+.kissopen-setup-page__scroll {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+}
+
+.kissopen-setup-page__scroll-viewport {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: safe center;
+    overflow: auto;
+}
+
+.kissopen-setup-page__body {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 560px;
+    padding: 40px;
+}
+
+.kissopen-setup-page__steps {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: none;
+    justify-content: center;
+    padding: 32px 32px 8px;
+}
+
+.kissopen-setup-page__heading {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: inherit;
+    width: 100%;
+}
+
+/* The sky remains one stable full-window layer while a stage changes. Only the
+   content remounts and dissolves into place, so a background shared by two
+   adjacent setup states never flashes or moves. */
+.kissopen-setup-page[data-transition] .kissopen-setup-page__body {
+    animation: kissopen-setup-page-crossfade-in 320ms ease both;
+}
+
+@keyframes kissopen-setup-page-crossfade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* First-run pages use the same photographic treatment as the welcome deck:
+   white words and one white primary action in either appearance. Functional
+   wells such as commands and text inputs retain their themed surfaces. */
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-page__title,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-page__copy,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-page__progress-line,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-page__progress-label,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-page__progress-detail,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-assistants__mark,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-assistants__name,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-assistants__detail,
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-text-field__label {
+    color: var(--onboarding-backdrop-ink);
+}
+
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-page__progress-track {
+    background: color-mix(in srgb, var(--onboarding-backdrop-ink) 28%, transparent);
+}
+
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-setup-page__progress-fill,
+.kissopen-setup-page[data-backdrop="sky"]
+    .kissopen-setup-page__progress[data-state="waiting"]
+    .kissopen-setup-page__progress-track::after {
+    background: var(--onboarding-backdrop-ink);
+}
+
+/* The same progress mark can sit directly on a dark photographic surface
+   without inheriting the page shell that normally supplies this treatment. */
+.kissopen-setup-page__progress[data-tone="inverse"] .kissopen-setup-page__progress-line,
+.kissopen-setup-page__progress[data-tone="inverse"] .kissopen-setup-page__progress-label,
+.kissopen-setup-page__progress[data-tone="inverse"] .kissopen-setup-page__progress-detail {
+    color: var(--button-primary-tint);
+}
+
+.kissopen-setup-page__progress[data-tone="inverse"] .kissopen-setup-page__progress-track {
+    background: color-mix(in srgb, var(--button-primary-tint) 28%, transparent);
+}
+
+.kissopen-setup-page__progress[data-tone="inverse"] .kissopen-setup-page__progress-fill,
+.kissopen-setup-page__progress[data-tone="inverse"][data-state="waiting"]
+    .kissopen-setup-page__progress-track::after {
+    background: var(--button-primary-tint);
+}
+
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-button[data-variant="primary"] {
+    background: var(--onboarding-backdrop-ink);
+    color: var(--onboarding-backdrop-action-ink);
+}
+
+.kissopen-setup-page[data-backdrop="sky"] .kissopen-button[data-variant="ghost"] {
+    color: color-mix(in srgb, white 78%, transparent);
+}
+
+.kissopen-setup-page[data-backdrop="sky"]
+    .kissopen-button[data-variant="ghost"]:hover:not(:disabled) {
+    background: color-mix(in srgb, white 12%, transparent);
+    color: white;
+}
+
+.kissopen-setup-page[data-backdrop="sky"]
+    .kissopen-button[data-variant="primary"]:hover:not(:disabled) {
+    background: color-mix(
+        in srgb,
+        var(--onboarding-backdrop-action-ink) 8%,
+        var(--onboarding-backdrop-ink)
+    );
+}
+
+/* Fixed square whether the art arrives or not: the scene renders nothing until
+   its worker runtime loads, and never in an engine that cannot have one, so
+   reserving the box here is what stops the title jumping when it appears. */
+.kissopen-setup-page__stage {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+}
+
+.kissopen-setup-page__title {
+    margin: 0;
+    color: var(--text);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.03em;
+    text-align: center;
+}
+
+.kissopen-setup-page__copy {
+    max-width: 400px;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: center;
+}
+
+/*
+ * Something to type, so it is selectable and looks it: the monospace face on a
+ * raised well. `user-select` is set explicitly because the surrounding chrome
+ * of a desktop window is commonly unselectable, and a command nobody can copy
+ * is worse than no command at all.
+ */
+.kissopen-setup-page__command {
+    max-width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    background: var(--surface-high);
+    color: var(--text);
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+    line-height: 20px;
+    /* Wraps rather than scrolling: a scrollport may carry no padding of its own,
+       and a horizontal scrollbar on a centred page is a worse way to read a long
+       command than a second line. */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    user-select: text;
+}
+
+/* The page's own body takes the full measure: a fork, a terminal, or a notice
+   is a block, and shrink-wrapping it to its content would leave it ragged
+   against the centred words above. */
+.kissopen-setup-page__slot {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Download, launch, discovery, and verification rewrite one retained frame.
+   The subscription copy fits three lines; reserving them from the first paint
+   keeps the status region and the owl on the same coordinates as words change. */
+.kissopen-local-onboarding__machine-setup .kissopen-setup-page__body {
+    gap: 16px;
+}
+
+.kissopen-local-onboarding__machine-setup .kissopen-setup-page__title {
+    white-space: nowrap;
+}
+
+.kissopen-local-onboarding__machine-setup .kissopen-setup-page__copy {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 72px;
+}
+
+/* Both lifecycle layers occupy this one reserved region during the handoff.
+   Keeping the region fixed means neither the progress line nor the harness row
+   can move the title, copy, or surrounding column when it becomes active. */
+.kissopen-local-onboarding__machine-setup .kissopen-setup-page__slot,
+.kissopen-local-onboarding__machine-status {
+    position: relative;
+    flex: none;
+    width: 100%;
+    height: 216px;
+}
+
+.kissopen-local-onboarding__machine-progress,
+.kissopen-local-onboarding__machine-assistants {
+    /* Crossfade layers must share the exact reserved status rectangle while both are painted. */
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    transition: opacity 180ms ease;
+}
+
+.kissopen-local-onboarding__machine-progress {
+    opacity: 1;
+}
+
+.kissopen-local-onboarding__machine-progress .kissopen-setup-page__progress {
+    width: 400px;
+}
+
+.kissopen-local-onboarding__machine-assistants {
+    gap: 48px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kissopen-local-onboarding__machine-actions {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 44px;
+}
+
+.kissopen-local-onboarding__machine-status[data-view="assistants"]
+    .kissopen-local-onboarding__machine-progress {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kissopen-local-onboarding__machine-status[data-view="assistants"]
+    .kissopen-local-onboarding__machine-assistants {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 120ms;
+}
+
+/*
+ * The action's progress, standing exactly where the action stood.
+ *
+ * 36px is the height of the medium button it replaces, so pressing that button
+ * swaps what the page says without moving a single line of it. The measure is
+ * narrower than the copy above on purpose: a bar as wide as a paragraph reads as
+ * a divider, and one this length is read as a quantity.
+ */
+.kissopen-setup-page__progress {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    width: 280px;
+    min-height: 36px;
+    animation: kissopen-setup-page-progress-in 160ms ease-out both;
+}
+
+@keyframes kissopen-setup-page-progress-in {
+    from {
+        transform: translateY(4px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.kissopen-setup-page__progress-track {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    height: 4px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-selected);
+}
+
+/*
+ * The unmeasured sweep, on the track rather than on the fill.
+ *
+ * It used to be the fill itself, widened to a travelling segment, and that made
+ * the first real number a lie in the wrong direction: the fill's computed width
+ * was the segment's, so the moment bytes were counted the bar animated from
+ * whatever the sweep happened to be to the true fraction — visibly shrinking on
+ * any download whose first report was under a third. Kept apart, the fill leaves
+ * zero exactly once, in the direction a download actually goes.
+ */
+.kissopen-setup-page__progress[data-state="waiting"] .kissopen-setup-page__progress-track::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: 35%;
+    border-radius: inherit;
+    background: var(--text);
+    animation: kissopen-setup-page-progress-sweep 1.15s ease-in-out infinite;
+}
+
+/*
+ * The fill is the full ink of the page rather than an accent: this bar is the
+ * only thing moving on the screen while it is up, and it means the same thing
+ * the primary button meant a moment ago.
+ *
+ * The width is eased because the bytes arrive in bursts. Reported honestly and
+ * drawn honestly, a fast archive would step the bar in visible jumps; a short
+ * ease turns the same truthful numbers into one continuous movement without
+ * ever showing a position the download has not reached.
+ */
+.kissopen-setup-page__progress-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--text);
+    transition: width 260ms ease-out;
+}
+
+/* Grows from empty even when its first paint already carries a number — an
+   archive small enough to be part-way down before the bar exists still starts
+   at zero, because a bar that appears half full reads as a bar that lost the
+   beginning. */
+@starting-style {
+    .kissopen-setup-page__progress-fill {
+        width: 0;
+    }
+}
+
+/* Nothing is measured yet, so nothing is claimed: the fill stays at zero and
+   the track's own sweep says "running" without asserting a position. */
+.kissopen-setup-page__progress[data-state="waiting"] .kissopen-setup-page__progress-fill {
+    width: 0;
+}
+
+@keyframes kissopen-setup-page-progress-sweep {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(286%);
+    }
+}
+
+.kissopen-setup-page__progress-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.kissopen-setup-page__progress-label {
+    flex: none;
+    color: var(--text);
+    font-weight: 500;
+}
+
+/* Tabular figures so a count that changes several times a second changes its
+   digits rather than its width. */
+.kissopen-setup-page__progress-detail {
+    overflow: hidden;
+    min-width: 0;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*
+ * Reduced motion keeps every fact and drops every movement: the bar still fills
+ * to the fraction it has reached, and the unmeasured state becomes a dimmed
+ * full track — visibly not a finished download, and visibly not stalled at zero.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-setup-page[data-transition] .kissopen-setup-page__body {
+        animation-duration: 1ms;
+    }
+
+    .kissopen-setup-page__progress {
+        animation: none;
+    }
+
+    .kissopen-local-onboarding__machine-progress,
+    .kissopen-local-onboarding__machine-assistants {
+        transition: none;
+    }
+
+    .kissopen-setup-page__progress-fill {
+        transition: none;
+    }
+
+    .kissopen-setup-page__progress[data-state="waiting"] .kissopen-setup-page__progress-fill {
+        width: 100%;
+        opacity: 0.4;
+    }
+
+    .kissopen-setup-page__progress[data-state="waiting"]
+        .kissopen-setup-page__progress-track::after {
+        content: none;
+    }
+}

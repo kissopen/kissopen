@@ -1,0 +1,44 @@
+.kissopen-conversation-usage-limit {
+    box-sizing: border-box;
+    width: 100%;
+    /* Narrow panes need their own width, not the browser window's breakpoint.
+       Mirrored in conversationRowHeight's usage-limit geometry. */
+    padding: 8px clamp(12px, calc(100% - 424px), 96px) 8px clamp(12px, calc(100% - 378px), 30px);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+}
+.kissopen-message--activity-lead .kissopen-conversation-usage-limit {
+    padding-inline: 0;
+}
+.kissopen-conversation-usage-limit__card {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--modal-border);
+    border-radius: 16px;
+    background: var(--surface);
+}
+.kissopen-conversation-usage-limit__icon {
+    display: flex;
+    flex: none;
+    padding-top: 2px;
+    color: var(--text-secondary);
+}
+.kissopen-conversation-usage-limit__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 20px;
+    overflow-wrap: anywhere;
+}
+.kissopen-conversation-usage-limit__content strong {
+    font-weight: 600;
+}
+.kissopen-conversation-usage-limit__content p {
+    margin: 0;
+    color: var(--text-secondary);
+}

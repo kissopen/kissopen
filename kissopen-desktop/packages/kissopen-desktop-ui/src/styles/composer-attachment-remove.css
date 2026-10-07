@@ -1,0 +1,48 @@
+.kissopen-composer-attachment-remove {
+    position: absolute;
+    z-index: 3;
+    top: -14px;
+    right: -14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text);
+    cursor: pointer;
+    appearance: none;
+}
+
+/* The full target is centered on the attachment corner. The smaller visible
+ * disc keeps that geometry legible without putting a dark control over the
+ * image itself. */
+.kissopen-composer-attachment-remove::before {
+    position: absolute;
+    inset: 5px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: 50%;
+    box-shadow: 0 1px 2px color-mix(in srgb, black 18%, transparent);
+    content: "";
+}
+
+.kissopen-composer-attachment-remove .kissopen-icon {
+    position: relative;
+}
+
+.kissopen-composer-attachment-remove:hover::before {
+    background: var(--surface-ripple);
+}
+
+.kissopen-composer-attachment-remove:focus-visible {
+    outline: none;
+}
+
+.kissopen-composer-attachment-remove:focus-visible::before {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}

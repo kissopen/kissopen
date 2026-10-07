@@ -1,0 +1,191 @@
+.kissopen-delegated-agent,
+.kissopen-delegated-agent * {
+    box-sizing: border-box;
+}
+
+.kissopen-delegated-agent-entry {
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-delegated-agent-entry--trace {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding-right: 20px;
+}
+
+.kissopen-delegated-agent-entry--trace > .kissopen-delegated-agent {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    padding-right: 0;
+}
+
+.kissopen-delegated-agent-entry--trace > .kissopen-agent-trace-row {
+    flex: none;
+    margin-top: 2px;
+}
+
+.kissopen-delegated-agent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    height: 44px;
+    padding: 2px 20px 2px 30px;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-delegated-agent[data-placement="panel"] {
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+.kissopen-message--activity-lead .kissopen-delegated-agent {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.kissopen-delegated-agent__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1 1 auto;
+    width: auto;
+    height: 40px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+
+.kissopen-delegated-agent__trailing {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    height: 40px;
+}
+
+.kissopen-delegated-agent__row[data-interactive] {
+    cursor: pointer;
+}
+
+/* A child with no open action is still a readout, not a dimmed dead control. */
+.kissopen-delegated-agent__row:disabled {
+    opacity: 1;
+}
+
+.kissopen-delegated-agent__row:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+.kissopen-delegated-agent__glyph {
+    display: flex;
+    flex: 0 0 14px;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.kissopen-delegated-agent__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.kissopen-delegated-agent__primary {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    height: 20px;
+    line-height: 20px;
+}
+
+.kissopen-delegated-agent__verb {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+/* Same argument treatment as a focused native tool row. The task and model
+   are both inputs to Agent, not a second title/status hierarchy. */
+.kissopen-delegated-agent__arguments {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--warning);
+    font-family: var(--kissopen-font-ui);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-delegated-agent__argument,
+.kissopen-delegated-agent__task,
+.kissopen-delegated-agent__model {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-delegated-agent__argument {
+    flex: 0 1 auto;
+}
+
+.kissopen-delegated-agent__task {
+    flex: 0 1 auto;
+}
+
+.kissopen-delegated-agent__model {
+    flex: 1 1 auto;
+}
+
+.kissopen-delegated-agent__arguments > span[aria-hidden] {
+    flex: none;
+    color: var(--input-placeholder);
+}
+
+.kissopen-delegated-agent__meta {
+    display: flex;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 14px;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+.kissopen-delegated-agent__meta > span:not([aria-hidden]) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kissopen-delegated-agent__meta > span[aria-hidden] {
+    flex: none;
+    color: var(--input-placeholder);
+}

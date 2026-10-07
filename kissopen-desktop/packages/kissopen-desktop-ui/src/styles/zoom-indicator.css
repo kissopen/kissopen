@@ -1,0 +1,46 @@
+/*
+ * The zoom read-out: a chip at the top of the window saying what scale the
+ * window is now at, the way a browser does.
+ *
+ * It is quoted from the Command hint's cap rather than wearing it. A cap is a
+ * container for key cells at fixed advances with a per-engine baseline
+ * correction, and a percentage is not a key — putting a bare number inside one
+ * inherits the type but none of the structure the type was calibrated in, and
+ * ties this read-out to every later change to how a key is drawn. The four
+ * declarations they genuinely share are stated here instead, and the padding is
+ * a read-out's rather than a cap's, so "150%" is not crowded.
+ *
+ * It sits above the overlay layer: zoom is what the window is doing, and the
+ * answer has to be legible over whatever the window happens to be showing.
+ */
+.kissopen-zoom-indicator {
+    position: fixed;
+    z-index: var(--kissopen-z-window-chrome);
+    top: 10px;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--input-background);
+    font-family: var(--kissopen-font-mono);
+    font-size: 10.8px;
+    font-weight: 500;
+    line-height: 22px;
+    color: var(--text-secondary);
+    font-synthesis: none;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateX(-50%);
+    /* The fade is the component's own clock: a caller restarts it by changing
+       the element's key rather than by holding a timer. */
+    animation: kissopen-zoom-indicator-fade 360ms ease 1100ms forwards;
+}
+
+@keyframes kissopen-zoom-indicator-fade {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}

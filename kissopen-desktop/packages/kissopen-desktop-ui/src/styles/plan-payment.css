@@ -1,0 +1,98 @@
+/*
+ * C-290 PlanPaymentDialog — paying for a plan without leaving the app.
+ *
+ * The stage keeps one height whatever it shows, so switching method or the
+ * code turning into "paid" does not make the dialog jump.
+ */
+
+.kissopen-plan-payment__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--kissopen-font-ui);
+    color: var(--text);
+}
+
+.kissopen-plan-payment__amount {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+}
+
+.kissopen-plan-payment__money {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.kissopen-plan-payment__period {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.kissopen-plan-payment__methods {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 10px;
+    background: var(--surface-highest);
+}
+
+.kissopen-plan-payment__method {
+    min-width: 88px;
+    padding: 6px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.kissopen-plan-payment__method[aria-checked="true"] {
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: 0 1px 3px var(--shadow-floating);
+}
+
+.kissopen-plan-payment__method:disabled {
+    cursor: default;
+}
+
+.kissopen-plan-payment__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 320px;
+    text-align: center;
+}
+
+/* Payment apps read an inverted code badly: always black on white. */
+.kissopen-plan-payment__code.kissopen-qr-code {
+    background: #fff;
+    color: #000;
+}
+
+.kissopen-plan-payment__hint {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.kissopen-plan-payment__note {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.kissopen-plan-payment__done {
+    color: var(--success);
+}
+
+.kissopen-plan-payment__problem {
+    color: var(--status-error);
+}

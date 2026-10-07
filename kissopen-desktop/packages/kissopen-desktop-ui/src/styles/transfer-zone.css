@@ -1,0 +1,84 @@
+/*
+ * C-171 TransferZone — the region a tab lands in when it is dragged out of the
+ * other strip. At rest it is nothing but a flex column around its content; the
+ * invitation only exists while a drag is in flight, and is painted over the
+ * region rather than added to it so arming a zone never moves anything.
+ */
+
+.kissopen-transfer-zone {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* The invitation is an overlay over the whole region, which is exactly what
+   absolute positioning is for: it must cover content it is not part of, and it
+   must not take part in the column it is drawn over. */
+.kissopen-transfer-zone__invite {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    /* Along the bottom rather than in the middle: the dragged tab is drawn at
+       the pointer, and the middle of the region is exactly where the pointer
+       is going, so a centred badge is the one the tab lands on top of. */
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 24px;
+    /* The drop zone is found by hit-testing the pointer, so the invitation
+       itself must never be what the pointer finds. */
+    pointer-events: none;
+}
+
+/* Two writers, one appearance: the `state` prop React renders, and the
+   attribute a live drag writes onto the element itself. */
+.kissopen-transfer-zone[data-transfer-state] .kissopen-transfer-zone__invite,
+.kissopen-transfer-zone[data-transfer-drag] .kissopen-transfer-zone__invite {
+    display: flex;
+}
+
+.kissopen-transfer-zone[data-transfer-state="armed"] .kissopen-transfer-zone__invite,
+.kissopen-transfer-zone[data-transfer-drag="armed"] .kissopen-transfer-zone__invite {
+    outline: 2px dashed var(--divider);
+    outline-offset: -8px;
+}
+
+.kissopen-transfer-zone[data-transfer-state="over"] .kissopen-transfer-zone__invite,
+.kissopen-transfer-zone[data-transfer-drag="over"] .kissopen-transfer-zone__invite {
+    background: var(--surface-ripple);
+    outline: 2px solid var(--radio-active);
+    outline-offset: -8px;
+}
+
+.kissopen-transfer-zone__badge {
+    display: flex;
+    flex: none;
+    gap: 8px;
+    align-items: center;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: 0 2px 12px var(--shadow-subtle);
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    font-synthesis: none;
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+.kissopen-transfer-zone[data-transfer-state="over"] .kissopen-transfer-zone__badge,
+.kissopen-transfer-zone[data-transfer-drag="over"] .kissopen-transfer-zone__badge {
+    color: var(--text);
+    opacity: 1;
+}
+
+.kissopen-transfer-zone[data-transfer-state="armed"] .kissopen-transfer-zone__badge,
+.kissopen-transfer-zone[data-transfer-drag="armed"] .kissopen-transfer-zone__badge {
+    opacity: 0.7;
+}

@@ -1,0 +1,440 @@
+---
+name: release
+description: >
+  Release pipeline for CLI, mobile, web, and server. Guides through version
+  bumping, building, testing, publishing, and deploying. Replaces the old
+  interactive release-it flow with a Claude Code-native experience.
+  Use when user types /release or asks to release, publish, deploy, or ship
+  any component.
+---
+
+# Release
+
+You are the release operator for the Kissopen monorepo. When invoked, walk the user through releasing the component they choose.
+
+## Step 1: Pick a target
+
+Ask which component to release:
+
+- **CLI** — npm package `kissopen`
+- **Mobile** — Expo/EAS builds for iOS + Android
+- **Web** — Docker image + K8s deploy via TeamCity
+- **Server** — Docker image + K8s deploy via TeamCity
+- **Docs** — GitHub Pages (separate repo)
+
+Present these as options. Wait for the user to pick.
+
+---
+
+## CLI Release
+
+    Package:     packages/kissopen-cli
+    npm name:    kissopen
+    Registry:    https://registry.npmjs.org
+    Git tags:    cli-{version}
+
+CLI releases use `.github/workflows/release-kissopen-cli.yml`, following the
+`kissopen-agent` manual-dispatch convention: one run builds/tests/packs, then
+publishes that exact artifact through npm trusted publishing. Never publish
+from local npm credentials or create a release tag by hand. The workflow creates
+the tag and GitHub Release only after npm publication and a fresh-install smoke
+check succeed. Steps 4–6 below describe the workflow's build gates, not a second
+local release procedure.
+
+Tag namespace note:
+- CLI releases use `cli-X.Y.Z`
+- Native releases use `native-<runtime-version>`
+- OTA releases use `ota-<ota-version>`
+- Do not use a bare `vX.Y.Z` tag for Kissopen releases because multiple release streams coexist in this repo
+
+### Step 2: Gather state
+
+Run these in parallel:
+1. `npm view kissopen dist-tags` — see current latest + beta
+2. `cat packages/kissopen-cli/package.json | grep version` — local version
+3. `git status --short` — check for dirty state
+4. `git branch --show-current` — confirm branch
+5. `git log --oneline -10` — recent commits for release notes context
+
+Present a summary:
+```
+Local version:  X.Y.Z
+npm latest:     X.Y.Z
+npm beta:       X.Y.Z-N
+Branch:         main
+Working tree:   clean / dirty
+```
+
+### Step 3: Pick channel and version
+
+Ask the user:
+- **Channel**: `latest` or `beta`
+- **Bump type**: For latest: `patch`, `minor`, `major`. For beta: `prerelease` (appends `-N`), or explicit version.
+
+Suggest a sensible default based on the current state. For beta, the next prerelease of the current version. For latest, a patch bump.
+
+Present as options. Wait for confirmation.
+
+### Step 4: Version bump
+
+The workflow stamps its requested version into `packages/kissopen-cli/package.json`
+before building. Do NOT use `npm version` (it chokes on pnpm workspace protocol).
+Beta identities stay in the artifact; stable releases persist the version on main.
+
+IMPORTANT: do this **before** build/test for the CLI. The build imports `package.json` and bakes the version into the generated bundle. If you build first and bump later, `kissopen --version` can still report the old prerelease version even though npm metadata shows the new one.
+
+### Step 4b: `@kissopen/kissopen-wire` must stay bundled — do NOT move it back
+
+`packages/kissopen-cli/package.json` keeps `"@kissopen/kissopen-wire": "workspace:*"` in
+**`devDependencies`, deliberately**. That is not a mistake to tidy up.
+
+pkgroll has no `--external` flag — its entire externals policy is derived from
+`dependencies`/`peerDependencies`. So the dependency section IS the bundling
+switch:
+
+- in `dependencies` → pkgroll emits a bare `import ... from '@kissopen/kissopen-wire'`
+  and Node resolves it from the registry at runtime
+- in `devDependencies` → pkgroll inlines the code into `dist/`. The dev dependency
+  may remain in the published manifest, but is not installed as a runtime dependency.
+
+It must stay in `devDependencies`. After any build change, verify:
+
+```bash
+# must return nothing — no runtime import may survive
+grep -rnE "(import|require).*@kissopen/kissopen-wire" packages/kissopen-cli/dist/
+# must return the definitions, not just import mentions
+grep -rhoE "(function|const) (createEnvelope|stripLeadingTaskNotificationWrappers)" packages/kissopen-cli/dist/
+```
+
+(A bare `"@kissopen/kissopen-wire": "workspace:*"` string does still appear in dist —
+that is the CLI's own package.json inlined as a JSON literal for the version
+string. Inert. Only an actual `import`/`require` matters.)
+
+**Why this exists.** `1.2.1-beta.0` shipped declaring `"@kissopen/kissopen-wire":
+"0.1.0"` — the only version on npm, published 2026-02-13. Local kissopen-wire was
+*also* labeled `0.1.0` but had 18 commits of drift, including `f85b20c3` which
+added `stripLeadingTaskNotificationWrappers` and imported it from
+`kissopen-cli/src/codex/utils/sessionProtocolMapper.ts`. February's tarball had no
+such export, ESM failed at module load, and `kissopen` crashed on **every**
+invocation — dead on arrival, not degraded. `1.2.0` had survived the identical
+latent bug purely because none of its 15 import sites needed a post-February
+symbol. `workspace:*` publishes the local version NUMBER, never the local CODE.
+
+**No in-repo test can catch that class of bug.** Inside the monorepo
+`workspace:*` resolves to local source, so `prepublishOnly` — build, typecheck,
+all 792 unit tests — always sees the correct code. It only fails against the
+registry. The isolated install smoke check is what catches that class of bug.
+
+**Still exposed — `kissopen-agent` and `kissopen-server-self-host`** both keep
+kissopen-wire in `dependencies`, so they carry the original trap. Before publishing
+either, bundle it the same way or get kissopen-wire republished first.
+
+**Publish rights:** `@kissopen/kissopen-wire` is owned solely by `steve.kite
+<steve@korshakov.com>`. `bra1ndump` is an owner of `kissopen` but NOT of the
+`@slopus` scope, so publishing kissopen-wire 404s for them. Bundling exists partly
+to route around that.
+
+Note: `kissopen --version` prints BOTH kissopen's own version and the Claude Code
+version it found:
+
+```
+kissopen version: 1.2.1-beta.1
+Using Claude Code v2.1.224 from native installer
+2.1.224 (Claude Code)
+```
+
+Do NOT pipe it through `tail -2` — that cuts the kissopen line off and makes it
+look like the command only reports Claude Code's version. Read the first line.
+
+### Step 5: Build
+
+```bash
+cd packages/kissopen-cli
+pnpm --filter kissopen run build
+```
+
+Report success/failure. Stop on failure.
+
+### Step 5b: Self-host server split
+
+The `kissopen` npm package no longer bundles the self-host server binary or webapp.
+Packaged installs resolve those from the separately installed
+`kissopen-server-self-host` package. Do not rebuild or ship `tools/server` or
+`tools/webapp` as part of a CLI release.
+
+If the CLI release depends on self-host server changes, release
+`kissopen-server-self-host` separately. It lives in `packages/kissopen-server-self-host`
+and is the publishing shell around the private `packages/kissopen-server`:
+`pnpm --filter kissopen-server-self-host build` bundles that package's standalone
+entrypoint into `dist/` and copies `prisma/` in (this needs bun), then
+`pnpm --filter kissopen-server-self-host run bundle:webapp` builds the bundled
+webapp. Publish from `packages/kissopen-server-self-host` — `packages/kissopen-server`
+is private and is never published. The server package is a JS/TS npm package;
+npm handles platform
+specific dependencies such as Prisma and sharp normally. Do not pass
+`--ignore-scripts` when publishing it; its `prepublishOnly` script rebuilds the
+runtime, rebuilds the webapp, and runs tests before npm receives the tarball.
+
+Before handing a server publish to the user, pre-run the full `prepublishOnly`
+chain yourself to catch failures early — the `bundle:webapp` step runs a multi-minute
+`expo export`, and `build` needs bun:
+
+```bash
+pnpm --filter kissopen-server-self-host --fail-if-no-match run prepublishOnly
+```
+
+The server typecheck, unit suite, and both Docker images are gated by
+`.github/workflows/server.yml`.
+
+(Observed: `1332` merged a `standalone.spec.ts` test that only passes on Windows
+because the impl used POSIX `path.basename`; it was red on `main` and would have
+aborted the publish at the `prepublishOnly` test step.)
+
+### Step 6: Test (unit only)
+
+```bash
+cd packages/kissopen-cli
+pnpm --filter kissopen exec vitest run --project unit
+```
+
+Integration tests are slow and flaky — skip them for releases. Unit tests are the gate.
+Expect the unit suite to take around a minute; `src/utils/serverConnectionErrors.test.ts` is particularly slow, so don't mistake a long run for a hang.
+
+Report results. If failures, ask the user whether to proceed or abort.
+
+### Step 7: Publish
+
+Fetch/rebase onto current main before dispatching. Build user-facing release notes
+from the actual changes since the previous CLI release of that channel (for a
+first beta of a new stable target, start from the latest stable). Keep notes under
+`.context/`. Show the chosen version, channel, and notes and get confirmation.
+
+```bash
+gh workflow run release-kissopen-cli.yml --repo slopus/kissopen --ref main \
+  -f version=X.Y.Z-beta.N -F prerelease=true \
+  -F release_notes=@.context/release-notes.md
+```
+
+Stable releases use `version=X.Y.Z` and `prerelease=false`. The workflow derives
+the npm dist-tag (`beta` or `latest`) and rejects mismatched versions. Do not
+introduce a separate prepare/publish dispatch. `-F release_notes=@...` reads file
+contents; `-f release_notes=...` sends a literal path, which is wrong.
+
+The workflow runs `prepublishOnly` explicitly **after version stamping and before
+`pnpm pack`**. Packing or publishing an existing tarball does not invoke the source
+workspace's `prepublishOnly`. Never omit this build/typecheck/unit-test gate.
+`1.1.10-beta.9` previously shipped a stale `beta.8` bundle when scripts were skipped.
+
+Use pnpm for workspace packaging. Uploading the already-tested pnpm tarball with
+a pinned npm CLI is supported and matches Kissopen Terminal's CI. Do not run raw
+`npm publish` against the source workspace. npm 11.5.1+ supports OIDC; the workflow
+pins and directly invokes npm 11.18.0 so Node's bundled npm cannot shadow it.
+
+One-time trust configuration on npm: GitHub owner `slopus`, repository `kissopen`,
+workflow `release-kissopen-cli.yml`, environment `npm`, direct publishing allowed.
+The GitHub environment permits only main. Never request npm passwords, tokens,
+browser authentication links, or OTPs in chat, and never fall back to local npm
+credentials if OIDC fails.
+
+### Step 8: Verify
+
+```bash
+npm view kissopen@{version} version   # did the version actually publish?
+npm view kissopen dist-tags           # did the channel tag move?
+```
+
+Watch the dispatched run to completion using the product's durable wait/monitor
+mechanism and GitHub CLI status/logs. Check `npm view kissopen@X.Y.Z version` before
+retrying any failed publication: npm versions are immutable. A failed publish
+must leave the release tag and GitHub Release absent. If publication succeeded
+but a later gate failed, investigate before retrying; do not overwrite the version
+or move an existing tag.
+
+⚠️ **This metadata check is necessary but NOT sufficient.** `npm view ... version`
+only confirms the tarball was *accepted* — it says nothing about what's *inside* it.
+A bundle stamped with the wrong version (the `--ignore-scripts` footgun above) passes
+this check cleanly. The authoritative check is the workflow's fresh-install
+smoke test (`kissopen --version`). Never report a release as done on the
+metadata check alone.
+
+Then confirm the new version appears under the correct dist-tag. The tag often
+lags the publish by 10–40s — poll a few times before concluding it failed; npm
+tag propagation is not instant.
+
+### Step 9: Read back the release and installed-package verification
+
+```bash
+gh release view cli-X.Y.Z --repo slopus/kissopen --json body,tagName,isDraft,isPrerelease,url
+```
+
+The body must contain the actual notes, not a filename. Betas must be prereleases,
+must update only npm's beta tag, and must leave GitHub's latest release unchanged.
+The CLI shares its repository with native/OTA releases, so even stable CLI releases
+do not automatically replace GitHub's latest release.
+
+The workflow checks the tarball SHA-256 after artifact download, compares the npm
+integrity and provenance metadata, then installs the published version in a fresh
+directory and checks `kissopen --version`, `kissopen --help`, and `kissopen daemon status`.
+Verify that these gates passed. Do not replace the maintainer's global CLI or
+restart their daemon as an implicit release step. After stable releases, fetch
+and fast-forward/rebase the workflow's version commit while preserving local work.
+
+---
+
+## Mobile Release
+
+    Package:     packages/kissopen-app
+    Variants:    development, preview, production
+    Platform:    Expo SDK 54 / React Native 0.81.4
+
+### Build types
+
+**Always ask the user explicitly what they want to release.** Present these
+options in order of popularity:
+
+1. **OTA update (preview)** — push JS bundle to preview channel. Most common release type.
+2. **OTA update (production)** — push JS bundle to production channel. Do this after preview OTA is validated.
+3. **Native dev build** — when native code changes. Points to dev server with bundled app.
+4. **Full native release** — build all profiles (dev + preview + production) to prep for a new native release.
+
+#### OTA Updates
+
+  ```bash
+  # Preview (most common)
+  pnpm --filter kissopen-app run ota
+
+  # Production
+  pnpm --filter kissopen-app run ota:production
+  ```
+
+OTA scripts require a message — stdin is not readable from Claude Code, so run the
+underlying `eas update` directly with `--message`:
+  ```bash
+  cd packages/kissopen-app && APP_ENV=preview NODE_ENV=preview tsx sources/scripts/parseChangelog.ts && pnpm typecheck && eas update --branch preview --message "<message>"
+  ```
+
+#### Native Builds
+
+- **Dev build** — development profile, used when native code changes (points to dev server)
+  ```bash
+  cd packages/kissopen-app && eas build --profile development --platform all --non-interactive
+  ```
+
+- **TestFlight / Play Store builds** — use `-store` profiles for distribution via TestFlight and Play Store.
+  **Always pass `--auto-submit`** so the build goes straight to TestFlight after completion.
+  ```bash
+  # Preview (TestFlight/internal testing)
+  cd packages/kissopen-app && eas build --profile preview-store --platform ios --non-interactive --auto-submit
+
+  # Dev (TestFlight, points to dev server)
+  cd packages/kissopen-app && eas build --profile development-store --platform ios --non-interactive --auto-submit
+
+  # Production (App Store / Play Store submission)
+  cd packages/kissopen-app && eas build --profile production --platform ios --non-interactive --auto-submit
+  ```
+
+**IMPORTANT:** Always pass `--non-interactive` to `eas build` commands. Without it,
+EAS prompts for Apple account login interactively which breaks in non-TTY contexts
+(Claude Code, CI). Remote credentials are already configured on EAS servers.
+
+**IMPORTANT:** Always pass `--auto-submit` to `-store` builds. Without it, the build
+finishes but never reaches TestFlight — you have to manually submit with `eas submit`.
+
+### EAS Build Profiles
+
+    Profile              Distribution   Channel       Notes
+    development-store    store          development   Dev build via TestFlight
+    preview-store        store          preview       TestFlight / Play Store internal testing
+    production           store          production    App Store / Play Store submission
+
+---
+
+#### Internal / ad-hoc profiles (rarely used)
+
+These install via direct link, NOT TestFlight. Almost never needed — prefer
+the `-store` profiles above.
+
+    Profile              Distribution   Channel
+    development          internal       development
+    preview              internal       preview
+
+Version source is remote (EAS manages build numbers, auto-incremented).
+Runtime version "20" — bump when native code changes to invalidate OTA.
+
+### App Store Connect
+
+    Apple ID:    steve@bulkovo.com
+    Team ID:     466DQWDR8C
+
+    App Store Connect App IDs:
+    Production:   6748571505  (com.ex3ndr.kissopen)
+    Preview:      6749025570  (com.slopus.kissopen.preview)
+    Development:  6748984254  (com.slopus.kissopen.dev)
+
+---
+
+## Web Release
+
+    Package:     packages/kissopen-app (same Expo app, web export)
+    Dockerfile:  Dockerfile.webapp
+    Image:       docker.korshakov.com/kissopen-app:{version}
+    K8s:         packages/kissopen-app/deploy/kissopen-app.yaml (3 replicas)
+
+Web releases go through TeamCity (`Lab_KissopenWeb`). The config is in the TeamCity UI, not in the repo.
+
+Flow: `expo export --platform web` -> nginx:alpine static serve -> Docker build -> push -> K8s deploy.
+
+Build args: `POSTHOG_API_KEY`, `REVENUE_CAT_STRIPE`.
+
+Guide the user to trigger the TeamCity build, or help with manual Docker builds if needed.
+
+---
+
+## Server Release
+
+    Package:     packages/kissopen-server
+    Dockerfile:  Dockerfile.server (production), Dockerfile (standalone w/ PGlite)
+    Image:       docker.korshakov.com/handy-server:{version}
+    K8s:         packages/kissopen-server/deploy/handy.yaml (1 replica, port 3005)
+
+Server releases go through TeamCity (`Lab_KissopenServer`). The config is in the TeamCity UI, not in the repo.
+
+Build: node:20 + python3 + ffmpeg, builds kissopen-wire + kissopen-server.
+Secrets from Vault: handy-db, handy-master, handy-github, handy-files, handy-e2b, handy-revenuecat, handy-elevenlabs.
+Redis: kissopen-redis StatefulSet (redis:7-alpine, 1Gi persistent volume).
+
+Guide the user to trigger the TeamCity build.
+
+---
+
+## Docs Release
+
+    Site:    happy.engineering (GitHub Pages)
+    Repo:    github.com/slopus/slopus.github.io
+
+Separate repo, not part of this monorepo. Guide the user to push to that repo.
+
+---
+
+## Writing release notes (the in-app changelog)
+
+`CHANGELOG.md` is regenerated into `changelog.json` and shown **inside the mobile app, on a phone, right after an OTA update**. Write for that reader.
+
+1. **Investigate before writing — use subagents (Opus).** Don't infer from commit titles. Spawn parallel subagents to read the actual code + git history of each candidate change and classify it: user-visible UX vs impl detail, default-on vs gated, new vs polish/fix.
+2. **Default-off ⇒ exclude.** A change behind a setting/experimental flag that defaults to OFF (or whose UI entry point is hidden) is a silent ship — omit it until it's on by default. Same for impl / perf-internal / refactor / type-only changes.
+3. **Audience is phone users.** Most never touch the CLI or desktop. Be skeptical of CLI-only / desktop-only / web-only / beta-only items — a genuinely strong feature can still be wrong for *this* venue; announce those in CLI release notes / docs / GitHub instead.
+4. **Ask, don't assume.** When announce-vs-silent-ship, default state, or scope is unclear, ask the owner and confirm the final include/exclude list before writing. Never headline-announce on your own judgment.
+5. **Voice:** benefit-first, terse, em-dash, one line per item, grouped as a dated themed entry like existing ones. Edit `CHANGELOG.md` only, then regenerate via `tsx packages/kissopen-app/sources/scripts/parseChangelog.ts`.
+6. **Community Credits bullet.** End each entry with a single bullet crediting community contributors whose commits ship in it: `- Community Credits: [@user1](https://github.com/user1), [@user2](https://github.com/user2)`. Core team never appears there — Kirill (`bra1ndump` / kirill2003de@gmail.com), `Scoteezy`, and Steve (`ex3ndr`). To find contributors: get the previous OTA's commit via `eas update:list --branch preview` + `eas update:view <group-id> --json` (`gitCommitHash`), then `git log <hash>..HEAD` and keep non-core authors. GitHub handles come from the PR (`gh pr view <n> --json author`), not from the commit email. If an OTA shipped without a changelog entry, its uncredited community commits roll into the next entry's credits.
+
+## Rules
+
+- **Release notes: investigate with subagents, exclude default-off, ask when unsure** — see "Writing release notes" above.
+- **Always present options** — never assume which component, channel, or version.
+- **Always verify before publishing** — show the user what will be published and get confirmation.
+- **CLI releases use the approved GitHub workflow** — dispatch from main with the confirmed version and notes; never publish from local credentials or handle npm credentials/OTP.
+- **Do not bundle self-host server/webapp into `kissopen`** — self-host runtime and the bundled webapp ship through `kissopen-server-self-host`, not the main CLI package.
+- **Unit tests are the gate, not integration tests** — integration tests are slow and have flaky abort/interrupt tests.
+- **Use pnpm to pack the workspace** — CI uploads that exact tested tarball with its pinned npm CLI; never use raw npm publishing on the source workspace.
+- **Run prepublishOnly after stamping and before packing** — tarball upload does not run the workspace's lifecycle scripts. Never skip this gate.
+- **Never force-push tags** — if a tag exists, stop and ask.

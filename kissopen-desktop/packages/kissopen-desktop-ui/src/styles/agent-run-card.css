@@ -1,0 +1,335 @@
+/*
+ * C-013 AgentRunCard — the hero card: an agent run on a surface card.
+ *
+ * Status treatments: review = mint-tinted border + soft glow, working = 3px
+ * brand-gradient progress strip along the top edge, queued = dashed hairline,
+ * complete = neutral hairline with a mint check in the header. Max-width 680.
+ * Every color derives from theme tokens; the mint tints are color-mix()
+ * blends of --success so no raw color values appear here.
+ */
+
+.kissopen-agent-run-card,
+.kissopen-agent-run-card * {
+    box-sizing: border-box;
+}
+
+.kissopen-agent-run-card {
+    position: relative;
+    display: block;
+    max-width: 680px;
+    overflow: hidden;
+    margin: 0;
+    padding: 16px;
+    background-color: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-agent-run-card[data-status="review"] {
+    border-color: color-mix(in srgb, var(--success) 35%, transparent);
+    background-color: color-mix(in srgb, var(--success) 5%, var(--surface));
+    box-shadow: 0 0 24px var(--surface-high);
+}
+
+.kissopen-agent-run-card[data-status="queued"] {
+    border-style: dashed;
+    border-color: var(--divider);
+}
+
+/* ---- Working progress strip ------------------------------------------ */
+
+.kissopen-agent-run-card__progress {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background-color: var(--groupped-background);
+}
+
+/* A colour is not an image: as `background-image` this declaration was dropped
+   and the strip painted nothing at all. It fills the way every other progress
+   bar in the app does. */
+.kissopen-agent-run-card__progress-fill {
+    height: 3px;
+    background-color: var(--text-link);
+}
+
+/* ---- Header ----------------------------------------------------------- */
+
+.kissopen-agent-run-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+}
+
+.kissopen-agent-run-card__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.kissopen-agent-run-card__agent {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+    text-overflow: ellipsis;
+}
+
+.kissopen-agent-run-card__kind {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+}
+
+.kissopen-agent-run-card__check {
+    display: flex;
+    flex: none;
+    color: var(--success);
+}
+
+.kissopen-agent-run-card__toggle {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin: 0 0 0 auto;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    appearance: none;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.kissopen-agent-run-card__toggle:hover {
+    background-color: var(--surface-ripple);
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-run-card__toggle:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-agent-run-card__toggle-icon {
+    display: flex;
+    transition: transform 120ms ease;
+}
+
+.kissopen-agent-run-card[data-expanded] .kissopen-agent-run-card__toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* ---- Title, diffstat meta, branch ------------------------------------- */
+
+.kissopen-agent-run-card__title {
+    margin: 8px 0 0;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: -0.01em;
+}
+
+.kissopen-agent-run-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.kissopen-agent-run-card__added {
+    display: block;
+    flex: none;
+    color: var(--diff-success);
+}
+
+.kissopen-agent-run-card__removed {
+    display: block;
+    flex: none;
+    color: var(--diff-error);
+}
+
+.kissopen-agent-run-card__detail {
+    display: block;
+    overflow: hidden;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+}
+
+.kissopen-agent-run-card__branch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.kissopen-agent-run-card__branch-icon {
+    display: flex;
+    flex: none;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-run-card__branch-name {
+    display: block;
+    overflow: hidden;
+    color: var(--text-secondary);
+    text-overflow: ellipsis;
+}
+
+/* ---- Step checklist (expanded) ---------------------------------------- */
+
+.kissopen-agent-run-card__steps {
+    display: block;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.kissopen-agent-run-card__step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+}
+
+.kissopen-agent-run-card__step-glyph {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+.kissopen-agent-run-card__step[data-status="done"] .kissopen-agent-run-card__step-glyph {
+    color: var(--success);
+}
+
+.kissopen-agent-run-card__step-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kissopen-radius-pill);
+}
+
+.kissopen-agent-run-card__step[data-status="working"] .kissopen-agent-run-card__step-dot {
+    background-color: var(--text-link);
+    box-shadow: 0 0 0 3px var(--surface-selected);
+}
+
+.kissopen-agent-run-card__step[data-status="pending"] .kissopen-agent-run-card__step-dot {
+    border: 1px solid var(--text-secondary);
+    background-color: transparent;
+}
+
+.kissopen-agent-run-card__step-label {
+    display: block;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-run-card__step[data-status="done"] .kissopen-agent-run-card__step-label {
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-run-card__step[data-status="working"] .kissopen-agent-run-card__step-label {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.kissopen-agent-run-card__step[data-status="pending"] .kissopen-agent-run-card__step-label {
+    color: var(--text-secondary);
+}
+
+/* ---- Expanded children slot + actions --------------------------------- */
+
+.kissopen-agent-run-card__body {
+    margin-top: 12px;
+}
+
+.kissopen-agent-run-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* ---- Engine-measured optical corrections ------------------------------- */
+
+/*
+ * Re-measured 2026-07 at true-2x capture resolution (1600x1600 tester
+ * viewport, verified unscaled by CaptureSanity). Alpha-weighted ink centroids
+ * of every card-owned text run in all three engines (see AgentRunCard.test.tsx)
+ * show: Gecko rasterizes every run of this card's text exactly 0.50px lower
+ * than Blink, and WebKit draws the 12px mono and 13px UI runs 0.44-0.49px
+ * lower while the 15px title already matches Blink (-0.04px). The translate
+ * corrections below cancel that engine drift only — they are paint-only and
+ * never move layout boxes. Icons, the toggle chevron, and step dots measured
+ * true-centered raw (|d| <= 0.11px in every engine), so they carry none.
+ */
+.kissopen-agent-run-card__agent,
+.kissopen-agent-run-card__kind,
+.kissopen-agent-run-card__added,
+.kissopen-agent-run-card__removed,
+.kissopen-agent-run-card__detail,
+.kissopen-agent-run-card__branch-name,
+.kissopen-agent-run-card__step-label {
+    translate: 0 var(--kissopen-run-card-text-y, 0px);
+}
+
+.kissopen-agent-run-card__title {
+    translate: 0 var(--kissopen-run-card-title-y, 0px);
+}
+
+/*
+ * Firefox — only Gecko parses -moz-appearance. (@-moz-document is stripped by
+ * the CSS pipeline, and @supports (font: -apple-system-body) also matches
+ * Blink on macOS, so neither is a usable engine scope.)
+ */
+@supports (-moz-appearance: none) {
+    .kissopen-agent-run-card {
+        --kissopen-run-card-text-y: -0.5px;
+        --kissopen-run-card-title-y: -0.5px;
+    }
+}
+
+/* WebKit — Blink and Gecko do not parse -webkit-named-image(). */
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-agent-run-card {
+        --kissopen-run-card-text-y: -0.5px;
+        --kissopen-run-card-title-y: 0px;
+    }
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="28 28 74 64" width="74" height="64">
+  <title>一起卷 menu bar mark</title>
+  <!--
+    The 卷 mark in one colour, for the menu bar.
+
+    The design's drawing for 32px and below: the roll alone, without the
+    paper's back, as a heavy round-capped stroke —
+    M34,34 H70 A26,26 0 0 1 70,86 A16,16 0 0 1 70,54 on the 120 grid.
+    The stroke is heavier than the in-app small mark (10) so the hook still
+    reads at 16 points. The viewBox is the ink's own bounds (34 − 6 to
+    96 + 6 across, 34 − 6 to 86 + 6 down).
+
+    Black because macOS reads a template image's alpha and tints it itself;
+    the coloured renderings for the other platforms substitute this value.
+  -->
+  <path d="M34,34 H70 A26,26 0 0 1 70,86 A16,16 0 0 1 70,54" fill="none" stroke="#000000" stroke-width="12" stroke-linecap="round"/>
+</svg>

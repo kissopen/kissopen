@@ -1,0 +1,34 @@
+/*
+ * PanelHeader — the 56px band across the top of a docked panel column.
+ *
+ * Contract: 56px high, 16px x-padding, transparent, and no hairline of its own —
+ * exactly `ChannelHeader`'s band, because the point is that the two columns'
+ * headers form one band across the window. Whatever sits beneath the band owns
+ * the dividing line, as the tab bar does in both columns.
+ */
+
+.kissopen-panel-header,
+.kissopen-panel-header * {
+    box-sizing: border-box;
+}
+
+.kissopen-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+    width: 100%;
+    height: 56px;
+    margin: 0;
+    padding: 0 16px;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+}
+
+/* Chrome controls dock 12px from a panel edge, matching AppShell's sidebar
+   collapse control. Ordinary titles and content retain the standard 16px inset. */
+.kissopen-panel-header[data-edge-control] {
+    padding-right: 12px;
+    padding-left: 12px;
+}

@@ -1,0 +1,269 @@
+/*
+ * C-238 KissopenAgentCreateSessionPage — the window's "Create", holding the whole
+ * content region.
+ *
+ * The region is a scrollport with nothing in it but one 640px column standing in
+ * its middle: the task, where it runs, how it is configured, and the commit. The
+ * task is given the full lane and eight 20px reading lines, because it is the
+ * thing being decided; everything under it is a quiet control on the same lane,
+ * so nothing competes with what is being written. The well, hairline, radius,
+ * focus ring, and placeholder are the same inset treatment TextField and Select
+ * wear, so the biggest field in the system still reads as one of its fields.
+ */
+
+.kissopen-agent-create-session-page {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* The scrollport itself, full-bleed: all spacing belongs to the column inside
+   it, which `margin: auto` centres on both axes and which pushes the scrollport
+   past the region only when the window is too short to hold it. */
+.kissopen-agent-create-session-page__viewport {
+    display: flex;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.kissopen-agent-create-session,
+.kissopen-agent-create-session * {
+    box-sizing: border-box;
+}
+
+.kissopen-agent-create-session {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    gap: 16px;
+    margin: auto;
+    padding: 24px;
+    width: 100%;
+    max-width: 688px; /* 640px column inside the 24px gutters on either side. */
+    /*
+     * The task field's height, named once because two rules need the same
+     * number: the field is drawn at it, and the body reserves room for it. Eight
+     * 20px reading lines where the window can spare them, down to five where it
+     * cannot.
+     *
+     * The region would happily scroll instead, but then a short window would
+     * open on a field and a scrollbar with the project the session runs in below
+     * the fold — so the field gives up its lines before the choices under it
+     * give up their place. 454px is everything else the column is, measured: the
+     * 48px gutters, the 96px stage and 32px title under an 8px gap, the five
+     * 16px gaps, the 28px pick, the two 52px control rows, the 36px commit row,
+     * and the 22px well around the field.
+     */
+    --kissopen-agent-create-field-height: min(160px, max(100px, calc(100vh - 454px)));
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* ---- The mark and the title -------------------------------------------- */
+
+.kissopen-agent-create-session__header {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/*
+ * The chick's stage. A fixed square, held whether the animation's worker runtime
+ * arrives or not: `LottieScene` draws nothing until it does, and the column's
+ * geometry must not depend on when that happens.
+ */
+.kissopen-agent-create-session__stage {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+}
+
+.kissopen-agent-create-session__title {
+    margin: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: -0.2px;
+    text-align: center;
+}
+
+/* The choice of what is being made, centred under the title rather than
+   stretched: two words do not need the whole 640px lane. */
+.kissopen-agent-create-session__kinds {
+    display: flex;
+    flex: none;
+    justify-content: center;
+}
+
+/* ---- The draft ---------------------------------------------------------- */
+
+/*
+ * Whichever draft is on screen, drawn into one box that always keeps the taller
+ * one's height. A bot is a name and a sentence; a task is a field and two rows
+ * of choices — without the reserved room the mark, the title, the pick, and the
+ * commit would all jump by a couple of hundred pixels every time the tabs are
+ * used. The reservation follows the field rather than being a constant, so a
+ * short window shrinks both drafts by the same amount and they still agree.
+ */
+.kissopen-agent-create-session__body {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 16px;
+    /* The task draft: the field in its 22px well, then the two 52px control
+       rows, with the column's 16px gaps between them. */
+    min-height: calc(var(--kissopen-agent-create-field-height) + 158px);
+}
+
+/* ---- The bot ------------------------------------------------------------ */
+
+.kissopen-agent-create-session__bot {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kissopen-agent-create-session__note {
+    margin: 0;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: 0;
+}
+
+/* ---- The task ---------------------------------------------------------- */
+
+.kissopen-agent-create-session__prompt {
+    display: flex;
+    flex: none;
+    padding: 10px 12px;
+    background: var(--input-background);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    transition: border-color 120ms ease;
+}
+
+.kissopen-agent-create-session__prompt:focus-within {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+/*
+ * The height is taken rather than grown from the content, so the column's
+ * geometry does not move under the writer; a task longer than the field scrolls
+ * inside it, and the field itself is the scrollport, so its own padding stays on
+ * the well around it.
+ */
+.kissopen-agent-create-session__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: var(--kissopen-agent-create-field-height);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    background: transparent;
+    border: none;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    resize: none;
+    color: var(--input-text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+    font-synthesis: none;
+    caret-color: var(--radio-active);
+}
+
+.kissopen-agent-create-session__input::placeholder {
+    color: var(--input-placeholder);
+    opacity: 1;
+}
+
+/* While a start is in flight the field is read-only rather than disabled, so it
+   keeps its caret and its colour and only refuses to be typed into. */
+.kissopen-agent-create-session__input:read-only {
+    cursor: default;
+}
+
+/* ---- Where it runs ----------------------------------------------------- */
+
+.kissopen-agent-create-session__where {
+    display: flex;
+    flex: none;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.kissopen-agent-create-session__destination {
+    flex: 0 1 260px;
+    min-width: 0;
+}
+
+/* The checkout the session will run in, on the control's own line: it is read
+   with the project name rather than under it, and it is a path, so it is set in
+   the mono face and truncated from the end when the lane runs out. */
+.kissopen-agent-create-session__path {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- How it is configured ---------------------------------------------- */
+
+.kissopen-agent-create-session__how {
+    display: flex;
+    flex: none;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.kissopen-agent-create-session__how > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* Model names are the longest values in the row and the only ones a reader
+   cannot guess from a truncation, so the picker takes the larger share. */
+.kissopen-agent-create-session__model {
+    flex: 1.7 1 0;
+}
+
+/* ---- The commit -------------------------------------------------------- */
+
+/* The chord sits beside the button rather than under the field: the two are one
+   act, and the row ends where the column does. */
+.kissopen-agent-create-session__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.kissopen-agent-create-session__chord {
+    display: flex;
+    flex: none;
+    align-items: center;
+}

@@ -1,0 +1,95 @@
+/*
+ * C-161 SplashScreen — the mark on the workspace surface while the app resolves.
+ *
+ * It fills its host and centers the 96px logo animation on both axes. The surface is the one
+ * the workspace and the onboarding card share, so the crossfade out of this
+ * screen changes what is on the surface, never the surface itself.
+ *
+ * What is said below the mark — the progress of the start, the reassurance line,
+ * or neither — sits absolutely below it rather than as further flex rows, so the
+ * mark's position never depends on any of it: a bar or a line arriving mid-start
+ * would otherwise recenter the group and nudge the mark, which is the one thing
+ * this screen must never visibly do.
+ */
+
+.kissopen-splash-screen {
+    box-sizing: border-box;
+}
+
+.kissopen-splash-screen {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background: var(--surface);
+}
+
+.kissopen-splash-screen__body {
+    position: relative;
+    flex: none;
+}
+
+/* The logo animation's 96px tile. Its line runs in from beyond the tile's
+   left edge while it draws; the SVG does not clip, so that part simply paints
+   outside the box and never moves the mark. */
+.kissopen-splash-screen__mark {
+    flex: none;
+}
+
+/*
+ * Below the mark, and out of the mark's flow: the absolute box is what keeps the
+ * mark centred on the screen rather than on the screen's contents. Inside it
+ * everything is an ordinary flex column.
+ *
+ * The delay is the point of the animation, not the fade. A start that is over in
+ * a few frames must show the mark and nothing else — a bar that appeared and
+ * left again is exactly the flicker this screen exists to avoid — so the drawing
+ * itself waits, rather than the app holding a timer and a piece of state to
+ * decide when to say something.
+ */
+.kissopen-splash-screen__below {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    transform: translateX(-50%);
+    /* Wide enough that the longest step name sits inside its own track without
+       ellipsis in any engine, and no wider: the bar is read at a glance from the
+       middle of an otherwise empty window. */
+    width: 420px;
+    animation: kissopen-splash-screen-arrive 200ms ease-out 600ms both;
+}
+
+@keyframes kissopen-splash-screen-arrive {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* The wait still holds — appearing without being seen to appear is the point —
+   so only the fade itself is dropped. */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-splash-screen__below {
+        animation-duration: 1ms;
+    }
+}
+
+.kissopen-splash-screen__note {
+    max-width: 280px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    color: var(--text-secondary);
+    font-size: 13px;
+    white-space: nowrap;
+}

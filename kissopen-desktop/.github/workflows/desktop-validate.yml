@@ -1,0 +1,105 @@
+name: Validate desktop on Linux and Windows
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+        inputs:
+            platform:
+                description: Platforms to validate
+                type: choice
+                options: [all, windows, linux]
+                default: all
+
+permissions:
+    contents: read
+
+concurrency:
+    group: desktop-validate-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    linux:
+        if: ${{ inputs.platform != 'windows' }}
+        name: Linux build, tests, and gym
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+
+        steps:
+            - name: Check out source
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: "24"
+                  cache: pnpm
+
+            - name: Install display server and Electron libraries
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y xvfb libnss3 libgtk-3-0 libgbm1 libasound2t64
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Typecheck desktop source
+              run: |
+                  pnpm --dir packages/kissopen-desktop-electron typecheck
+                  pnpm --dir packages/kissopen-desktop-app typecheck
+                  pnpm --dir packages/kissopen-desktop-gym typecheck
+
+            - name: Test application
+              run: pnpm test
+
+            - name: Install the latest released Kissopen Agent
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  TAG="$(gh release view --repo slopus/kissopen-agent --json tagName --jq .tagName)"
+                  VERSION="${TAG#v}"
+                  mkdir -p "$RUNNER_TEMP/kissopen-agent"
+                  gh release download "$TAG" --repo slopus/kissopen-agent \
+                    --pattern "kissopen-agent-${VERSION}-linux-x64.tar.gz" \
+                    --dir "$RUNNER_TEMP/kissopen-agent"
+                  tar -xzf "$RUNNER_TEMP/kissopen-agent/kissopen-agent-${VERSION}-linux-x64.tar.gz" \
+                    -C "$RUNNER_TEMP/kissopen-agent"
+                  chmod +x "$RUNNER_TEMP/kissopen-agent/kissopen-agent-linux-x64"
+                  printf 'KISSOPEN_DESKTOP_AGENT_EXECUTABLE=%s\n' \
+                    "$RUNNER_TEMP/kissopen-agent/kissopen-agent-linux-x64" >> "$GITHUB_ENV"
+
+            - name: Build the optimized desktop profile
+              run: pnpm --dir packages/kissopen-desktop-electron build:profile:optimized
+
+            - name: Run the Electron gym boot workload
+              env:
+                  ELECTRON_DISABLE_SANDBOX: "1"
+              run: |
+                  xvfb-run --auto-servernum \
+                    pnpm --dir packages/kissopen-desktop-gym gym:electron run \
+                    --profile smoke --workload boot
+
+            - name: Upload gym artifacts
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-gym-linux
+                  path: /tmp/hdg/*/artifacts/*
+                  if-no-files-found: ignore
+
+            - name: Package unsigned Linux builds
+              run: pnpm --dir packages/kissopen-desktop-electron dist:linux
+
+            - name: Upload Linux packages
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-linux-unsigned
+                  path: packages/kissopen-desktop-electron/release/*.AppImage
+                  if-no-files-found: error
+
+    windows:
+        if: ${{ inputs.platform != 'linux' }}
+        uses: ./.github/workflows/build-windows.yml

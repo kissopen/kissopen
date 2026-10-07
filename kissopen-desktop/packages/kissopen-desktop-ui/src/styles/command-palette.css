@@ -1,0 +1,121 @@
+/*
+ * C-060 CommandPalette — Slack-style ⌘K palette card.
+ *
+ * The card is a 640px high surface on the 14px shell radius with a 1px modal
+ * hairline and the shared elevated modal shadow. A fixed 60px input row (search
+ * glyph · own text input · ESC cap · ghost close) sits over a scrollable body,
+ * split by a 1px hairline. It renders the card only — no scrim or stacking — so
+ * a host composes it inside ModalOverlay for its dim and placement.
+ */
+
+.kissopen-command-palette,
+.kissopen-command-palette *,
+.kissopen-command-palette *::before,
+.kissopen-command-palette *::after {
+    box-sizing: border-box;
+}
+
+.kissopen-command-palette {
+    --kissopen-search-results-last-radius: 5px;
+
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 640px;
+    height: 461px;
+    max-height: 100%;
+    overflow: hidden;
+    background: var(--surface-high);
+    border: 1px solid var(--modal-border);
+    border-radius: var(--kissopen-radius-shell);
+    box-shadow: 0 24px 64px var(--shadow-elevated);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* ---- Input row -------------------------------------------------------- */
+
+.kissopen-command-palette__header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    height: 60px;
+    padding: 0 16px 0 20px;
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-command-palette__icon {
+    display: flex;
+    flex: none;
+    color: var(--text-secondary);
+}
+
+.kissopen-command-palette__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 40px;
+    letter-spacing: -0.01em;
+    font-synthesis: none;
+    caret-color: var(--radio-active);
+}
+
+.kissopen-command-palette__input::placeholder {
+    color: var(--text-secondary);
+    opacity: 1;
+}
+
+.kissopen-command-palette__hint {
+    flex: none;
+}
+
+.kissopen-command-palette__close {
+    flex: none;
+}
+
+/* ---- Body ------------------------------------------------------------- */
+
+/* Scrollport: edge-to-edge, no padding of its own. */
+.kissopen-command-palette__body {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.kissopen-command-palette__body-viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* The bar is the product's one scrollbar — see styles/scrollbar.css. The
+       card states its own inset and its own corners, but not its own bar: a
+       scrollbar that appeared in a different colour, at a different width, on
+       the surface a reader reaches for most is the sort of difference nobody
+       chose. It marks itself `data-scrollbar-rows`, because a command sits on a
+       selected row and the bar must be beside that row rather than on it. No
+       gutter is stated here: reserving the width is the bar's own job, and only
+       when the list is long enough to have one. */
+}
+
+/* Inner content wrapper carries the 8px inset around the command groups. It is
+   a card's own inset, not the panel one: --kissopen-search-results-last-radius
+   above is derived from it (14px shell − 1px border − 8px inset = 5px), so
+   retuning it — or pointing it at --kissopen-panel-inset because the numbers look
+   alike — bends that inner corner out of parallel with the card's. See
+   DESIGN.md, "Nested rounded corners". */
+.kissopen-command-palette__body-content {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    padding: 8px;
+}

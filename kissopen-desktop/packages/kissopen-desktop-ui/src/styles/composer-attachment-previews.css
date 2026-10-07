@@ -1,0 +1,102 @@
+.kissopen-composer-attachments,
+.kissopen-composer-attachments * {
+    box-sizing: border-box;
+}
+
+.kissopen-composer-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 2px 14px 0 0;
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-composer-attachments__item {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    color: var(--text-secondary);
+    overflow: visible;
+}
+
+.kissopen-composer-attachments__media {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.kissopen-composer-attachments__file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    width: 100%;
+    min-width: 0;
+    padding: 6px 4px 4px;
+}
+
+.kissopen-composer-attachments__name {
+    display: block;
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 10px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The preview action and play mark belong to the media they overlay, so they
+ * intentionally leave the preview's flex flow. */
+.kissopen-composer-attachments__open,
+.kissopen-composer-attachments__play {
+    position: absolute;
+}
+
+.kissopen-composer-attachments__open {
+    z-index: 1;
+    inset: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: inherit;
+    cursor: zoom-in;
+    appearance: none;
+}
+
+.kissopen-composer-attachments__open:hover {
+    background: color-mix(in srgb, var(--surface-ripple) 28%, transparent);
+}
+
+.kissopen-composer-attachments__open:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-composer-attachments__play {
+    z-index: 2;
+    left: 4px;
+    bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: 50%;
+    color: var(--text);
+    pointer-events: none;
+}

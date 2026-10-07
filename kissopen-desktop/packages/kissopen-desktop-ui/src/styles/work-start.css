@@ -1,0 +1,664 @@
+/*
+ * The 工作 page while no project is open, in the home page's language: the
+ * same pale ground, white 20px cards and violet accent. One question leads —
+ * what the reader wants to push forward — in a card whose right half is a road
+ * over the hills; what a project gives them stands beside it; three examples
+ * and the shape of a good project follow.
+ */
+.kissopen-work-start,
+.kissopen-work-start * {
+    box-sizing: border-box;
+}
+
+.kissopen-work-start {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    background: var(--home-bg);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-work-start__scroll {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.kissopen-work-start__viewport {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.kissopen-work-start__page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 1320px;
+    margin-inline: auto;
+    padding: 28px 36px 32px;
+}
+
+/* Header ------------------------------------------------------------------ */
+.kissopen-work-start__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kissopen-work-start__crumbs {
+    display: flex;
+    gap: 10px;
+    color: var(--home-muted);
+    font-size: 14px;
+}
+
+.kissopen-work-start__crumb-here {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.kissopen-work-start__title {
+    margin: 4px 0 0;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.kissopen-work-start__lead {
+    margin: 0;
+    color: var(--home-muted);
+    font-size: 16px;
+    line-height: 24px;
+}
+
+/* Cards ------------------------------------------------------------------- */
+.kissopen-work-start__row {
+    display: flex;
+    gap: 20px;
+}
+
+.kissopen-work-start__hero,
+.kissopen-work-start__after,
+.kissopen-work-start__example,
+.kissopen-work-start__formula {
+    position: relative;
+    border: 1px solid var(--home-border);
+    border-radius: 20px;
+    background: var(--home-card);
+    box-shadow: var(--home-shadow);
+}
+
+.kissopen-work-start__hero {
+    display: flex;
+    flex: 1.75 1 0;
+    min-width: 0;
+    min-height: 360px;
+    margin: 0;
+    overflow: hidden;
+}
+
+.kissopen-work-start__hero-copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    width: min(680px, 80%);
+    padding: 32px 30px;
+}
+
+.kissopen-work-start__question {
+    margin: 0 0 18px;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 36px;
+}
+
+.kissopen-work-start__ask {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 60px;
+    padding: 6px 6px 6px 18px;
+    border: 1px solid var(--home-border);
+    border-radius: 14px;
+    background: var(--home-card);
+    box-shadow: var(--home-shadow-raised);
+}
+
+.kissopen-work-start__ask:focus-within {
+    border-color: var(--home-accent);
+}
+
+.kissopen-work-start__input {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 15px;
+}
+
+.kissopen-work-start__input::placeholder {
+    color: var(--home-muted);
+}
+
+.kissopen-work-start__start {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 10px;
+    background: var(--home-accent);
+    color: var(--home-on-accent);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--home-shadow-accent);
+}
+
+.kissopen-work-start__start:hover:not(:disabled) {
+    background: var(--home-accent-strong);
+}
+
+.kissopen-work-start__start:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.kissopen-work-start__hint {
+    margin: 0;
+    color: var(--home-muted);
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.kissopen-work-start__error {
+    margin: 0;
+    color: var(--home-danger-text);
+    font-size: 13px;
+}
+
+.kissopen-work-start__folder {
+    align-self: flex-start;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--home-accent);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.kissopen-work-start__folder:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* The road over the hills fills the card's right side, behind the copy. */
+.kissopen-work-start__journey {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 62%;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, var(--text) 18%);
+    mask-image: linear-gradient(to right, transparent 0, var(--text) 18%);
+}
+
+.kissopen-work-start__journey svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-work-start__stop {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.kissopen-work-start__stop[data-stop="1"] {
+    top: 20%;
+    left: 22%;
+}
+
+.kissopen-work-start__stop[data-stop="2"] {
+    top: 10%;
+    left: 48%;
+}
+
+.kissopen-work-start__stop[data-stop="3"] {
+    top: 3%;
+    left: 74%;
+}
+
+/* The dotted road between the stops, drawn in the stops' own percentages. */
+.kissopen-work-start__road {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-work-start__road path {
+    fill: none;
+    stroke: var(--home-accent);
+    stroke-dasharray: 3 6;
+    stroke-linecap: round;
+    stroke-opacity: 0.45;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.kissopen-work-start__stop-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+    box-shadow: var(--home-shadow-raised);
+}
+
+.kissopen-work-start__stop-icon[data-tone="peach"] {
+    background: var(--home-peach-soft);
+    color: var(--home-peach);
+}
+
+.kissopen-work-start__motto {
+    position: absolute;
+    right: 40px;
+    bottom: 64px;
+    color: var(--home-muted);
+    font-family: "Kaiti SC", "STKaiti", "KaiTi", serif;
+    font-size: 19px;
+    line-height: 32px;
+    letter-spacing: 0.18em;
+    transform: rotate(-8deg);
+}
+
+.kissopen-work-start__after {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+    padding: 26px 26px 0;
+    overflow: hidden;
+}
+
+.kissopen-work-start__after-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.kissopen-work-start__benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.kissopen-work-start__benefit {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.kissopen-work-start__benefit-icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+
+.kissopen-work-start__benefit-copy,
+.kissopen-work-start__example-copy,
+.kissopen-work-start__part-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.kissopen-work-start__benefit-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.kissopen-work-start__benefit-detail {
+    color: var(--home-muted);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-work-start__hills {
+    position: relative;
+    flex: 1 0 96px;
+    margin: 0 -26px;
+}
+
+.kissopen-work-start__hills svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-work-start__hills-folder {
+    position: absolute;
+    right: 64px;
+    bottom: 18px;
+    color: var(--home-accent);
+    opacity: 0.85;
+}
+
+/* Examples ---------------------------------------------------------------- */
+.kissopen-work-start__examples {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.kissopen-work-start__examples-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.kissopen-work-start__section-title {
+    margin: 0 0 6px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.kissopen-work-start__section-lead {
+    margin: 0;
+    color: var(--home-muted);
+    font-size: 15px;
+}
+
+.kissopen-work-start__more {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--home-accent);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.kissopen-work-start__example-row {
+    display: flex;
+    gap: 16px;
+}
+
+.kissopen-work-start__example {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    padding: 16px 18px 16px 16px;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        box-shadow 120ms ease,
+        transform 120ms ease;
+}
+
+.kissopen-work-start__example:hover:not(:disabled) {
+    box-shadow: var(--home-shadow-hover);
+    transform: translateY(-1px);
+}
+
+.kissopen-work-start__example:disabled {
+    cursor: default;
+}
+
+.kissopen-work-start__example .kissopen-home__picture {
+    width: 112px;
+    height: 84px;
+}
+
+.kissopen-work-start__example-copy {
+    flex: 1 1 0;
+}
+
+.kissopen-work-start__example-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.kissopen-work-start__example-detail {
+    color: var(--home-muted);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.kissopen-work-start__example-go {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--home-peach-soft);
+    color: var(--home-peach);
+}
+
+/* The person's projects ---------------------------------------------------- */
+.kissopen-work-start__projects {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.kissopen-work-start__count {
+    margin-left: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+    font-size: 13px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.kissopen-work-start__project-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.kissopen-work-start__project {
+    flex: 0 1 calc((100% - 32px) / 3);
+    min-width: 260px;
+}
+
+.kissopen-work-start__project .kissopen-home__picture {
+    width: 88px;
+    height: 66px;
+}
+
+.kissopen-work-start__project .kissopen-work-start__example-title,
+.kissopen-work-start__project .kissopen-work-start__example-detail {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.kissopen-work-start__project .kissopen-work-start__example-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.kissopen-work-start__progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.kissopen-work-start__progress-bar {
+    flex: 1 1 0;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--home-accent-soft);
+}
+
+.kissopen-work-start__progress-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--home-accent);
+}
+
+/* Formula ----------------------------------------------------------------- */
+.kissopen-work-start__formula {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px 14px 24px;
+    background: var(--home-card-soft);
+}
+
+.kissopen-work-start__formula-idea {
+    display: flex;
+    flex: none;
+    color: var(--home-accent);
+}
+
+.kissopen-work-start__formula-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 15px;
+    white-space: nowrap;
+    font-weight: 700;
+}
+
+.kissopen-work-start__formula-parts {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-work-start__formula-plus {
+    color: var(--home-muted);
+    font-size: 20px;
+}
+
+.kissopen-work-start__part {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px 8px 8px;
+    border-radius: 14px;
+    background: var(--home-card);
+}
+
+.kissopen-work-start__part-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+}
+
+.kissopen-work-start__part-icon[data-tone="green"] {
+    background: var(--home-green-soft);
+    color: var(--home-green);
+}
+
+.kissopen-work-start__part-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.kissopen-work-start__part-detail {
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.kissopen-work-start__footnote {
+    margin: 0;
+    color: var(--home-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (max-width: 1180px) {
+    .kissopen-work-start__row,
+    .kissopen-work-start__example-row {
+        flex-direction: column;
+    }
+
+    .kissopen-work-start__formula {
+        flex-wrap: wrap;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-work-start__example {
+        transition: none;
+    }
+}

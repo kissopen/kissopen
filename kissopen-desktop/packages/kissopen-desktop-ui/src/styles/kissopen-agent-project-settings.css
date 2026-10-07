@@ -1,0 +1,185 @@
+/*
+ * C-178 KissopenAgentProjectSettingsDialog — the body of one project's settings dialog.
+ *
+ * Three blocks in one column: the identity strip that says which project this
+ * is, the name field, and the read-only location. The column owns the spacing
+ * between them, and the read-only field is built on TextField's own rhythm —
+ * 13px label, 6px to the value, 12px note — so a fact and an editable value
+ * read as one list rather than as two kinds of thing.
+ */
+
+.kissopen-agent-project-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    font-family: var(--kissopen-font-ui);
+}
+
+.kissopen-agent-project-settings * {
+    box-sizing: border-box;
+}
+
+.kissopen-agent-project-settings__identity {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.kissopen-agent-project-settings__identity-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-agent-project-settings__identity-name {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-project-settings__identity-meta {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.kissopen-agent-project-settings__field {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.kissopen-agent-project-settings__label {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+/* The path well takes TextField's medium control height and inset fill, and is
+   plainly not editable: mono, secondary, and carrying the copy instead of a
+   caret. */
+.kissopen-agent-project-settings__path {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 36px;
+    padding: 0 6px 0 10px;
+    background: var(--input-background);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+}
+
+/* The copy stays out: in a transcript it hides until its row is hovered because
+   every line has one, but here there is a single path and a single action on
+   it, and a control nobody can see is a control nobody uses. */
+.kissopen-agent-project-settings__path .kissopen-copy-button {
+    opacity: 1;
+}
+
+.kissopen-agent-project-settings__path-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-project-settings__hint {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+/* Where the project's sessions run. It keeps the rhythm of the fields above —
+   13px label, then the control, then the note — because it is one more thing
+   about the project that is set rather than a different kind of surface. The
+   choice, the image it may need, and the notes are all immediate children of
+   this column, so the image field appearing and disappearing moves nothing but
+   itself. */
+.kissopen-agent-project-settings__compute {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* How often and when the board is built, on one line. */
+.kissopen-agent-project-settings__board-timing {
+    display: flex;
+    gap: 8px;
+}
+
+.kissopen-agent-project-settings__board-timing > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* What the project is set to now, beside the commit that would change it: the
+   fact on the left and the act on the right, on one line, so the reader sees
+   what they are leaving as they choose what to leave it for. */
+.kissopen-agent-project-settings__compute-pending {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.kissopen-agent-project-settings__compute-current {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    /* An image reference is long, but this line is a passing statement about
+       what is being replaced rather than the value itself — that is in the field
+       above, with its own scroll and the whole name in it. One truncated line
+       keeps the row from growing under a name nobody came here to read. */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Where the project ends. It is the one block here that removes something, so a
+   hairline separates it from the fields above rather than letting it read as one
+   more of them, and it keeps the same label/value/note rhythm so the separation
+   is the only thing that sets it apart. */
+.kissopen-agent-project-settings__archive {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--divider);
+}
+
+.kissopen-agent-project-settings__archive-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}

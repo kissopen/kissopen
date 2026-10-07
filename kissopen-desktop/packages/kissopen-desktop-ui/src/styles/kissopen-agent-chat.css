@@ -1,0 +1,589 @@
+/*
+ * KissopenAgent-only chat surfaces with no shared counterpart: the user-input prompt, the
+ * model/effort/permission control menus, and the `/` command palette rows.
+ * Layout is flexbox throughout; colors and type come only from theme roles.
+ */
+
+/* ---- User input prompt ----------------------------------------------------- */
+
+.kissopen-agent-input {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--kissopen-font-ui);
+}
+
+/* A question in a transcript is a quiet inline response block. It follows the
+   same measure as the composer without introducing another card or table. */
+.kissopen-agent-input[data-variant="card"] {
+    gap: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+}
+
+/* Match the composer's actual card edges, not only the shared max measure. */
+.kissopen-conversation .kissopen-agent-input[data-variant="card"] {
+    width: auto;
+    /* The transcript may carry the shared scrollbar gutter while the dock does
+       not. The asymmetric margins keep this block's painted edges on the
+       composer's painted edges when that 8px track is present. */
+    margin-right: 14px;
+    margin-left: 18px;
+}
+
+.kissopen-agent-input__questions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/*
+ * A fieldset is sized by its own contents rather than by its flex parent, so
+ * without this the option rows would stop at the longest label and leave the
+ * rest of the measure empty. Zeroing the intrinsic minimum lets the ordinary
+ * stretch apply and the options run the full width of the column.
+ */
+.kissopen-agent-input__question {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    min-inline-size: 0;
+    border: none;
+}
+
+.kissopen-agent-input__legend {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0;
+    width: 100%;
+}
+
+/* What the question is about, and how many of its options may be taken, on one
+   line above the question, so the rule is read before the options are. */
+.kissopen-agent-input__eyebrow {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.kissopen-agent-input__header {
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-input__rule {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-input__prompt {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+
+.kissopen-agent-input__options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.kissopen-agent-input__option {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
+}
+
+.kissopen-agent-input__option:hover {
+    background: var(--surface-pressed);
+}
+
+.kissopen-agent-input__option[data-selected] {
+    border-color: var(--text-link);
+    background: var(--surface-selected);
+}
+
+/* While an answer is in flight the options are frozen rather than removed, so
+   what was chosen stays readable if the send fails and has to be retried. */
+.kissopen-agent-input__option[data-disabled] {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.kissopen-agent-input__option[data-disabled]:hover {
+    background: var(--surface);
+}
+
+.kissopen-agent-input__option[data-disabled][data-selected]:hover {
+    background: var(--surface-selected);
+}
+
+.kissopen-agent-input__option-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-agent-input__option-label {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text);
+}
+
+.kissopen-agent-input__option-description {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-input__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* Transcript variant: a restrained form embedded in the response flow. */
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__questions {
+    gap: 0;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__question {
+    gap: 0;
+}
+
+.kissopen-agent-input[data-variant="card"]
+    .kissopen-agent-input__question
+    + .kissopen-agent-input__question {
+    padding-top: 8px;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__legend {
+    gap: 3px;
+    padding: 6px 12px 5px;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__prompt {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__options {
+    gap: 2px;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__option {
+    align-items: center;
+    gap: 9px;
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+}
+
+.kissopen-agent-input[data-variant="card"]
+    .kissopen-agent-input__option
+    + .kissopen-agent-input__option {
+    border-top: 0;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__option:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__option[data-selected] {
+    background: color-mix(in srgb, var(--surface-selected) 72%, transparent);
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__option-body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__option-label {
+    font-size: 14px;
+    line-height: 19px;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__option-description {
+    min-width: 0;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: normal;
+}
+
+.kissopen-agent-input[data-variant="card"] .kissopen-agent-input__footer {
+    padding: 4px 8px;
+    border-top: 0;
+}
+
+.kissopen-agent-input__answers {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+}
+
+.kissopen-agent-input__answer {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 5px 12px;
+    border-radius: var(--kissopen-radius-sm);
+    background: color-mix(in srgb, var(--surface-selected) 58%, transparent);
+}
+
+.kissopen-agent-input__answer-label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--text);
+}
+
+.kissopen-agent-input__answer-description {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+/* ---- Session controls / control menu --------------------------------------- */
+
+.kissopen-agent-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.kissopen-agent-control {
+    position: relative;
+    display: inline-flex;
+}
+
+.kissopen-agent-control__trigger {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+}
+
+.kissopen-agent-control__trigger:disabled {
+    cursor: default;
+    opacity: 0.62;
+}
+
+.kissopen-agent-control__label {
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-control__value {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.kissopen-agent-control__chevron {
+    display: inline-flex;
+    color: var(--text-secondary);
+}
+
+/* An application's own artwork on the trigger: 16px, its own silhouette, no
+   frame of ours around it. */
+.kissopen-agent-control__leading {
+    display: block;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+/* ---- Split control --------------------------------------------------------
+ *
+ * One box divided rather than two controls placed side by side: the action side
+ * keeps the leading corners, the chevron side the trailing ones, and the single
+ * hairline between them is the action side's own right border. Each half lights
+ * on hover so it is visible that they answer separately.
+ */
+
+.kissopen-agent-control[data-split] .kissopen-agent-control__trigger {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.kissopen-agent-control[data-split] .kissopen-agent-control__trigger--menu {
+    padding: 0 6px;
+    border-left: 0;
+    border-radius: 0 var(--kissopen-radius-sm) var(--kissopen-radius-sm) 0;
+}
+
+.kissopen-agent-control[data-split] .kissopen-agent-control__trigger:hover:not(:disabled) {
+    background: var(--surface-ripple);
+}
+
+.kissopen-agent-control[data-split][data-open]
+    .kissopen-agent-control__trigger--menu:not(:disabled) {
+    background: var(--surface-ripple);
+}
+
+/* ---- Ghost variant --------------------------------------------------------
+ *
+ * The composer footer's form of the control: no box, no fill, dimmed until it
+ * is pointed at, so a session setting sits under the message being written
+ * rather than beside it. Same geometry as the audience toggle it shares that
+ * row with, and it opens on hover, so reading the current value costs nothing.
+ */
+
+.kissopen-agent-control[data-variant="ghost"] .kissopen-agent-control__trigger {
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    opacity: 0.5;
+    transition:
+        color 120ms ease,
+        opacity 120ms ease;
+}
+
+.kissopen-agent-control[data-variant="ghost"] .kissopen-agent-control__trigger:hover:not(:disabled),
+.kissopen-agent-control[data-variant="ghost"][data-open]
+    .kissopen-agent-control__trigger:not(:disabled) {
+    color: var(--text);
+    opacity: 1;
+}
+
+.kissopen-agent-control[data-variant="ghost"] .kissopen-agent-control__value {
+    font-weight: 500;
+    color: inherit;
+}
+
+.kissopen-agent-control[data-variant="ghost"] .kissopen-agent-control__label {
+    color: inherit;
+}
+
+/* The chevron is the one piece of chrome the quiet form drops: the value is
+   already the affordance, and pointing at it opens the menu. */
+.kissopen-agent-control[data-variant="ghost"] .kissopen-agent-control__chevron {
+    display: none;
+}
+
+/* ---- Live transcript activity --------------------------------------------
+ *
+ * The entry is the trailing half of the working-status line: the same 14px
+ * secondary type as the clock and phase beside it, sized to its own text so
+ * the line can put it at the far end or drop it to the next line whole.
+ */
+.kissopen-agent-activity-transcript {
+    box-sizing: border-box;
+    height: 24px;
+    min-width: 0;
+    padding: 2px 20px 2px 0;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-agent-activity-transcript__row {
+    display: flex;
+    align-items: baseline;
+    height: 20px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+
+.kissopen-agent-activity-transcript__row:not(:disabled) {
+    cursor: pointer;
+}
+
+.kissopen-agent-activity-transcript__row:disabled {
+    opacity: 1;
+}
+
+.kissopen-agent-activity-transcript__row:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+.kissopen-agent-activity-transcript__primary {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    height: 20px;
+    overflow: hidden;
+    color: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-activity-transcript__primary > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-activity-transcript__separator {
+    flex: none;
+    color: var(--input-placeholder);
+}
+
+/* Full-window transparent dismissal layer beneath the popover; leaves flow. */
+.kissopen-agent-control__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--kissopen-z-overlay) - 1);
+    border: none;
+    background: transparent;
+    cursor: default;
+}
+
+/* Popover overlays out of flow directly beneath its trigger. Its 4px offset is
+   padding rather than a gap so a pointer travelling from the trigger to the menu
+   never leaves the control, which is what keeps the hover form open. */
+.kissopen-agent-control__popover {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: var(--kissopen-z-overlay);
+    padding-top: 4px;
+}
+
+/* A control parked at the right edge of a header would push its popover off the
+   window if it opened rightwards, so it hangs from the trigger's right edge. */
+.kissopen-agent-control__popover[data-align="end"] {
+    left: auto;
+    right: 0;
+}
+
+.kissopen-agent-control__popover[data-placement="above"] {
+    top: auto;
+    bottom: 100%;
+    padding-top: 0;
+    padding-bottom: 4px;
+}
+
+/* ---- Command palette rows -------------------------------------------------- */
+
+.kissopen-agent-command-palette__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Inset the rows past the shell's 14px corner radius so their own rounded
+       hover corners never sit inside the palette's corner field (which the
+       nested-radius contract would otherwise require to be concentric). */
+    padding: 6px;
+}
+
+.kissopen-agent-command-palette__item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.kissopen-agent-command-palette__item:hover {
+    background: var(--surface-selected);
+}
+
+.kissopen-agent-command-palette__icon {
+    flex: none;
+    display: inline-flex;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-command-palette__item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.kissopen-agent-command-palette__item-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.kissopen-agent-command-palette__item-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-command-palette__slash {
+    flex: none;
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-command-palette__empty {
+    margin: 0;
+    padding: 12px;
+    text-align: center;
+    color: var(--text-secondary);
+}

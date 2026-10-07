@@ -1,0 +1,59 @@
+{
+    "name": "kissopen-desktop-workspace",
+    "version": "0.3.0",
+    "private": true,
+    "description": "Kissopen local desktop client for Kissopen Agent",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/slopus/happy-desktop.git"
+    },
+    "type": "module",
+    "scripts": {
+        "dev": "node scripts/dev-desktop.mjs",
+        "dev:web": "PORTLESS_LAN=0 PORTLESS_LAN_IP= PORTLESS_TLD=localhost pnpm exec portless run --name kissopen-desktop-web node scripts/dev-web.mjs",
+        "dev:desktop": "node scripts/dev-desktop.mjs",
+        "dev:desktop:electron": "node scripts/dev-desktop.mjs",
+        "dev:profile": "node scripts/dev-desktop.mjs --profile",
+        "dev:sandbox": "node scripts/dev-desktop-sandbox.mjs",
+        "dev:sandbox:subscriptions": "node scripts/dev-desktop-sandbox.mjs --real-home --name=subscriptions",
+        "desktop:assets": "node scripts/create-mac-icon.mjs && node scripts/create-tray-icon.mjs && node scripts/create-brand-images.mjs && node scripts/create-windows-icon.mjs",
+        "desktop:assets:windows": "node scripts/create-windows-icon.mjs",
+        "desktop:update-manifest": "node scripts/create-mac-update-manifest.mjs standard",
+        "desktop:mac:release": "node scripts/build-mac-apps.mjs",
+        "desktop:win:release": "node scripts/build-windows-app.mjs",
+        "desktop:local:web": "pnpm --dir packages/kissopen-desktop-electron build:local-web-ui",
+        "demo": "node --import tsx scripts/demo/record.mjs",
+        "blueprint": "PORTLESS_LAN=0 PORTLESS_LAN_IP= PORTLESS_TLD=localhost pnpm exec portless run --name kissopen-desktop-blueprint node scripts/dev-blueprint.mjs",
+        "build": "pnpm -r --if-present build",
+        "test": "pnpm -r --if-present test",
+        "test:watch": "pnpm -r --parallel --if-present test:watch",
+        "typecheck": "tsc --project tsconfig.json && pnpm -r --if-present typecheck",
+        "format": "oxfmt --write eslint scripts tsconfig.json && pnpm -r --if-present format",
+        "format:check": "oxfmt --check eslint scripts tsconfig.json && pnpm -r --if-present format:check",
+        "lint": "oxlint eslint scripts && pnpm -r --if-present lint",
+        "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm build",
+        "clean": "pnpm -r --if-present clean"
+    },
+    "devDependencies": {
+        "@eslint/css": "^1.4.0",
+        "@rolldown/plugin-babel": "0.2.3",
+        "@types/node": "^26.1.1",
+        "babel-plugin-react-compiler": "1.0.0",
+        "concurrently": "^10.0.3",
+        "oxfmt": "^0.57.0",
+        "oxlint": "^1.73.0",
+        "portless": "^0.15.4",
+        "sharp": "^0.35.3",
+        "tsx": "^4.21.0",
+        "typescript": "^7.0.2",
+        "vite": "8.1.4",
+        "vite-plugin-node-polyfills": "^0.28.0",
+        "yaml": "^2.9.0"
+    },
+    "engines": {
+        "node": ">=24.0.0",
+        "pnpm": ">=10.28.1"
+    },
+    "packageManager": "pnpm@10.28.1"
+}

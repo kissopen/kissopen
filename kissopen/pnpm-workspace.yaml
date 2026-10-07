@@ -1,0 +1,35 @@
+packages:
+  - "packages/kissopen-app"
+  - "packages/kissopen-wire"
+  - "packages/kissopen-sync"
+  - "packages/kissopen-app-logs"
+  - "packages/expo-tailcat"
+
+# pnpm 11 stopped reading settings from .npmrc and from the "pnpm" field in
+# package.json, so they are repeated here (the old locations still serve pnpm 10,
+# which is what packageManager pins).
+#
+# nodeLinker must stay hoisted: `expo prebuild` writes an ios/ project that points
+# every native module at <repo root>/node_modules/<pkg>, a path the isolated linker
+# never creates. An isolated install makes all 156 of those references dangle and
+# the Xcode build fails with "Build input file cannot be found".
+nodeLinker: hoisted
+shamefullyHoist: true
+strictPeerDependencies: false
+autoInstallPeers: true
+
+overrides:
+  whatwg-url: 14.2.0
+  parse-path: 7.0.3
+  "@types/parse-path": 7.0.3
+
+onlyBuiltDependencies:
+  - "@more-tech/react-native-libsodium"
+  - "@prisma/client"
+  - "@prisma/engines"
+  - "@shopify/react-native-skia"
+  - "@tailwindcss/oxide"
+  - better-sqlite3
+  - esbuild
+  - prisma
+  - sharp

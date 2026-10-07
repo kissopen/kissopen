@@ -1,0 +1,37 @@
+{
+    "name": "monorepo",
+    "private": true,
+    "scripts": {
+        "web": "pnpm --filter kissopen-app web",
+        "app-logs": "pnpm --filter kissopen-app-logs start",
+        "postinstall": "node ./scripts/postinstall.cjs"
+    },
+    "workspaces": {
+        "packages": [
+            "packages/kissopen-app",
+            "packages/kissopen-wire",
+            "packages/kissopen-sync",
+            "packages/kissopen-app-logs",
+            "packages/expo-tailcat"
+        ]
+    },
+    "pnpm": {
+        "overrides": {
+            "whatwg-url": "14.2.0",
+            "parse-path": "7.0.3",
+            "@types/parse-path": "7.0.3"
+        },
+        "onlyBuiltDependencies": [
+            "@more-tech/react-native-libsodium",
+            "@prisma/client",
+            "@prisma/engines",
+            "@shopify/react-native-skia",
+            "@tailwindcss/oxide",
+            "better-sqlite3",
+            "esbuild",
+            "prisma",
+            "sharp"
+        ]
+    },
+    "packageManager": "pnpm@10.11.0"
+}

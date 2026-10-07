@@ -1,0 +1,226 @@
+/*
+ * C-036 SearchResults — grouped unified search popover.
+ *
+ * Contract: a 400px raised card (--surface-pressed) with a 1px strong hairline,
+ * 10px card radius and a soft drop shadow, 6px inner padding. Groups stack with
+ * 6px breathing room; each group has a 28px mono uppercase header (type label
+ * left, result count right) over 44px rows. Every row leads with a 28px block —
+ * an avatar for people and message authors, a hash/glyph tile for channels and
+ * message fallbacks — then a stacked title + muted meta. Query matches inside a
+ * title paint on the accent highlight token.
+ */
+
+.kissopen-search-results,
+.kissopen-search-results * {
+    box-sizing: border-box;
+}
+
+.kissopen-search-results {
+    display: block;
+    width: 400px;
+    padding: 6px;
+    background: var(--surface-pressed);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-md);
+    box-shadow: 0 12px 32px var(--shadow-floating);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Flush variant: fill a host surface (e.g. CommandPalette) without card chrome. */
+.kissopen-search-results[data-variant="flush"] {
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* ---- Groups ----------------------------------------------------------- */
+
+.kissopen-search-results__group {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+}
+
+.kissopen-search-results__group + .kissopen-search-results__group {
+    margin-top: 6px;
+}
+
+.kissopen-search-results__group-head {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    height: 28px;
+    padding: 0 10px;
+}
+
+.kissopen-search-results__group-label {
+    display: block;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.kissopen-search-results__group-count {
+    flex: none;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+/* ---- Rows ------------------------------------------------------------- */
+
+.kissopen-search-results__row {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    text-align: left;
+    appearance: none;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+}
+
+.kissopen-search-results__group:last-child .kissopen-search-results__row:last-child {
+    border-bottom-right-radius: var(--kissopen-search-results-last-radius, 3px);
+    border-bottom-left-radius: var(--kissopen-search-results-last-radius, 3px);
+}
+
+.kissopen-search-results__row:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-search-results__row:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+.kissopen-search-results__row-leading {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+.kissopen-search-results__row-glyph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--groupped-background);
+    color: var(--text-secondary);
+}
+
+.kissopen-search-results__row-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-search-results__row-title {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-search-results__row-meta {
+    display: block;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- Rich snippet spans ----------------------------------------------- */
+
+.kissopen-search-results__mark {
+    border-radius: 4px;
+    background: var(--surface-selected);
+    color: var(--text-link);
+    font-weight: 600;
+}
+
+.kissopen-search-results__mention {
+    color: var(--text-link);
+    font-weight: 500;
+}
+
+.kissopen-search-results__code {
+    padding: 0 4px;
+    border-radius: 4px;
+    background: var(--groupped-background);
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+}
+
+.kissopen-search-results__link {
+    color: var(--text-link);
+    text-decoration: none;
+}
+
+/* ---- Empty ------------------------------------------------------------ */
+
+.kissopen-search-results__empty {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 32px 16px;
+    text-align: center;
+}
+
+.kissopen-search-results__empty-icon {
+    display: flex;
+    color: var(--text-secondary);
+}
+
+.kissopen-search-results__empty-label {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+}

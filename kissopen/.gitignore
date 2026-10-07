@@ -1,0 +1,89 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+/ios
+/android
+/packages/kissopen-app/ios
+/packages/kissopen-app/android
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+.env
+.env.production
+
+# typescript
+*.tsbuildinfo
+
+.claude/settings.local.json
+.claude/*.lock
+.claude/worktrees/
+.plan
+
+CLAUDE.local.md
+CLAUDE.md
+.claude/CLAUDE.md
+
+.dev/worktree/*
+
+# Local dev environments
+.environments/
+environments/data/
+
+# Development planning notes (keep local, don't commit)
+notes/
+docs/notes/
+# ralphex progress logs
+progress*.txt
+
+# OpenCode trace output (script is committed, output is not)
+docs/competition/opencode/traces/
+
+# scratch tooling
+.cdp-scripts/
+kissopen-workspaces/
+
+# local KISSOPEN_HOME_DIR for self-host testing
+.kissopen-fully-local/
+.kissopen-dev/
+
+# third party tools
+.supervibe/
+
+.context/
+.kissopen-tmp/
+
+# Preserve upstream tracked instruction files when importing this workspace.
+!environments/lab-rat-todo-project/CLAUDE.md
+!packages/kissopen-app/CLAUDE.md
+!packages/kissopen-cli/CLAUDE.md
+!packages/kissopen-cli/src/daemon/CLAUDE.md
+!packages/kissopen-server/CLAUDE.md
+!packages/kissopen-server/deploy/integration-tests/CLAUDE.md

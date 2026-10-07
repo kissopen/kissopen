@@ -1,0 +1,134 @@
+/* Status rows stay in normal flow. A row may own clearance from preceding
+ * activity, but it never shifts itself over content that came before it. */
+.kissopen-chat-turn-status,
+.kissopen-conversation-turn-status {
+    margin-top: 0;
+    padding: 0 20px 0 30px;
+}
+
+/* The running footer uses the same 16px/24px type measure as message content. */
+.kissopen-agent-working-status,
+.kissopen-agent-working-status * {
+    box-sizing: border-box;
+}
+
+.kissopen-agent-working-status {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    width: 100%;
+    height: 32px;
+    min-height: 32px;
+    background: transparent;
+    font-family: var(--kissopen-font-ui);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kissopen-agent-working-status:not([data-active]) {
+    height: 0;
+    min-height: 0;
+}
+
+.kissopen-agent-working-status[data-active] {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* One typographic run after the loader: clock, separator, and phase share the
+   same family, size, line box, and baseline — the row's own body measure, so
+   the line reporting the turn reads at the size the turn's own prose does. */
+.kissopen-agent-working-status__state {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    padding-left: 3px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.kissopen-agent-working-status__state .kissopen-typed-text {
+    min-width: 0;
+    vertical-align: baseline;
+    font-family: inherit;
+}
+
+/* A question pauses work on the human side. The static label starts where the
+   loader normally starts; no empty glyph column suggests that work continues. */
+.kissopen-agent-working-status[data-awaiting-input] .kissopen-agent-working-status__state {
+    padding-left: 0;
+}
+
+.kissopen-agent-working-status__spinner {
+    flex: none;
+    align-self: center;
+    margin-right: 3px;
+}
+
+/* The activity rows above this footer set a 14px glyph column, and the text
+   after them starts 6px past it. The 14px loader's snapped braille box is 8px
+   wide, so the row's 3px leading padding plus this 3px trailing margin complete
+   the same 14px column. A ring already fills the column, so it takes the
+   padding back and adds no margin of its own: a turn that starts waiting keeps
+   both the glyph and the text it precedes exactly where the work above them
+   sits. */
+.kissopen-agent-working-status__ring {
+    flex: none;
+    margin-left: -3px;
+}
+
+.kissopen-agent-working-status__timer {
+    flex: none;
+    text-align: right;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* The wait countdown stands in the phase slot. Its digits change every second,
+   but it keeps the exact typography and baseline of the ordinary phase. */
+.kissopen-agent-working-status__phase {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.kissopen-agent-working-status__separator {
+    flex: none;
+    color: var(--input-placeholder);
+}
+
+/* A live footer follows the newest activity rather than closing settled prose:
+ * keep it in normal flow and retain a small block boundary above it. */
+.kissopen-chat-turn-status.kissopen-agent-working-status,
+.kissopen-conversation-turn-status.kissopen-agent-working-status {
+    margin-top: 4px;
+}
+
+/* Prose already owns the closing boundary shared with its settled summary. */
+.kissopen-conversation-turn-status--after-message.kissopen-agent-working-status {
+    margin-top: 0;
+}
+
+.kissopen-chat-turn-status.kissopen-agent-working-status:not([data-active]),
+.kissopen-conversation-turn-status.kissopen-agent-working-status:not([data-active]) {
+    margin-top: 0;
+}
+
+/* When the status itself opens the agent turn, Message already owns the same
+   content inset and author clearance as a tool-first row. */
+.kissopen-message--activity-lead .kissopen-conversation-turn-status {
+    margin-top: 0;
+    padding: 0;
+}

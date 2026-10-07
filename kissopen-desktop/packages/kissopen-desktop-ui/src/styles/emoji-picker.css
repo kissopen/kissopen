@@ -1,0 +1,192 @@
+/*
+ * C-043 EmojiPicker — reaction-picker popover on the high surface.
+ *
+ * Contract: a high card with a 1px modal hairline, 10px
+ * card radius, and a soft drop shadow. 8px padding wraps a search field over
+ * an emoji grid of fixed, equal 36px slots (grid-template-columns is set inline
+ * from the `columns` prop). Every emoji — unicode char or custom image — sits
+ * in the same explicitly sized 24px art slot centered in its cell, so the grid
+ * stays regular no matter the artwork. Optional mono section labels separate a
+ * recent row from the full grid. All geometry is integer on the 4px grid.
+ */
+
+.kissopen-emoji-picker,
+.kissopen-emoji-picker * {
+    box-sizing: border-box;
+}
+
+.kissopen-emoji-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--modal-border);
+    border-radius: var(--kissopen-radius-md);
+    /* It shares the composer's popover slot with the command and mention
+     * pickers, but floats narrower than the card instead of spanning it, so it
+     * keeps a short, faint drop where those two rely on the hairline alone. */
+    box-shadow: 0 2px 8px var(--shadow-color);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* ---- Search ----------------------------------------------------------- */
+
+.kissopen-emoji-picker__search {
+    display: block;
+}
+
+/* The search control is 9px inside the card's top edge (1px border + 8px
+ * padding), so its top curve is the remaining 1px of the 10px card curve. */
+.kissopen-emoji-picker__search .kissopen-text-field__control {
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+}
+
+/* ---- Sections + labels ------------------------------------------------ */
+
+.kissopen-emoji-picker__section {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kissopen-emoji-picker__label {
+    display: block;
+    flex: none;
+    height: 20px;
+    /* Aligns the label to the emoji artwork, inset 6px inside the 36px cell. */
+    padding: 0 6px;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ---- Grid of fixed equal slots ---------------------------------------- */
+
+.kissopen-emoji-picker__grid {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- true 2-D emoji grid: fixed 36px slots wrap into an aligned multi-row matrix flexbox cannot keep column-aligned */
+    display: grid;
+    /* grid-template-columns comes inline: repeat(columns, 36px). */
+    justify-content: start;
+}
+
+.kissopen-emoji-picker__cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--kissopen-radius-sm);
+    color: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+}
+
+[data-kissopen-desktop-ui="emoji-picker-all-section"]
+    .kissopen-emoji-picker__cell[data-picker-bottom-left] {
+    border-bottom-left-radius: 1px;
+}
+
+[data-kissopen-desktop-ui="emoji-picker-all-section"]
+    .kissopen-emoji-picker__cell[data-picker-bottom-right] {
+    border-bottom-right-radius: 1px;
+}
+
+.kissopen-emoji-picker__cell:hover {
+    background: var(--surface-ripple);
+}
+
+.kissopen-emoji-picker__cell:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/* Fixed 24px art slot, shared by unicode glyphs and custom images so both
+ * emoji kinds occupy identical geometry (only the artwork inside differs). */
+.kissopen-emoji-picker__art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    font-family: var(--kissopen-font-emoji);
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.kissopen-emoji-picker__glyph {
+    display: block;
+    line-height: 24px;
+    transform: translate(var(--kissopen-emoji-x, 0px), var(--kissopen-emoji-y, 0px));
+}
+
+.kissopen-emoji-picker__image {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/*
+ * Optical corrections for font-fallback color emoji. Apple Color Emoji carries
+ * a consistent left side-bearing, so the advance-centered glyph lands off the
+ * 24px slot center by a per-engine amount measured at true 2× (visible-bounds
+ * centroid on zeroed vars, EmojiPicker.test.tsx). The offset is uniform across
+ * artwork because visible bounds quantize to the device-pixel grid, so one
+ * translate per engine recenters the whole set. Custom images are already
+ * box-centered and get no shift. Values are the Chromium base; Gecko/WebKit
+ * override below. Re-measure after any change — the raster response is
+ * non-linear (see the ReactionChip treatment this mirrors).
+ */
+.kissopen-emoji-picker {
+    --kissopen-emoji-x: 1.5px;
+    --kissopen-emoji-y: 0px;
+}
+
+/* Firefox — Gecko is the only engine that parses -moz-appearance. */
+@supports (-moz-appearance: none) {
+    .kissopen-emoji-picker {
+        --kissopen-emoji-x: 2px;
+        --kissopen-emoji-y: 1px;
+    }
+}
+
+/* WebKit — Blink and Gecko do not parse -webkit-named-image(). */
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-emoji-picker {
+        --kissopen-emoji-x: 0px;
+        --kissopen-emoji-y: -0.5px;
+    }
+}
+
+/* ---- Empty ------------------------------------------------------------ */
+
+.kissopen-emoji-picker__empty {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 6px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
+}

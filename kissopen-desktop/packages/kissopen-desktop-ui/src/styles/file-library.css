@@ -1,0 +1,470 @@
+/* C-282 FileLibrary — a spacious heading and filter toolbar over dated cards.
+ * A full-bleed scrollport owns scrolling; its inner list owns the gutters.
+ * File rows stay compact and retain their source and hover actions. */
+
+.kissopen-file-library,
+.kissopen-file-library__toolbar,
+.kissopen-file-library__list,
+.kissopen-file-library__row,
+.kissopen-file-library__tile {
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.kissopen-file-library {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    background: var(--home-bg);
+}
+
+/* Heading ---------------------------------------------------------------- */
+
+.kissopen-file-library__toolbar,
+.kissopen-file-library__list {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: 40px;
+}
+
+/* A failed upload, said where the button that started it is. */
+.kissopen-file-library__error {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1440px;
+    margin: 16px auto 0;
+    padding-inline: 40px;
+}
+
+/* Toolbar: search grows, the filter keeps its width ----------------------- */
+
+.kissopen-file-library__toolbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    min-height: 60px;
+    flex-wrap: wrap;
+    padding-block: 8px 16px;
+}
+
+.kissopen-file-library__search {
+    flex: 1 1 0;
+    min-width: min(220px, 100%);
+    max-width: 360px;
+}
+
+@media (max-width: 1000px) {
+    .kissopen-file-library__toolbar,
+    .kissopen-file-library__list,
+    .kissopen-file-library__error {
+        padding-inline: 24px;
+    }
+}
+
+/* List ------------------------------------------------------------------- */
+
+/* ScrollArea lays out its viewport and track itself; this only gives it the
+   height left under the toolbar. The viewport is what scrolls. */
+.kissopen-file-library__scroll {
+    flex: 1 1 0;
+    min-height: 0;
+}
+
+.kissopen-file-library__viewport {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+
+.kissopen-file-library__list {
+    display: flex;
+    /* Keep all rows at their natural height so the viewport, not this clipped
+       content wrapper, owns overflow and the scrollbar's full range. */
+    flex: none;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 16px;
+    padding-bottom: 32px;
+}
+
+.kissopen-file-library__group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border: 1px solid var(--home-border);
+    border-radius: 20px;
+    background: var(--home-card);
+}
+
+.kissopen-file-library__group-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+    padding: 16px 12px 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+}
+
+.kissopen-file-library__group-label > span:first-of-type {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-file-library__group-count {
+    flex: none;
+    padding: 0 6px;
+    border-radius: 6px;
+    background: var(--home-accent-soft);
+    color: var(--home-accent);
+    font-size: 11px;
+    letter-spacing: 0;
+}
+
+/* Row -------------------------------------------------------------------- */
+
+.kissopen-file-library__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    padding: 0 12px;
+    border-radius: 12px;
+    transition: background-color 120ms ease;
+}
+
+.kissopen-file-library__row:hover,
+.kissopen-file-library__row:focus-within {
+    background: var(--home-hover);
+}
+
+.kissopen-file-library__row[data-selected] {
+    background: var(--home-accent-soft);
+}
+
+.kissopen-file-library__tile {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--groupped-background);
+    color: var(--text-secondary);
+}
+
+.kissopen-file-library__row[data-kind="document"] .kissopen-file-library__tile {
+    color: var(--file-prose);
+}
+
+.kissopen-file-library__row[data-kind="data"] .kissopen-file-library__tile {
+    color: var(--file-data);
+}
+
+.kissopen-file-library__row[data-kind="image"] .kissopen-file-library__tile {
+    color: var(--file-image);
+}
+
+.kissopen-file-library__row[data-selected] .kissopen-file-library__tile {
+    background: var(--button-primary-background);
+    color: var(--button-primary-tint);
+}
+
+.kissopen-file-library__copy {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-file-library__name {
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kissopen-file-library__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.kissopen-file-library__dot {
+    flex: none;
+    width: 3px;
+    height: 3px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.kissopen-file-library__source {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--text-secondary);
+    font: inherit;
+    appearance: none;
+}
+
+button.kissopen-file-library__source {
+    cursor: pointer;
+}
+
+button.kissopen-file-library__source:hover {
+    color: var(--text-link);
+}
+
+button.kissopen-file-library__source:focus-visible {
+    border-radius: var(--kissopen-radius-sm);
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-file-library__source-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kissopen-file-library__selected {
+    color: var(--text-link);
+}
+
+.kissopen-file-library__time {
+    flex: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Actions: reserved width so the time never shifts; visible on hover ------ */
+
+.kissopen-file-library__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+    min-width: 60px;
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+.kissopen-file-library__row:hover .kissopen-file-library__actions,
+.kissopen-file-library__row:focus-within .kissopen-file-library__actions,
+.kissopen-file-library[data-actions-visible] .kissopen-file-library__actions {
+    opacity: 1;
+}
+
+/* Scope chip: the one conversation the list is narrowed to ---------------- */
+
+.kissopen-file-library__scope {
+    display: inline-flex;
+    box-sizing: border-box;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    max-width: 240px;
+    height: 28px;
+    padding: 0 4px 0 10px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-high);
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.kissopen-file-library__scope-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kissopen-file-library__scope-clear {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-pill);
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    appearance: none;
+}
+
+.kissopen-file-library__scope-clear:hover {
+    background: var(--surface-pressed);
+    color: var(--text);
+}
+
+.kissopen-file-library__scope-clear:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+/* Tiles ------------------------------------------------------------------- */
+/*
+ * The same dated groups, laid out as tiles on the same 880px measure. A tile
+ * is a 4:3 preview — the picture itself for an image, its kind otherwise —
+ * over its name and a quiet line of size and time. Actions float in the
+ * preview's corner on hover, as they trail a row.
+ */
+.kissopen-file-library__grid {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- tiles wrap into rows whose columns must line up */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 4px 12px 8px;
+}
+
+.kissopen-file-library__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding: 6px 6px 8px;
+    border-radius: var(--kissopen-radius-md);
+    transition: background-color 120ms ease;
+}
+
+.kissopen-file-library__card:hover,
+.kissopen-file-library__card:focus-within {
+    background: var(--surface-high);
+}
+
+.kissopen-file-library__card[data-selected] {
+    background: var(--surface-selected);
+}
+
+.kissopen-file-library__thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    margin-bottom: 4px;
+    border-radius: var(--kissopen-radius-sm);
+    background: var(--groupped-background);
+    color: var(--text-secondary);
+}
+
+.kissopen-file-library__card[data-kind="document"] .kissopen-file-library__thumb {
+    color: var(--file-prose);
+}
+
+.kissopen-file-library__card[data-kind="data"] .kissopen-file-library__thumb {
+    color: var(--file-data);
+}
+
+.kissopen-file-library__card[data-kind="image"] .kissopen-file-library__thumb {
+    color: var(--file-image);
+}
+
+/* A faint edge over the picture, so a white screenshot still reads as a tile. */
+.kissopen-file-library__thumb {
+    position: relative;
+}
+
+.kissopen-file-library__thumb::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px var(--divider);
+    content: "";
+    pointer-events: none;
+}
+
+.kissopen-file-library__thumb-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+}
+
+.kissopen-file-library__picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.kissopen-file-library__card-name {
+    overflow: hidden;
+    padding-inline: 2px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kissopen-file-library__card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding-inline: 2px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.kissopen-file-library__card-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    gap: 4px;
+    min-width: 0;
+}
+
+.kissopen-file-library__card:hover .kissopen-file-library__actions,
+.kissopen-file-library__card:focus-within .kissopen-file-library__actions {
+    opacity: 1;
+}

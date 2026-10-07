@@ -1,0 +1,85 @@
+/*
+ * ConversationErrorCard — a failed turn's reason on the assistant activity rail.
+ *
+ * Its 6px vertical inset around one 20px line gives it the same 32px height as
+ * a compact tool call. Icon, label, and reason stay in one scanning row.
+ */
+
+.kissopen-conversation-error-card,
+.kissopen-conversation-error-card * {
+    box-sizing: border-box;
+}
+
+.kissopen-conversation-error-card {
+    display: flex;
+    width: 100%;
+    padding: 6px 96px 6px 30px;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/* A turn that failed before it did anything else puts its first notice inside
+   the Message that owns the agent identity line. Message already supplies the
+   transcript inset, so keeping the card's own would indent it past the notices
+   beneath it. */
+.kissopen-message--activity-lead .kissopen-conversation-error-card {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.kissopen-conversation-error-card__bubble {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-conversation-error-card__icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 20px;
+    color: color-mix(in srgb, var(--status-error) 38%, var(--text-secondary));
+}
+
+.kissopen-conversation-error-card__content {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.kissopen-conversation-error-card__title {
+    flex: none;
+    color: color-mix(in srgb, var(--status-error) 38%, var(--text-secondary));
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.kissopen-conversation-error-card[data-tone="warning"] .kissopen-conversation-error-card__icon,
+.kissopen-conversation-error-card[data-tone="warning"] .kissopen-conversation-error-card__title,
+.kissopen-conversation-error-card[data-tone="warning"] .kissopen-conversation-error-card__reason {
+    color: color-mix(in srgb, var(--box-warning-text) 38%, var(--text-secondary));
+}
+
+/* The reason scrolls sideways (see ScrollingText) instead of ending in an
+   ellipsis: a failure a reader cannot finish reading is not a report. */
+.kissopen-conversation-error-card__reason {
+    min-width: 0;
+    flex: 1 1 auto;
+    color: color-mix(in srgb, var(--status-error) 38%, var(--text-secondary));
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.kissopen-conversation-error-card:hover .kissopen-copy-button,
+.kissopen-conversation-error-card:focus-within .kissopen-copy-button {
+    opacity: 1;
+}

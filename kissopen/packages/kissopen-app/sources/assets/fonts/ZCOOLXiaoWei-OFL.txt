@@ -1,0 +1,16 @@
+ZCOOLXiaoWei-yiqijuan.ttf
+=========================
+
+A subset of 站酷小薇体 (ZCOOL XiaoWei) containing only the glyphs 一 起 卷,
+used for the 一起卷 wordmark.
+
+Copyright 2018 The ZCOOL XiaoWei Project Authors
+(https://www.github.com/googlefonts/xiaowei)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+The full license text is available at https://openfontlicense.org
+(http://scripts.sil.org/OFL).
+
+The subset is a Modified Version under the OFL. It may be used, bundled and
+redistributed freely, but may not be sold by itself, and it keeps the
+original font's copyright notice and this license.

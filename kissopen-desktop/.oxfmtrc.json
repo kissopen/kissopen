@@ -1,0 +1,9 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "ignorePatterns": [
+        "packages/kissopen-desktop-ui/src/assets/animations/*.json",
+        "**/*.gen.ts"
+    ],
+    "tabWidth": 4,
+    "useTabs": false
+}

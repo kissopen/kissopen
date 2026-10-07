@@ -1,0 +1,113 @@
+/*
+ * One store's snapshot, printed whole. It reads like the diagnostics log next to
+ * it — a compact header over a bounded monospace scrollport — because the two
+ * answer the same kind of question and a reader scanning Dev Tools should not
+ * have to re-learn the shape of the panel for each one.
+ *
+ * The scrollport is bounded rather than growing with the value: a workspace
+ * snapshot can be thousands of lines, and a page that grows by one of them per
+ * store stops being scannable at all.
+ */
+
+.kissopen-agent-raw-state,
+.kissopen-agent-raw-state * {
+    box-sizing: border-box;
+}
+
+.kissopen-agent-raw-state {
+    display: flex;
+    flex-direction: column;
+    max-height: 320px;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--diff-context-bg);
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+.kissopen-agent-raw-state__header {
+    display: flex;
+    align-items: center;
+    flex: none;
+    gap: 8px;
+    height: 40px;
+    padding: 0 10px 0 12px;
+    background: var(--surface-high);
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-agent-raw-state__title {
+    flex: none;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+.kissopen-agent-raw-state__detail {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A single panel-level action, always visible rather than row-hover chrome. */
+.kissopen-agent-raw-state__header .kissopen-copy-button {
+    opacity: 1;
+}
+
+/* Full-bleed scrollport: its inner content element owns the readable inset. */
+.kissopen-agent-raw-state__scrollport {
+    flex: 1 1 0%;
+    min-height: 0;
+    width: 100%;
+    background: var(--diff-context-bg);
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: 17px;
+}
+
+.kissopen-agent-raw-state__viewport {
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    background: inherit;
+    color: inherit;
+    font: inherit;
+}
+
+.kissopen-agent-raw-state__viewport:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: -2px;
+}
+
+.kissopen-agent-raw-state__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 12px;
+}
+
+/* Pretty-printed JSON keeps its own indentation, so the value is not wrapped:
+   a re-flowed object is harder to read than one that scrolls sideways. */
+.kissopen-agent-raw-state__value {
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    white-space: pre;
+}
+
+.kissopen-agent-raw-state__value code {
+    color: inherit;
+    font: inherit;
+    white-space: inherit;
+    user-select: text;
+}

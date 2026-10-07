@@ -1,0 +1,33 @@
+.kissopen-logo-intro .kissopen-mark__left {
+    animation: var(--kissopen-intro-play, kissopen-intro-left) 1.8s ease-in-out
+        var(--kissopen-intro-delay, 0ms) 1;
+}
+.kissopen-logo-intro .kissopen-mark__right {
+    animation: var(--kissopen-intro-play, kissopen-intro-right) 1.8s ease-in-out
+        var(--kissopen-intro-delay, 0ms) 1;
+}
+@keyframes kissopen-intro-left {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+    25% {
+        opacity: 0.22;
+    }
+}
+@keyframes kissopen-intro-right {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 0.22;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-logo-intro path {
+        animation: none;
+    }
+}

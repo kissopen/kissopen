@@ -1,0 +1,165 @@
+/*
+ * C-250 WelcomeScreen — the first-run deck: art, title, slogan, dots, button,
+ * centred on the workspace surface.
+ *
+ * The whole screen is one centred column with three overlays that are not part
+ * of it — the generated backdrop, the window-drag lane along the top, and the
+ * appearance switcher in the bottom-right corner. All are out of flow, so the
+ * column measures the same with or without them.
+ *
+ * The deck in the middle of it is C-270 WelcomeDeck and owns its own geometry;
+ * see `welcome-deck.css` for the two measurements that keep the column still
+ * while it advances.
+ *
+ * It paints the same surface onboarding and the splash paint, so arriving here
+ * and leaving here changes the content of the window rather than its scenery.
+ * Every dimension is on the 4px grid.
+ */
+
+.kissopen-welcome-screen,
+.kissopen-welcome-screen__backdrop,
+.kissopen-welcome-screen__view,
+.kissopen-welcome-screen__body {
+    box-sizing: border-box;
+}
+
+/*
+ * Decorative scenery occupies the window without participating in its layout.
+ * The view and the two corner/edge controls establish higher stacking levels,
+ * so the canvas can never cover copy, focus rings, scrollbars, or the drag lane.
+ */
+.kissopen-welcome-screen__backdrop {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+}
+
+.kissopen-welcome-screen > .kissopen-window-drag-region {
+    z-index: 2;
+}
+
+/*
+ * The root is the window, and it is the positioning context the window-drag
+ * lane pins itself to — `.kissopen-window-drag-region` is absolute and expects
+ * its host surface to say what "top" means. The lane is deliberately *outside*
+ * the scrollport below it: an absolute box inside a scroll container scrolls
+ * away with the content, and a drag lane that leaves the top of the window is
+ * no drag lane at all. Being out of flow, it also cannot push the centred
+ * column down — this screen looks identical with and without it.
+ */
+.kissopen-welcome-screen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+}
+
+/*
+ * Full-bleed scrollport: it owns scrolling for the whole screen, edge to edge,
+ * with no spacing of its own. `safe center` keeps the column optically centred
+ * while it fits and lets it scroll from the top at the 720 × 480 minimum
+ * window, where a 160px hero plus two lines of copy plus the action is taller
+ * than the glass.
+ */
+.kissopen-welcome-screen__view {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.kissopen-welcome-screen__view-viewport {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: safe center;
+    min-height: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+
+/*
+ * The content wrapper owns every gap and gutter the scrollport is forbidden. Its
+ * 40px side gutter is also the focus-safe gutter: the dots' 2px ring and the
+ * action's own focus treatment are painted far inside it, so no scroll edge can
+ * clip a focus indicator.
+ */
+.kissopen-welcome-screen__body {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    width: 100%;
+    padding: 32px 40px;
+}
+
+/* ---- Action ----------------------------------------------------------- */
+
+/*
+ * Wide enough to read as the way out of this screen rather than as an ordinary
+ * button that happens to be centred, and never wider than the slogan measure.
+ */
+.kissopen-welcome-screen__action {
+    flex: none;
+    min-width: 240px;
+}
+
+/* The sky is one photographic treatment in either appearance: white mark,
+   white words, and a white way forward. The inverse label keeps the action
+   readable without introducing a theme-specific colour. */
+.kissopen-welcome-screen[data-backdrop="sky"] .kissopen-welcome-screen__action {
+    background: var(--onboarding-backdrop-ink);
+    color: var(--onboarding-backdrop-action-ink);
+}
+
+.kissopen-welcome-screen[data-backdrop="sky"]
+    .kissopen-welcome-screen__action:hover:not(:disabled) {
+    background: color-mix(
+        in srgb,
+        var(--onboarding-backdrop-action-ink) 8%,
+        var(--onboarding-backdrop-ink)
+    );
+}
+
+/* ---- Appearance switcher ---------------------------------------------- */
+
+/*
+ * The one corner control. Absolute against the root, so it takes nothing from
+ * the centred column: the deck is laid out identically whether or not this
+ * button is there, which is the same promise the one-cell slide stack makes.
+ *
+ * 24px from both edges — the safe-area gutter the system uses around a card in
+ * a window. The 28px ghost button plus its 2px focus ring at 2px offset ends
+ * 20px inside the glass, so the ring is nowhere near the root's `overflow`
+ * clip. It sits in the bottom-right because the drag lane owns the top band:
+ * the two are at opposite ends of the window and cannot contend for a pixel.
+ */
+.kissopen-welcome-screen__appearance {
+    position: absolute;
+    z-index: 2;
+    right: 24px;
+    bottom: 24px;
+}
+
+/*
+ * The corner the switcher sits in is the one place the scrim deliberately does
+ * not reach, and in this picture it is bright cloud — which a light glyph in the
+ * dark appearance would disappear into. The control gets its own disc of surface
+ * rather than the ellipse being widened to cover it: one 28px circle keeps its
+ * contrast without washing out the whole corner behind it.
+ */
+.kissopen-welcome-screen[data-backdrop="sky"] .kissopen-welcome-screen__appearance {
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+}

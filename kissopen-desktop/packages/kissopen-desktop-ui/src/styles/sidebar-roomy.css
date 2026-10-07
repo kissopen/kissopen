@@ -1,0 +1,103 @@
+/*
+ * The roomy sidebar: the main window's navigation in the home page's language.
+ *
+ * A pale ground a shade lighter than the page, the product logo under the
+ * window's control lane, destination rows at 40px with 14px labels and 20px
+ * glyphs, and a selection in the home page's lavender with violet ink. Section
+ * rows — assistants, projects, conversations — keep the 32px contract of the
+ * compact sidebar and only share the selection colour and a softer corner, so
+ * a long list stays as dense as before. The footer grows to 64px for a 36px
+ * identity glyph.
+ */
+.kissopen-sidebar[data-roomy] {
+    --kissopen-surface-footer-height: 64px;
+    --kissopen-panel-inset: 12px;
+    background: var(--home-card-soft);
+}
+
+.kissopen-sidebar__roomy-brand {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 calc(var(--kissopen-panel-inset) + 14px);
+    --kissopen-lockup-height: 18px;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__actions {
+    gap: 4px;
+    padding-top: 4px;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__actions .kissopen-sidebar__item {
+    gap: 12px;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__actions .kissopen-sidebar__item-leading {
+    width: 24px;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__actions .kissopen-sidebar__item-label {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__item {
+    border-radius: 10px;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__item:hover {
+    background: var(--home-hover);
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__item[data-active] {
+    background: var(--home-accent-soft);
+    color: var(--home-accent-strong);
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__item[data-active] .kissopen-sidebar__item-leading,
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__item[data-active] .kissopen-sidebar__item-label {
+    color: var(--home-accent-strong);
+}
+
+/* The content column owns all group spacing, including optional sections. */
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__body-content {
+    gap: 20px;
+}
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__body-content > * {
+    margin-top: 0;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__body-accessory:empty {
+    display: none;
+}
+
+/* Section names in the page's own type rather than the compact sidebar's mono caps. */
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__section-label {
+    color: var(--home-muted);
+    font-family: var(--kissopen-font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__footer {
+    padding: 0 10px;
+    border-top-color: var(--home-border);
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__profile {
+    padding: 8px 10px;
+    border-radius: 12px;
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__profile:hover {
+    background: var(--home-hover);
+}
+
+.kissopen-sidebar[data-roomy] .kissopen-sidebar__profile-name {
+    font-size: 14px;
+}

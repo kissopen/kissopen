@@ -1,0 +1,141 @@
+/*
+ * Working-tree diff viewer — a deliberately quiet, full-pane code surface.
+ * Pierre Diffs renders inside Shadow DOM; inherited custom properties align its
+ * typography, material, and colors with Kissopen without coupling to Pierre's
+ * internals.
+ */
+
+.kissopen-changed-file-diff {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* The mode switch sits above the code and stays put while it scrolls. */
+.kissopen-changed-file-diff__bar {
+    box-sizing: border-box;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: var(--kissopen-subheader-height);
+    padding: 0 8px;
+    background: var(--surface);
+    box-shadow: inset 0 -1px var(--divider);
+}
+
+.kissopen-changed-file-diff__bar-end {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-changed-file-diff__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    /* Preview and Edit hand scrolling to their own inner viewers. */
+    overflow: hidden;
+}
+
+.kissopen-changed-file-diff[data-mode="unified"] .kissopen-changed-file-diff__body,
+.kissopen-changed-file-diff[data-mode="split"] .kissopen-changed-file-diff__body {
+    /*
+     * The renderer owns both scroll axes: Pierre keeps horizontal scrolling
+     * inside each code column, while the renderer host owns the one vertical
+     * scrollport for the whole file. Keeping the body clipped prevents a
+     * second scrollport from reserving a blank lane beside the rows.
+     */
+    overflow: hidden;
+}
+
+.kissopen-changed-file-diff__viewport {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kissopen-changed-file-diff[data-mode="unified"] .kissopen-changed-file-diff__viewport,
+.kissopen-changed-file-diff[data-mode="split"] .kissopen-changed-file-diff__viewport {
+    --kissopen-code-trailing-clearance: calc(var(--kissopen-scrollbar-track) + 1ch);
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* A preview is a whole viewer that owns its own scrolling — a document with a
+   reading measure, a picture on a stage, a recording that fills its frame — so
+   the pane hands it the region rather than scrolling it from outside, which
+   would give the same content two scrollbars. */
+.kissopen-changed-file-diff[data-mode="preview"] .kissopen-changed-file-diff__body {
+    display: flex;
+    overflow: hidden;
+}
+
+.kissopen-changed-file-diff__renderer {
+    display: block;
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    overflow: visible;
+    /* The bar is the product's own (styles/scrollbar.css), the same one the
+       file viewer's editor and every panel draw: it appears while this pane is
+       being scrolled and is gone otherwise. It is an overlay and takes no
+       layout, so a row's green or red runs to the pane edge and continues
+       underneath it. */
+    --diffs-font-family: var(--kissopen-font-mono);
+    --diffs-header-font-family: var(--kissopen-font-ui);
+    --diffs-font-size: 12px;
+    --diffs-line-height: 20px;
+    /* Pierre's default header is `1lh + 3 × gap-block`: 20 + 3 × 4 = 32,
+       exactly the same row as the tabs, mode bar, and Preview path. */
+    --diffs-gap-block: var(--kissopen-subheader-inset);
+    --diffs-gap-inline: 10px;
+    --diffs-light-bg: var(--surface);
+    --diffs-dark-bg: var(--surface);
+    --diffs-light: var(--text);
+    --diffs-dark: var(--text);
+
+    /* Pierre mixes one accent per side into the page background to build every
+       addition and deletion surface it draws. Setting those two accents is
+       therefore the whole of the color integration: row fills, gutter tints,
+       and word-level emphasis all follow from them. They are the same tokens
+       `DiffSnippet` paints inline diffs with, so a hunk in the transcript and
+       the same hunk in this pane are finally the same green and red.
+
+       One declaration serves both appearances: these are the theme-neutral
+       fallbacks Pierre consults inside both branches of its `light-dark()`, and
+       the tokens themselves already switch with the theme. */
+    --diffs-addition-color: var(--diff-added-border);
+    --diffs-deletion-color: var(--diff-removed-border);
+}
+
+/* The same code editor the file tab uses: editing a change should not look like
+   a different application from editing the file it is a change to. */
+.kissopen-changed-file-diff__editor {
+    width: 100%;
+    height: 100%;
+}
+
+.kissopen-changed-file-diff__updating {
+    flex: none;
+    padding: 3px 7px;
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-high);
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    pointer-events: none;
+}

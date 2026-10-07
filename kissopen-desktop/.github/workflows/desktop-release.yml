@@ -1,0 +1,341 @@
+name: Release Kissopen Desktop
+run-name: Release Kissopen Desktop v${{ inputs.version }}
+
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: Semantic version without v; previews use X.Y.Z-preview.N
+                required: true
+                type: string
+            release_notes:
+                description: Markdown changelog to include in the GitHub Release
+                required: true
+                type: string
+            prerelease:
+                description: Preview (Nightly only); disable for a stable release of both apps
+                required: true
+                default: true
+                type: boolean
+
+permissions:
+    contents: read
+
+concurrency:
+    group: release-macos-desktop
+    cancel-in-progress: false
+
+env:
+    RELEASE_TAG: v${{ inputs.version }}
+    RELEASE_VERSION: ${{ inputs.version }}
+    RELEASE_PRERELEASE: ${{ inputs.prerelease }}
+
+jobs:
+    linux:
+        needs: verify
+        if: ${{ !inputs.prerelease }}
+        uses: ./.github/workflows/build-linux.yml
+
+    windows:
+        needs: verify
+        if: ${{ !inputs.prerelease }}
+        uses: ./.github/workflows/build-windows.yml
+        with:
+            verify_agent_release: true
+
+    verify:
+        name: Verify release inputs and source
+        runs-on: macos-14
+        timeout-minutes: 60
+
+        steps:
+            - name: Check out source
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: "24"
+                  cache: pnpm
+
+            - name: Verify release inputs
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RELEASE_NOTES: ${{ inputs.release_notes }}
+              run: |
+                  if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+                    echo "Desktop releases must be dispatched from main." >&2
+                    exit 1
+                  fi
+                  pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+                  if [[ "$RELEASE_PRERELEASE" == true ]]; then
+                    pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-preview\.(0|[1-9][0-9]*)$'
+                  fi
+                  if [[ ! "$RELEASE_VERSION" =~ $pattern ]]; then
+                    echo "Use X.Y.Z-preview.N for previews, or X.Y.Z with prerelease=false for production." >&2
+                    exit 1
+                  fi
+                  if [[ -z "${RELEASE_NOTES//[[:space:]]/}" ]]; then
+                    echo "Release notes must not be blank." >&2
+                    exit 1
+                  fi
+                  git fetch origin main --tags
+                  if [[ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]]; then
+                    echo "Desktop releases must start from the current main branch." >&2
+                    exit 1
+                  fi
+                  ROOT_VERSION="$(node -p "require('./package.json').version")"
+                  DESKTOP_VERSION="$(node -p "require('./packages/kissopen-desktop-electron/package.json').version")"
+                  if [[ "$RELEASE_PRERELEASE" != true && "$RELEASE_VERSION" != "$ROOT_VERSION" ]]; then
+                    echo "Requested version $RELEASE_VERSION does not match root package version $ROOT_VERSION." >&2
+                    exit 1
+                  fi
+                  if [[ "$DESKTOP_VERSION" != "$ROOT_VERSION" ]]; then
+                    echo "Desktop package version $DESKTOP_VERSION does not match root package version $ROOT_VERSION." >&2
+                    exit 1
+                  fi
+                  if git rev-parse --verify --quiet "refs/tags/$RELEASE_TAG" >/dev/null; then
+                    echo "Tag $RELEASE_TAG already exists." >&2
+                    exit 1
+                  fi
+                  if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+                    echo "Release $RELEASE_TAG already exists." >&2
+                    exit 1
+                  fi
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Test application
+              run: pnpm test
+
+    build:
+        name: Build macOS ${{ matrix.arch }}
+        needs: verify
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - arch: arm64
+                      runner: macos-14
+                    - arch: x64
+                      runner: macos-15-intel
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 60
+        env:
+            APPLE_API_ISSUER: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+            APPLE_API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+            APPLE_NOTARY_KEY_P8_BASE64: ${{ secrets.APPLE_NOTARY_KEY_P8_BASE64 }}
+            APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+            CSC_KEY_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+            CSC_LINK: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+
+        steps:
+            - name: Check out source
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: "24"
+                  cache: pnpm
+
+            - name: Verify signing configuration
+              run: |
+                  test -n "$CSC_LINK"
+                  test -n "$CSC_KEY_PASSWORD"
+                  test -n "$APPLE_NOTARY_KEY_P8_BASE64"
+                  test -n "$APPLE_API_KEY_ID"
+                  test -n "$APPLE_API_ISSUER"
+                  test -n "$APPLE_TEAM_ID"
+                  test "$APPLE_TEAM_ID" = "466DQWDR8C"
+
+            - name: Prepare App Store Connect API key
+              run: |
+                  NOTARY_KEY="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+                  printf '%s' "$APPLE_NOTARY_KEY_P8_BASE64" | base64 -D > "$NOTARY_KEY"
+                  chmod 600 "$NOTARY_KEY"
+                  printf 'APPLE_API_KEY=%s\n' "$NOTARY_KEY" >> "$GITHUB_ENV"
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Typecheck desktop source
+              if: matrix.arch == 'arm64'
+              run: |
+                  pnpm --dir packages/kissopen-desktop-electron typecheck
+                  pnpm --dir packages/kissopen-desktop-app typecheck
+
+            - name: Build, sign, notarize, and verify desktop distributions
+              env:
+                  RELEASE_ARCH: ${{ matrix.arch }}
+              run: |
+                  FLAVOR=all
+                  if [[ "$RELEASE_PRERELEASE" == true ]]; then FLAVOR=local-web; fi
+                  pnpm desktop:mac:release -- --arch "$RELEASE_ARCH" --flavor "$FLAVOR"
+
+            - name: Remove App Store Connect API key
+              if: always()
+              run: rm -f "$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+
+            - name: Upload architecture artifacts
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-macos-${{ matrix.arch }}
+                  retention-days: 7
+                  path: |
+                      packages/kissopen-desktop-electron/release/standard/*.dmg
+                      packages/kissopen-desktop-electron/release/standard/*.zip
+                      packages/kissopen-desktop-electron/release/standard/*.blockmap
+                      packages/kissopen-desktop-electron/release/local-web/*.dmg
+                      packages/kissopen-desktop-electron/release/local-web/*.zip
+                      packages/kissopen-desktop-electron/release/local-web/*.blockmap
+                  if-no-files-found: error
+
+            - name: Build hosted local renderer
+              if: matrix.arch == 'arm64'
+              env:
+                  KISSOPEN_LOCAL_WEB_BUILD_ID: ${{ inputs.version }}-${{ github.sha }}
+              run: pnpm desktop:local:web
+
+            - name: Upload hosted local renderer
+              if: matrix.arch == 'arm64'
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: kissopen-desktop-local-web-site
+                  path: packages/kissopen-desktop-electron/release/local-web-site
+                  if-no-files-found: error
+
+    publish:
+        name: Publish GitHub Release
+        if: ${{ !cancelled() && needs.verify.result == 'success' && needs.build.result == 'success' && ((needs.windows.result == 'success' && needs.linux.result == 'success') || (inputs.prerelease && needs.windows.result == 'skipped' && needs.linux.result == 'skipped')) }}
+        needs:
+            - verify
+            - build
+            - windows
+            - linux
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            contents: write
+
+        steps:
+            - name: Check out the verified commit
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  fetch-depth: 0
+
+            - name: Download signed artifacts
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+              with:
+                  pattern: kissopen-desktop-macos-*
+                  path: packages/kissopen-desktop-electron/release
+                  merge-multiple: true
+
+            - name: Download unsigned Windows artifacts
+              if: ${{ !inputs.prerelease }}
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+              with:
+                  pattern: kissopen-desktop-windows-*-unsigned
+                  path: packages/kissopen-desktop-electron/release/windows
+                  merge-multiple: true
+
+            - name: Confirm the release target
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  git fetch origin main --tags
+                  if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+                    echo "The verified commit is no longer on main." >&2
+                    exit 1
+                  fi
+                  if git rev-parse --verify --quiet "refs/tags/$RELEASE_TAG" >/dev/null; then
+                    echo "Tag $RELEASE_TAG was created while this release was building." >&2
+                    exit 1
+                  fi
+                  if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+                    echo "Release $RELEASE_TAG was created while this release was building." >&2
+                    exit 1
+                  fi
+
+            - name: Download boot-verified Linux AppImages
+              if: ${{ !inputs.prerelease }}
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+              with:
+                  pattern: kissopen-desktop-linux-*
+                  path: packages/kissopen-desktop-electron/release/linux
+                  merge-multiple: true
+
+            - name: Create architecture-aware updater manifests
+              run: |
+                  if [[ "$RELEASE_PRERELEASE" != true ]]; then node scripts/create-mac-update-manifest.mjs standard; fi
+                  node scripts/create-mac-update-manifest.mjs local-web
+
+            - name: Create tag and GitHub release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RELEASE_NOTES: ${{ inputs.release_notes }}
+              run: |
+                  mkdir -p .release
+                  printf '%s\n' "$RELEASE_NOTES" > .release/notes.md
+                  node --input-type=module <<'NODE'
+                  import { stat } from 'node:fs/promises';
+                  import { desktopFlavorNames, desktopFlavorRead } from './scripts/desktopFlavors.mjs';
+                  const flavors = process.env.RELEASE_PRERELEASE === 'true' ? ['local-web'] : desktopFlavorNames;
+                  for (const name of flavors) {
+                    const flavor = desktopFlavorRead(name);
+                    const directory = `packages/kissopen-desktop-electron/release/${flavor.output}`;
+                    const files = [`${flavor.channel}-mac.yml`, ...['arm64', 'x64'].flatMap(arch =>
+                      ['dmg', 'zip', 'dmg.blockmap', 'zip.blockmap'].map(ext =>
+                        `${flavor.artifactPrefix}-${process.env.RELEASE_VERSION}-${arch}.${ext}`))];
+                    for (const file of files) {
+                      const path = `${directory}/${file}`;
+                      const info = await stat(path);
+                      if (!info.isFile() || info.size === 0) throw new Error(`Missing or empty release asset: ${path}`);
+                    }
+                  }
+                  if (process.env.RELEASE_PRERELEASE !== 'true') {
+                    for (const arch of ['x64', 'arm64']) {
+                      const path = `packages/kissopen-desktop-electron/release/linux/Kissopen-${process.env.RELEASE_VERSION}-${arch}.AppImage`;
+                      const info = await stat(path);
+                      if (!info.isFile() || info.size === 0) throw new Error(`Missing or empty release asset: ${path}`);
+                    }
+                    for (const name of desktopFlavorNames) {
+                      const flavor = desktopFlavorRead(name);
+                      const installer = `${flavor.artifactPrefix}-${process.env.RELEASE_VERSION}-x64.exe`;
+                      for (const file of [installer, `${installer}.blockmap`, `${flavor.channel}.yml`]) {
+                        const path = `packages/kissopen-desktop-electron/release/windows/${file}`;
+                        const info = await stat(path);
+                        if (!info.isFile() || info.size === 0) throw new Error(`Missing or empty release asset: ${path}`);
+                      }
+                    }
+                  }
+                  NODE
+                  shopt -s nullglob
+                  assets=(packages/kissopen-desktop-electron/release/{standard,local-web}/*.{dmg,zip,blockmap} packages/kissopen-desktop-electron/release/{standard,local-web}/*-mac.yml)
+                  if [[ "$RELEASE_PRERELEASE" != true ]]; then
+                    assets+=(packages/kissopen-desktop-electron/release/windows/*.{exe,blockmap} packages/kissopen-desktop-electron/release/windows/{latest,nightly}.yml)
+                    assets+=(packages/kissopen-desktop-electron/release/linux/*.AppImage)
+                  fi
+                  arguments=("$RELEASE_TAG" --draft --target "$GITHUB_SHA" --title "Kissopen $RELEASE_TAG" --notes-file .release/notes.md)
+                  if [[ "$RELEASE_PRERELEASE" == true ]]; then arguments+=(--prerelease --latest=false); fi
+                  gh release create "${arguments[@]}" "${assets[@]}"
+                  if [[ "$RELEASE_PRERELEASE" == true ]]; then
+                    gh release edit "$RELEASE_TAG" --draft=false --latest=false
+                  else
+                    gh release edit "$RELEASE_TAG" --draft=false --latest
+                  fi
+                  RELEASE_URL="$(gh release view "$RELEASE_TAG" --json url --jq .url)"
+                  printf 'Published [Kissopen %s](%s).\n' "$RELEASE_TAG" "$RELEASE_URL" >> "$GITHUB_STEP_SUMMARY"

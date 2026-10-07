@@ -1,0 +1,371 @@
+/*
+ * Badge family — Badge (status pill), CountBadge (unread count),
+ * ReactionChip (emoji reaction), KeyCap (shortcut hint).
+ *
+ * Contract heights: Badge 18, CountBadge 18 (min-width 18), ReactionChip 24,
+ * KeyCap 18. Badge and KeyCap use the mono uppercase treatment; CountBadge
+ * uses mono lining/tabular figures so arbitrary counts share one figure band.
+ */
+
+.kissopen-badge,
+.kissopen-badge *,
+.kissopen-count-badge,
+.kissopen-count-badge *,
+.kissopen-reaction-chip,
+.kissopen-reaction-chip *,
+.kissopen-key-cap,
+.kissopen-key-cap * {
+    box-sizing: border-box;
+}
+
+/* ---- Badge ---------------------------------------------------------- */
+
+.kissopen-badge {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    gap: 4px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-synthesis: none;
+    white-space: nowrap;
+}
+
+.kissopen-badge__label {
+    display: block;
+    /*
+     * letter-spacing also trails the last glyph, so the advance box the flex
+     * centering centers is 0.06em wider than the ink. Trimming that trailing
+     * space here recenters the ink structurally (no translate needed on x).
+     */
+    margin-right: -0.06em;
+    transform: translate(var(--kissopen-badge-label-x, 0px), var(--kissopen-badge-label-y, 0px));
+}
+
+.kissopen-badge__icon {
+    display: flex;
+    flex: none;
+    /*
+     * The 12px spark glyph rasterizes with its ink centroid ~0.45px right of
+     * its box in every engine (Badge.test.tsx); the path lives in Icon.tsx,
+     * which the badge cannot edit, so compensate at the slot.
+     */
+    transform: translateX(var(--kissopen-badge-icon-x, 0px));
+}
+
+.kissopen-badge[data-variant="neutral"] {
+    background: var(--input-background);
+    color: var(--text-secondary);
+}
+
+.kissopen-badge[data-variant="accent"] {
+    background: var(--surface-selected);
+    color: var(--text-link);
+}
+
+.kissopen-badge[data-variant="success"] {
+    background: var(--surface-high);
+    color: var(--success);
+}
+
+.kissopen-badge[data-variant="warning"] {
+    background: var(--box-warning-background);
+    color: var(--box-warning-text);
+}
+
+.kissopen-badge[data-variant="danger"] {
+    background: var(--box-error-background);
+    color: var(--box-error-text);
+}
+
+.kissopen-badge[data-variant="info"] {
+    background: var(--surface-high);
+    color: var(--radio-active);
+}
+
+.kissopen-badge[data-variant="outline"] {
+    background: transparent;
+    border: 1px solid var(--divider);
+    padding: 0 5px; /* keeps label 6px from the visual edge */
+    color: var(--text-secondary);
+}
+
+/* ---- CountBadge ------------------------------------------------------ */
+
+.kissopen-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    height: 18px;
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: var(--kissopen-radius-pill);
+    font-family: var(--kissopen-font-mono);
+    font-size: 10.8px;
+    font-weight: 700;
+    line-height: 18px;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-synthesis: none;
+    white-space: nowrap;
+}
+
+.kissopen-count-badge__label {
+    display: block;
+}
+
+/* A count that wants to be noticed. What it counts is the information; the
+   hue never was, and system blue made a ten-pixel number the loudest thing in
+   the sidebar while reading at 4:1 against its own fill. Ink on paper is
+   louder still and legible in both appearances. */
+.kissopen-count-badge[data-tone="accent"] {
+    background: var(--text);
+    color: var(--surface);
+}
+
+.kissopen-count-badge[data-tone="neutral"] {
+    background: var(--input-background);
+    color: var(--text-secondary);
+}
+
+/* ---- ReactionChip ---------------------------------------------------- */
+
+.kissopen-reaction-chip {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    gap: 5px;
+    height: 24px;
+    margin: 0;
+    padding: 0 8px;
+    background: var(--input-background);
+    border: 1px solid var(--divider);
+    border-radius: var(--kissopen-radius-pill);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    appearance: none;
+    cursor: pointer;
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease;
+}
+
+.kissopen-reaction-chip:hover {
+    border-color: var(--divider);
+}
+
+.kissopen-reaction-chip:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-reaction-chip__emoji {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    font-family: var(--kissopen-font-emoji);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.kissopen-reaction-chip__emoji-glyph {
+    display: block;
+    line-height: 18px;
+    transform: translate(var(--kissopen-chip-emoji-x, 0px), var(--kissopen-chip-emoji-y, 0px));
+}
+
+.kissopen-reaction-chip__count {
+    display: block;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 22px;
+    font-variant-numeric: lining-nums tabular-nums;
+    color: var(--text-secondary);
+}
+
+.kissopen-reaction-chip[data-active] {
+    background: var(--surface-selected);
+    border-color: var(--text-link);
+}
+
+.kissopen-reaction-chip[data-active] .kissopen-reaction-chip__count {
+    color: var(--text-link);
+}
+
+/* ---- KeyCap ---------------------------------------------------------- */
+
+.kissopen-key-cap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    height: 18px;
+    padding: 0 4px;
+    background: var(--input-background);
+    border-radius: 4px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 10.8px;
+    font-weight: 500;
+    line-height: 18px;
+    color: var(--text-secondary);
+    font-synthesis: none;
+    white-space: nowrap;
+}
+
+.kissopen-shortcut-hint--floating {
+    position: absolute;
+    z-index: 4;
+    /* Hidden hints stay inside their owner so they add no phantom scroll range. */
+    top: 50%;
+    left: 50%;
+    display: inline-flex;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 80ms ease,
+        visibility 0s linear 80ms,
+        top 0s linear 80ms,
+        transform 0s linear 80ms;
+}
+
+[data-shortcut-hint]:hover > .kissopen-shortcut-hint--floating {
+    top: calc(100% + 4px);
+    opacity: 1;
+    transform: translateX(-50%);
+    visibility: visible;
+    transition-delay: 500ms;
+}
+
+[data-shortcut-hint]:focus-visible > .kissopen-shortcut-hint--floating,
+[data-shortcut-hints] .kissopen-shortcut-hint--floating,
+[data-shortcut-hints] [data-shortcut-hint]:hover > .kissopen-shortcut-hint--floating {
+    top: calc(100% + 4px);
+    opacity: 1;
+    transform: translateX(-50%);
+    visibility: visible;
+    transition-delay: 0ms;
+}
+
+.kissopen-key-cap__label {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 10px;
+}
+
+.kissopen-key-cap__key {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    height: 10px;
+}
+
+.kissopen-key-cap__key[data-kind="text"] {
+    width: 6.5px;
+    transform: translateY(var(--kissopen-keycap-text-y, 0px));
+}
+
+.kissopen-key-cap__text {
+    display: block;
+    line-height: 10px;
+}
+
+.kissopen-key-cap__key[data-kind="symbol"] {
+    width: 9px;
+    transform: translateY(var(--kissopen-keycap-symbol-y, 0px));
+}
+
+.kissopen-key-cap__key svg {
+    display: block;
+    width: 9px;
+    height: 9px;
+    overflow: visible;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+/*
+ * ---- Optical corrections (measured; see Badge.test.tsx) ---------------
+ *
+ * Engine-measured ink-centroid corrections, tuned against alpha-weighted
+ * visible-pixel captures at 2x in all three engines (raw drift measured with
+ * every value below zeroed first). One correction per part must serve every
+ * content case; the residual is inherent glyph-ink asymmetry, not box
+ * misalignment. Engines snap glyph runs to device-pixel steps, so the
+ * response to a translate is non-linear; re-measure, never extrapolate.
+ * Base values are the Chromium measurements; Gecko and WebKit override below.
+ */
+.kissopen-badge {
+    --kissopen-badge-icon-x: -0.2px;
+    --kissopen-badge-label-x: 0.2px;
+    --kissopen-badge-label-y: 0.7px;
+}
+
+.kissopen-reaction-chip {
+    --kissopen-chip-emoji-x: 0.95px;
+    --kissopen-chip-emoji-y: 0px;
+}
+
+.kissopen-key-cap {
+    /*
+     * KeyCap vertical is calibrated on '0' (bilaterally symmetric figure band)
+     * at the integer fixture position used by Badge.test.tsx. The raster snaps
+     * the '0' centroid onto the 10px slot center with no text shift; the
+     * modifier symbols rise 0.5px to sit on that same axis. Chromium and Gecko
+     * rasterize the shared slot identically, so only WebKit overrides it.
+     */
+    --kissopen-keycap-symbol-y: -0.5px;
+    --kissopen-keycap-text-y: 0px;
+}
+
+/*
+ * Firefox — Gecko is the only engine that parses -moz-appearance.
+ * (@-moz-document is stripped by the CSS pipeline, and Blink on macOS
+ * matches @supports (font: -apple-system-body), so those two classic
+ * scopes cannot be used here.)
+ */
+@supports (-moz-appearance: none) {
+    .kissopen-badge {
+        --kissopen-badge-label-y: -0.5px;
+    }
+
+    .kissopen-reaction-chip {
+        --kissopen-chip-emoji-x: 1.5px;
+        --kissopen-chip-emoji-y: 0.9px;
+    }
+    /* KeyCap: Gecko rasterizes identically to the Chromium base here. */
+}
+
+/* WebKit — Blink and Gecko do not parse -webkit-named-image(). */
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-badge {
+        --kissopen-badge-label-y: 0.3px;
+    }
+
+    .kissopen-reaction-chip {
+        --kissopen-chip-emoji-x: 0px;
+        --kissopen-chip-emoji-y: -0.9px;
+    }
+
+    .kissopen-key-cap {
+        --kissopen-keycap-symbol-y: 0px;
+        --kissopen-keycap-text-y: 0px;
+    }
+}

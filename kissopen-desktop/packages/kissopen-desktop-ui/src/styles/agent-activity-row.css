@@ -1,0 +1,693 @@
+/*
+ * AgentActivityRow: one glanceable row per tool call, reasoning block, shell
+ * run, or message from another agent, expanding into its detail. Layout is
+ * flexbox throughout; colors and type come only from theme roles.
+ */
+
+.kissopen-agent-activity-row {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    min-width: 0;
+    font-family: var(--kissopen-font-ui);
+}
+
+/* The header and its copy action share one row; only the header stretches. */
+.kissopen-agent-activity__line {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+}
+
+.kissopen-agent-activity__line .kissopen-agent-activity__header {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.kissopen-agent-activity-row:hover .kissopen-copy-button,
+.kissopen-agent-activity-row:focus-within .kissopen-copy-button {
+    opacity: 1;
+}
+
+/* Opening the file the tool worked on: the same quiet, hover-revealed action
+   as the copy beside it, so the row keeps one trailing control group. */
+.kissopen-agent-activity__open {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    appearance: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 100ms ease;
+}
+
+.kissopen-agent-activity__open:hover {
+    background: var(--surface-pressed);
+    color: var(--text);
+}
+
+.kissopen-agent-activity__open:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--radio-active);
+    outline-offset: 1px;
+}
+
+.kissopen-agent-activity-row:hover .kissopen-agent-activity__open,
+.kissopen-agent-activity-row:focus-within .kissopen-agent-activity__open {
+    opacity: 1;
+}
+
+.kissopen-agent-activity__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 2px 0;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: var(--text);
+    /* The header is a button, and a button does not inherit the page's font:
+       left alone it falls back to the UA's own, which is how a row's verb came
+       out in Arial while every label beside it was the house face. The inner
+       label spans each set a font of their own, so this was invisible until a
+       row rendered a word without one. */
+    font-family: var(--kissopen-font-ui);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.kissopen-agent-activity__header:disabled {
+    cursor: default;
+}
+
+.kissopen-agent-activity__dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kissopen-radius-pill);
+}
+
+.kissopen-agent-activity__dot[data-tone="success"] {
+    background: var(--success);
+}
+
+.kissopen-agent-activity__dot[data-tone="warning"] {
+    background: var(--box-warning-text);
+}
+
+.kissopen-agent-activity__dot[data-tone="error"] {
+    background: var(--status-error);
+}
+
+.kissopen-agent-activity__dot[data-tone="neutral"] {
+    background: var(--text-secondary);
+}
+
+/* Grey, and quieter than the verb it sits beside: the glyph is a scanning aid
+   down the left of a long transcript, not a second thing competing to be read
+   first. Fixed square so every row's verb starts on the same column. */
+.kissopen-agent-activity__glyph {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    color: var(--text-secondary);
+}
+
+/* The name of what the agent did. It is a label, not a link, and it is the
+   first word of the row: weight carries it, so it reads at full contrast
+   instead of in the interactive colour it never responded to. */
+.kissopen-agent-activity__verb {
+    flex: none;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* A command or path longer than the row scrolls sideways (see ScrollingText)
+   rather than losing its tail, so nothing an agent did is unreadable. */
+.kissopen-agent-activity__text {
+    min-width: 0;
+    flex: 1 1 auto;
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text);
+}
+
+.kissopen-agent-activity__file-summary {
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.kissopen-agent-activity__file-summary .kissopen-agent-activity__text {
+    flex: 0 1 auto;
+    font-weight: 600;
+}
+
+.kissopen-agent-activity__stats {
+    flex: none;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+}
+
+.kissopen-agent-activity__added {
+    color: var(--git-added-text);
+}
+
+.kissopen-agent-activity__deleted {
+    color: var(--git-removed-text);
+}
+
+.kissopen-agent-activity__chevron {
+    flex: none;
+    display: inline-flex;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-activity__time {
+    flex: none;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    opacity: 0;
+    transition: opacity 100ms ease;
+}
+
+.kissopen-agent-activity-row:hover .kissopen-agent-activity__time,
+.kissopen-agent-activity-row:focus-within .kissopen-agent-activity__time {
+    opacity: 1;
+}
+
+.kissopen-agent-activity__child,
+.kissopen-agent-activity__review {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    padding-left: 16px;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-activity__child-marker {
+    flex: none;
+    color: var(--divider);
+}
+
+.kissopen-agent-activity__child-text {
+    min-width: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.kissopen-agent-activity__child[data-tone="error"] {
+    color: var(--status-error);
+}
+
+.kissopen-agent-activity__source {
+    color: var(--text-link);
+    text-decoration: none;
+}
+
+.kissopen-agent-activity__source:hover,
+.kissopen-agent-activity__source:focus-visible {
+    text-decoration: underline;
+}
+
+.kissopen-agent-activity__review-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-agent-activity__review-title {
+    font-weight: 600;
+    color: var(--review-accent);
+}
+
+.kissopen-agent-activity__review-risk[data-risk="high"] {
+    color: var(--status-error);
+}
+
+.kissopen-agent-activity__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 16px;
+}
+
+.kissopen-agent-activity__diff {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.kissopen-agent-activity__output {
+    margin: 0;
+    padding: 8px 10px;
+    background: var(--diff-context-bg);
+    border-radius: var(--kissopen-radius-sm);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.kissopen-agent-activity__output-elide {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.kissopen-agent-activity__args {
+    margin: 0;
+    padding: 8px 10px;
+    background: var(--diff-context-bg);
+    border-radius: var(--kissopen-radius-sm);
+    font-family: var(--kissopen-font-mono);
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.kissopen-agent-activity__terminal {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.kissopen-agent-activity__status {
+    flex: 0 0 auto;
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-activity__status[data-failed="true"] {
+    color: var(--text-destructive);
+}
+
+/* Compact prose bodies: the model's own thinking, and a message another agent
+   sent it. Both read as quiet secondary text under their one-line summary. */
+.kissopen-agent-activity__reasoning,
+.kissopen-agent-activity__message {
+    gap: 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--text-secondary);
+}
+
+/*
+ * Transcript layout. Every activity row — reasoning, shell run, tool call, or a
+ * step a server already labeled — shares the agent message measure and its block
+ * spacing, so thinking reads as one more block of the reply rather than
+ * something pinned to the pane edge. The contract lives with the component.
+ */
+.kissopen-agent-activity-row {
+    flex: none;
+    /* The subject ellipsizes, so it is the one line that always reaches its
+       boundary: it stops short of where prose wraps, or a truncated command
+       reads as running off the surface. */
+    padding: 8px 96px 8px 30px;
+}
+
+/* Tool calls remain compact single lines, but each owns 6px above and below so
+ * a run scans as distinct actions rather than one dense paragraph. */
+.kissopen-agent-activity-row[data-kind="tool"],
+.kissopen-agent-activity-row[data-kind="labeled"],
+.kissopen-agent-activity-row[data-kind="agentMessage"] {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+/* A tool-first turn puts its first row inside the Message that owns the agent
+ * identity line. Message already supplies the transcript inset, so applying
+ * the activity inset again would double-indent the tool. */
+.kissopen-message--activity-lead .kissopen-agent-activity-row {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.kissopen-agent-activity-row[data-kind="tool"] .kissopen-agent-activity,
+.kissopen-agent-activity-row[data-kind="labeled"] .kissopen-agent-activity {
+    gap: 0;
+}
+
+.kissopen-agent-activity-row[data-kind="tool"] .kissopen-agent-activity__header,
+.kissopen-agent-activity-row[data-kind="labeled"] .kissopen-agent-activity__header,
+.kissopen-agent-activity-row[data-kind="agentMessage"] .kissopen-agent-activity__header {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 0;
+    cursor: default;
+}
+
+/*
+ * A message from another agent is one step of the turn, so its resting line is
+ * a tool row's: same rhythm, same quiet verb, same measure. What differs is its
+ * subject, which is a name rather than a command — so it is set in the UI face
+ * and takes only the width the name needs. The disclosure then sits with the
+ * name instead of at the row's trailing edge, which is the one position that
+ * moves: a row leading its turn is inset by the Message around it, and a plain
+ * row by its own padding, and the two put a trailing chevron 30px apart.
+ */
+.kissopen-agent-activity[data-presentation="agent-message"] .kissopen-agent-activity__verb {
+    flex: none;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-activity[data-presentation="agent-message"] .kissopen-agent-activity__text {
+    flex: 0 1 auto;
+    font-family: var(--kissopen-font-ui);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+}
+
+.kissopen-agent-activity[data-presentation="agent-message"] .kissopen-agent-activity__header {
+    cursor: pointer;
+}
+
+.kissopen-agent-activity[data-presentation="agent-message"]
+    .kissopen-agent-activity__header:disabled {
+    cursor: default;
+}
+
+.kissopen-agent-activity[data-single-line] .kissopen-agent-activity__verb {
+    flex: none;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-activity[data-single-line] .kissopen-agent-activity__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--kissopen-font-ui);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--warning);
+}
+
+.kissopen-agent-activity[data-single-line][data-presentation="execCommand"]
+    .kissopen-agent-activity__text,
+.kissopen-agent-activity[data-single-line][data-presentation="backgroundTerminalInteraction"]
+    .kissopen-agent-activity__text,
+.kissopen-agent-activity[data-single-line][data-presentation="fileDiff"]
+    .kissopen-agent-activity__text,
+.kissopen-agent-activity[data-single-line][data-mono] .kissopen-agent-activity__text {
+    font-family: var(--kissopen-font-mono);
+    font-size: 13px;
+}
+
+/* The edited file is a subject like an explored path or a command — same
+   monospace, same weight — so the row's only bold word stays the verb. It
+   shrinks to fit rather than flexing wide, keeping the diff stats beside the
+   name instead of pushed to the row's far edge. */
+.kissopen-agent-activity[data-single-line][data-presentation="fileDiff"]
+    .kissopen-agent-activity__file-summary
+    .kissopen-agent-activity__text {
+    flex: 0 1 auto;
+}
+
+/* How a row says what happened to it, in colour alone. The three treatments
+   live together and after the variant rules above, because each one overrides
+   an ink colour those rules set. Loudest last: a failure outranks elevation,
+   and elevation outranks a plain review.
+
+   A call that went through a permission review turns its glyph and verb amber
+   — worth spotting in a scan down the transcript, and no further, because the
+   subject is the command itself and a long amber command reads as a warning
+   about its content rather than a fact about its approval. */
+.kissopen-agent-activity[data-review]:not([data-failed]) .kissopen-agent-activity__glyph,
+.kissopen-agent-activity[data-review]:not([data-failed]) .kissopen-agent-activity__verb {
+    color: var(--review-accent);
+}
+
+/* A call granted temporary Full access ran outside the sandbox, and there the
+   subject is exactly the point: the tint is a warning about this command. So
+   the whole line turns, glyph through subject — and because a whole line is
+   far louder than a two-word mark, it turns a shade off the text ink instead
+   of the accent above. */
+.kissopen-agent-activity[data-elevated]:not([data-failed]) .kissopen-agent-activity__glyph,
+.kissopen-agent-activity[data-elevated]:not([data-failed]) .kissopen-agent-activity__verb,
+.kissopen-agent-activity[data-elevated]:not([data-failed]) .kissopen-agent-activity__text {
+    color: var(--activity-elevated-line);
+}
+
+/* A failure is the loudest fact a row carries, and the whole line is what
+   failed — the verb and its subject together. It outranks both marks above,
+   and like elevation it stays near the text ink: the row's dot is already
+   full-strength red, so the line only has to say which row is the failed one. */
+.kissopen-agent-activity[data-failed] .kissopen-agent-activity__glyph,
+.kissopen-agent-activity[data-failed] .kissopen-agent-activity__verb,
+.kissopen-agent-activity[data-failed] .kissopen-agent-activity__text,
+.kissopen-agent-activity[data-presentation="shell"][data-tone="error"]
+    .kissopen-agent-activity__glyph,
+.kissopen-agent-activity[data-presentation="shell"][data-tone="error"]
+    .kissopen-agent-activity__verb,
+.kissopen-agent-activity[data-presentation="shell"][data-tone="error"]
+    .kissopen-agent-activity__text {
+    color: var(--activity-failed-line);
+}
+
+/* Focused conversation rows spend their resting width on the tool subject.
+   Their start time overlays the trailing edge on hover, so it takes no width
+   from the subject before or after it appears — and because it rides that
+   edge, the row's trailing inset is also the time's, so it matches the 30px
+   leading inset and the line reads as evenly framed. */
+.kissopen-agent-activity-row[data-treatment="focused"] {
+    padding-right: 30px;
+}
+
+.kissopen-agent-activity-row[data-treatment="focused"][data-kind="tool"]
+    .kissopen-agent-activity__header,
+.kissopen-agent-activity-row[data-treatment="focused"][data-kind="agentMessage"]
+    .kissopen-agent-activity__header {
+    position: relative;
+}
+
+/*
+ * This timestamp leaves the flex flow on purpose: it is hover metadata over
+ * the row, not another column. Its surface veil turns the would-be "|" into a
+ * soft fade while the subject and every sibling keep exactly the same box.
+ */
+.kissopen-agent-activity-row[data-treatment="focused"][data-kind="tool"]
+    .kissopen-agent-activity__time,
+.kissopen-agent-activity-row[data-treatment="focused"][data-kind="agentMessage"]
+    .kissopen-agent-activity__time {
+    position: absolute;
+    top: 0;
+    right: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 92px;
+    height: 20px;
+    padding-left: 32px;
+    background: linear-gradient(90deg, transparent 0, var(--surface) 35%);
+    transition: none;
+}
+
+/* A still label in the slot TypedText otherwise owns. It must occupy the exact
+   inline box TypedText occupies, or a row whose motion profile happens to
+   render one rather than the other sits a pixel off its neighbours: an inline
+   span is sized by the font's own ascent and descent, while an inline-block
+   aligned to the line's bottom takes the line box's full height and puts its
+   baseline where the row's other labels put theirs. Everything here but the
+   width animation therefore comes from typed-text.css. */
+.kissopen-agent-activity__still-text {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- matches TypedText exactly: one inline text run occupying the same inline box as the label it stands in for, which a flex box would not */
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    white-space: nowrap;
+    font-family: var(--kissopen-font-mono);
+}
+
+/* A picture the agent made: the row's own width at most, corners like a card. */
+.kissopen-agent-activity-row .kissopen-agent-activity__picture {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    background: var(--surface);
+}
+
+/* A card standing in for a tool row — a proposal, a picture on its way, the
+   picture — sits on the tool rhythm with 6px above and below. The geometry model
+   in conversationRowHeight.ts adds the same 12px; change both together. */
+.kissopen-agent-activity-row .kissopen-agent-activity__card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    padding: 6px 0;
+}
+
+/* A scheduled task the agent created: a quiet 56px confirmation. Chip, then
+   two lines — what happened, and the task with when and where it runs. The
+   name gives way before the timing does. Where the surface can open Scheduled
+   tasks it is a <button> carrying [data-clickable] with a trailing chevron, at
+   the same 56px. SCHEDULED_TASK_CARD_HEIGHT in AgentActivityRow.tsx mirrors
+   the height; change both together. */
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 680px;
+    height: 56px;
+    padding: 0 12px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule[data-clickable] {
+    margin: 0;
+    appearance: none;
+    font-synthesis: none;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule[data-clickable]:hover {
+    background-image: linear-gradient(var(--surface-ripple), var(--surface-ripple));
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule[data-clickable]:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 2px;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule-open {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule-chip {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--groupped-background);
+    border-radius: var(--kissopen-radius-sm);
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule-title {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule-detail {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule-name {
+    display: block;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-weight: 500;
+    text-overflow: ellipsis;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__schedule-facts {
+    display: block;
+    flex: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* The picture as a control: no chrome of its own, the picture is the button. */
+.kissopen-agent-activity-row .kissopen-agent-activity__picture-button {
+    display: flex;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    cursor: zoom-in;
+}
+
+.kissopen-agent-activity-row .kissopen-agent-activity__picture-button:focus-visible {
+    outline: 2px solid var(--text-link);
+    outline-offset: 2px;
+}

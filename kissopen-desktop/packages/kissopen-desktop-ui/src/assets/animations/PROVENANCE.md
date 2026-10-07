@@ -1,0 +1,199 @@
+# Animation provenance
+
+## Where these came from
+
+The original five files were copied from `kissopen-list` (the Kissopen Coder React
+Native app), `sources/assets/animations/`, on 2 August 2026 — `sparkles.json`
+first, the other four on the same day the vocabulary was widened.
+`alien-monster.json` followed on 22 August 2026 from that directory's
+`game.json`. Each is byte-identical to its source: none was re-exported,
+re-drawn, re-timed, or otherwise modified. `cat-face.json`, `closed-lock.json`,
+`confetti-ball.json`, `fox.json`, `hatching-chick.json`, `llama.json`,
+`party.json`, and `unicorn.json` were supplied by the project owner on 22
+August 2026. `disguised-face.json` was supplied by the project owner on 23
+August 2026. `cherry-blossom.json`, `front-facing-baby-chick.json`,
+`mirror-ball.json`, and `open-hands.json` were supplied by the project owner on
+26 August 2026, and `cloud-variation.json` and `monkey-hear-no-evil.json` on 27
+August 2026. Their upstream sources are not recorded in the files.
+
+| File                           | SHA-256                                                            | Format                                        | Size              |
+| ------------------------------ | ------------------------------------------------------------------ | --------------------------------------------- | ----------------- |
+| `alien-monster.json`           | `e0875ef4ae4aa214a3d9de567ea39e9429465addabc91d177ea883302146ae89` | Lottie 5.5.2, 512×512, 60fps, 180f, 14 layers | 66 KB / 5 KB gz   |
+| `cat-face.json`                | `21d629ce58ad92bf140bfb7f5534e553232376a56c6bdddd0e527523a89c4d90` | Lottie 5.5.2, 512×512, 60fps, 180f, 17 layers | 367 KB / 66 KB gz |
+| `cherry-blossom.json`          | `4b6c31349911d268c4509e184aac61d877269d7e57745a32c750c851d8a25153` | Lottie 5.5.2, 512×512, 60fps, 180f, 30 layers | 309 KB / 42 KB gz |
+| `closed-lock.json`             | `f6087f51de1ccc7dea5cfb9853292bc14271e86e9390a8fbc9514b31b32a0ad8` | Lottie 5.5.2, 512×512, 60fps, 180f, 14 layers | 146 KB / 14 KB gz |
+| `cloud-variation.json`         | `4833ea8c714e353818667d8c8e39ce807273e86c79c2d473f2331a00526600aa` | Lottie 5.5.2, 512×512, 60fps, 180f, 39 layers | 143 KB / 12 KB gz |
+| `confetti-ball.json`           | `65e82eafe12ac295ce747336f8453e3c500d3c130f77db97581431bf1c7d9fc5` | Lottie 5.5.2, 512×512, 60fps, 180f, 41 layers | 193 KB / 20 KB gz |
+| `disguised-face.json`          | `2f4aa4452a5b785882bee5435a26774443b1a8232bfaa79136c22f2f4a2fa0d1` | Lottie 5.5.2, 512×512, 60fps, 180f, 17 layers | 281 KB / 41 KB gz |
+| `fox.json`                     | `7206bf1b9c34fd7d149e79747b48f7c9a1f51fd42ca92f4f344dee53eed0cd70` | Lottie 5.5.2, 512×512, 60fps, 180f, 20 layers | 368 KB / 38 KB gz |
+| `front-facing-baby-chick.json` | `27eaed25a9691b7f2e882e41ed2db6972b17d0a612089ac958da4af400eb9f45` | Lottie 5.5.2, 512×512, 60fps, 180f, 20 layers | 182 KB / 15 KB gz |
+| `hatching-chick.json`          | `1a693cca609409e3bf79c3c997801346bc083fd9ef2e6fa90689a1288be901dd` | Lottie 5.5.2, 512×512, 60fps, 180f, 3 layers  | 309 KB / 25 KB gz |
+| `llama.json`                   | `ff16ee4b8a19a782b5e5b12dbe103d145410f16b8801af5723b6636c56a0a0ff` | Lottie 5.5.2, 512×512, 60fps, 180f, 27 layers | 462 KB / 60 KB gz |
+| `mirror-ball.json`             | `58f32f20c8ac9d81f1cc403f6a473e1ff4480cd6aff986d1327efcc95d060a81` | Lottie 5.5.2, 512×512, 60fps, 180f, 36 layers | 836 KB / 41 KB gz |
+| `monkey-hear-no-evil.json`     | `ac6eb10983eba058156d8ec1b34e5a1239a6378fb83a8ad11f7a5d61cb61634b` | Lottie 5.5.2, 512×512, 60fps, 137f, 15 layers | 143 KB / 17 KB gz |
+| `open-hands.json`              | `7b5b9d98156057d2fb4cb895f0a462e943942be190dd0a302935e2ef306420b4` | Lottie 5.5.2, 512×512, 60fps, 179f, 3 layers  | 331 KB / 36 KB gz |
+| `owl.json`                     | `95402270d116a310aa4b1606f88a2bbc79d2b4d947b5d84181c0b126c7aaba59` | Lottie 5.5.2, 512×512, 60fps, 131f, 18 layers | 284 KB / 47 KB gz |
+| `party.json`                   | `de4ac9e38f2c7c3bc1e4022be841ec0c26b9b75cca51df43aaf9c0e97aaa1492` | Lottie 5.5.2, 512×512, 60fps, 180f, 40 layers | 131 KB / 15 KB gz |
+| `robot.json`                   | `eeabc392ba20328ce97452eb826dddf3e306129e360ce4847c3b48470ffc053b` | Lottie 5.5.2, 512×512, 60fps, 180f, 13 layers | 343 KB / 30 KB gz |
+| `snail.json`                   | `6a9c7b648681ae9d15b31455a76f7d47c5f53d6d72da10b8e43ba134fbd47a2c` | Lottie 5.5.2, 512×512, 60fps, 180f, 19 layers | 368 KB / 42 KB gz |
+| `sparkles.json`                | `b14e504ce3467a6ba1c519348dee9fc4e05286b9e4f058f33df9175865bde4b9` | Lottie 5.5.2, 512×512, 60fps, 180f, 23 layers | 104 KB / 8 KB gz  |
+| `unicorn.json`                 | `1e250cde4b49782d9c3140faaf50bee1bfbe88478ac794bf0c92402ff9b01b60` | Lottie 5.5.2, 512×512, 60fps, 180f, 31 layers | 463 KB / 60 KB gz |
+| `wand.json`                    | `8de70508fe1ebdeb08fc7005820329696f28ec84adc94f3cc4362cf7d3e72870` | Lottie 5.5.2, 512×512, 60fps, 176f, 30 layers | 193 KB / 16 KB gz |
+
+None embeds a raster asset and none references an external image, so a scene is
+one JSON fetch and nothing else. `monkey-hear-no-evil.json` is the only one with
+an `assets` entry at all, and it is a precomposition — vector layers inside the
+same file, not a picture fetched from somewhere. Each is imported by URL, so a screen only
+downloads the animation it actually shows.
+
+The repository formatter is told to leave this directory's JSON alone
+(`ignorePatterns` in `.oxfmtrc.json`); without that it pretty-prints the files to
+several times their size and the hashes above stop matching, which is the whole
+point of recording them.
+
+- **Licence for the six Kissopen Coder files** MIT, `Copyright (c) 2024 Kissopen Coder
+Contributors`. That is a
+  different copyright line from this repository's own
+  (`Copyright (c) 2026 Kissopen (2) Contributors`), so the MIT requirement to carry
+  the notice does apply. The complete, unabridged notice sits next to the files
+  it covers, in `LICENSE` in this directory.
+- **Upstream of upstream** unknown. `kissopen-list` records no attribution for
+  these files and the JSON carries no author metadata, so this note can only
+  vouch for the copy: where the artwork originally came from before it entered
+  that repository has not been established here.
+- **Licence for `cat-face.json`, `closed-lock.json`, `confetti-ball.json`,
+  `disguised-face.json`, `fox.json`, `hatching-chick.json`, `llama.json`,
+  `party.json`, `unicorn.json`, `cherry-blossom.json`,
+  `front-facing-baby-chick.json`, `mirror-ball.json`, `open-hands.json`,
+  `cloud-variation.json`, and `monkey-hear-no-evil.json`** not
+  recorded in the supplied files. Their upstream licensing has not been
+  independently established here.
+
+### Why they were not converted to `.lottie` containers
+
+A `.lottie` is a zip around the same JSON. These gzip to 8–47 KB over the wire
+already, so there is little left for the container to win, and it would cost a
+build step, a binary blob in review, and a second thing to keep reproducible.
+Plain JSON stays diffable and needs no tooling.
+
+## What each one means
+
+The complete source set is twenty-three glossy 3D emoji: 👾 game, 🐱 cat face, 🌸
+cherry blossom, 🔒 closed lock, ☁️ cloud, 🎊 confetti ball, 🥸 disguised face, 🦊
+fox, 🐥 front-facing baby chick, 🐣 hatching chick, 🦙 llama, 🪩 mirror ball, 🙉
+hear-no-evil monkey, 👐 open hands, 🦄 unicorn, 🦉 owl, 🎉 party, 🍿 popcorn, 🤖
+robot, 🐌 snail, ✨ sparkles, 🗿 stone, 🪄 wand. Eighteen carry a meaning Kissopen
+actually needs, and each is used for that one meaning and nothing else:
+
+- 👾 **alien monster** — _people and agents are together in one live session._
+  Multiplayer is a shared working room, not a transcript handed around after
+  the work is finished.
+- 🌸 **cherry blossom** — _a new friendship has begun._ It marks the settled
+  connection, not a request that still needs an answer.
+- 🔒 **closed lock** — _access is secured._ It is the settled state after a
+  private boundary has been established, not a warning or an access error.
+- ☁️ **cloud** — _work runs on hardware that is not this machine._ An agent
+  hosted for you, or one on a machine of your own that others can reach. It is
+  about where the work happens, never about a sync or an upload.
+- 🎊 **confetti ball** — _one milestone has just completed._ It marks the
+  specific completion rather than a group celebration.
+- 🥸 **disguised face** — _this machine's identity is being defined._ It belongs
+  to profile creation, where the person names the identity Kissopen Agent will use
+  for authored work and messages.
+- 🐥 **front-facing baby chick** — _a new social identity is ready to meet
+  people._ Unlike the hatching chick's creation moment, this is the person now
+  present and ready to connect.
+- 🐣 **hatching chick** — _something new has been created._ It belongs to the
+  first successful appearance of a new project, session, or document.
+- 🦙 **llama** — _several models are being combined on one job._ One harness
+  turns an unusual mix of Claude, Codex, Grok, or anything else into one
+  coherent workflow.
+- 🪩 **mirror ball** — _one thing shared across a whole circle at once._ A ball
+  of many mirrors throwing the same light everywhere in the room: one session,
+  one channel, one moment that a circle of people is in together rather than
+  each on their own. Not a completion — the party and the confetti ball own
+  those.
+- 🙉 **hear-no-evil monkey** — _nobody outside can listen to this._ It belongs
+  beside a promise about privacy that is actually kept, never beside a warning
+  that something is exposed.
+- 👐 **open hands** — _a social invitation is waiting for a response._ It belongs
+  to an incoming friend request, where accepting or declining is the next act.
+- 🎉 **party** — _a group is celebrating a shared completion._ It is the social
+  counterpart to the confetti ball's single milestone.
+- 🤖 **robot** — _an agent is ready, and waiting to be told what to do._ The
+  screen with no session open, and a conversation with nothing in it yet.
+- 🐌 **snail** — _something is being read right now, and it is taking a moment._
+  Every panel-wide wait, with no exceptions worth explaining: a session, a file,
+  the documents list, the shared files, the inbox, the
+  activity list, the calls list, provider usage. It is deliberately
+  self-deprecating: a wait is a wait,
+  and pretending otherwise while someone stares at a blank screen is worse.
+- 🪄 **wand** — _the missing thing is one you can make right here._ Only beside
+  a button that makes it: the first document, the first note. Where the same
+  screen is composed without that button it drops back to a plain glyph, because
+  the wand's whole claim is that the reader can act.
+- 🦉 **owl** — _we are watching, and nothing has been found yet._ A search box
+  nobody has typed in.
+- ✨ **sparkles** — _the absence is the good outcome._ A caught-up inbox, an
+  activity list with nothing unread, a quiet home.
+
+Each animation ends on the pose it was drawn to return to — the robot facing
+front, the owl upright and alert, the snail at rest, the wand mid-sparkle, the
+sparkle cluster full — so the frame a scene stops and holds is a frame worth
+holding. That is why no hand-picked "rest frame" index appears in the code: the
+last frame is the picture.
+
+### The five that are not used
+
+- 🍿 **popcorn** would be a second way of saying "wait", competing with the
+  snail on the same screens. One waiting picture, used consistently, is a
+  vocabulary; two is decoration.
+- 🗿 **stone** is a deadpan internet joke. Kissopen should not smirk at someone who
+  found nothing.
+- 🦄 **unicorn** duplicates the llama's model-mixing role without reading as
+  clearly as a model reference.
+- 🐱 **cat face** and 🦊 **fox** are mascots without distinct product-state
+  meanings. They stay available as source candidates without entering the typed
+  scene vocabulary as decoration.
+
+### Where a scene is deliberately absent
+
+Artwork is for a state a reader sits in, not for every blank rectangle:
+
+- **Errors and destructive states** keep their plain glyph. An animation next to
+  "Session unavailable" would be levity in the wrong place.
+- **A search or filter that matched nothing** keeps its glyph. It is a miss, not
+  a settled absence, and it re-renders on every keystroke — art that replayed
+  each time would be noise.
+- **Small inline placeholders and repeated rows** keep their glyph. A scene is
+  128px of artwork and a worker player; dozens at once would be neither.
+- **Screens whose two halves are both empty** get one scene, on the half where
+  the reader can act — the notes list, not the note editor beside it.
+
+See `LottieScene.tsx` for how a scene plays, rests, and replays.
+
+## The secretary's picture
+
+`chief-of-staff.mp4` and `chief-of-staff.png` are not Lottie: the video is the
+secretary's animated portrait and the PNG its first frame, which stands in as the
+poster before the video plays and as the still where nothing plays. Both were
+replaced on 23 September 2026 with a video supplied by the project owner (832×832,
+H.264, 6.19 s); the poster was cut from its first frame at 384×384 in the desktop's
+own Chromium and the `thumbhash` in `EmptyState.tsx` regenerated from that poster.
+The same frame, at 256×256 WebP, is the agent's bundled avatar
+(`kissopen-agent-modules/sources/bots/assets/chief-of-staff.webp`).
+
+| File                 | SHA-256                                                            | Format                    | Size    |
+| -------------------- | ------------------------------------------------------------------ | ------------------------- | ------- |
+| `chief-of-staff.mp4` | `081a1afc03d3b256b3bdb352a7219663399632d61ebe8fb31cfcb8a233511d3d` | MP4 H.264, 832×832, 6.19 s | 1.3 MB  |
+| `chief-of-staff.png` | `6a951f559cc3d5ad025d6be872430a12a7ca95afc7997886a7af0073a4640ea8` | PNG, 384×384              | 240 KB  |
+
+`secretary-waving.mp4` and `secretary-waving.png` are the same person waving
+hello, for a conversation with nothing in it yet: a video supplied by the project
+owner on 24 September 2026 (848×848, H.264, 3 s), its first frame cut at 384×384
+the same way, and the `thumbhash` in `EmptyState.tsx` regenerated from it.
+
+| File                   | SHA-256                                                            | Format                  | Size   |
+| ---------------------- | ------------------------------------------------------------------ | ----------------------- | ------ |
+| `secretary-waving.mp4` | `f06fcde33525584ee97f81f5de5042e2b33b30c551dfa867afdbd39220bf36ca` | MP4 H.264, 848×848, 3 s | 644 KB |
+| `secretary-waving.png` | `8b74f6a557bf1bceac11a5049d143981012327c6b460858359221d52ef3b11b1` | PNG, 384×384            | 238 KB |

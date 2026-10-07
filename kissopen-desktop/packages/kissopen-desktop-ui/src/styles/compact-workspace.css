@@ -1,0 +1,203 @@
+/* A phone-width main pane inside the desktop window. Container queries keep
+   this tied to the reading column, including when an inspector is dragged;
+   no duplicated page tree, navigation mode, or viewport/device detection. */
+@container kissopen-workspace (max-width: 600px) {
+    .kissopen-channel-header {
+        gap: 8px;
+        padding-inline: 12px;
+    }
+    .kissopen-channel-header__topic,
+    .kissopen-channel-header__dot {
+        display: none;
+    }
+    .kissopen-channel-header__actions {
+        gap: 4px;
+    }
+    .kissopen-tabs__tab-label {
+        max-width: 140px;
+    }
+    .kissopen-conversation__dock > *,
+    .kissopen-composer-dock__compose {
+        padding-inline: 12px;
+    }
+    .kissopen-composer__toolbar {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 40px;
+        padding-inline: 12px;
+    }
+    .kissopen-composer__trailing {
+        min-width: 0;
+        max-width: 100%;
+    }
+    .kissopen-composer-model-control {
+        max-width: 160px;
+    }
+    .kissopen-composer__footer {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 28px;
+    }
+    .kissopen-page-heading {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 20px 16px;
+    }
+    .work-library__content {
+        padding-inline: 16px;
+    }
+    .work-library__search {
+        width: 100%;
+    }
+    .work-library__card {
+        flex-basis: 100%;
+    }
+}
+
+@container kissopen-board-content (max-width: 600px) {
+    .kissopen-board__page {
+        gap: 16px;
+        padding: 16px 16px 96px;
+    }
+    .kissopen-board__header {
+        gap: 12px;
+    }
+    .kissopen-board__mark {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+    .kissopen-board__heading {
+        flex-basis: calc(100% - 56px);
+    }
+    .kissopen-board__goal {
+        font-size: 24px;
+        line-height: 32px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    .kissopen-board__header-side {
+        flex: 1 1 100%;
+        max-width: 100%;
+        justify-content: flex-start;
+    }
+    .kissopen-board__card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+    .kissopen-board__card-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .kissopen-board__card-title {
+        font-size: 18px;
+        overflow-wrap: anywhere;
+    }
+    .kissopen-board__focus-head {
+        flex-wrap: wrap;
+    }
+    .kissopen-board__next-title {
+        font-size: 22px;
+        line-height: 30px;
+    }
+    .kissopen-board__milestones {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .kissopen-board__milestone {
+        flex: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        text-align: left;
+    }
+    .kissopen-board__milestone::after {
+        display: none;
+    }
+    .kissopen-board__milestone-icon {
+        flex: none;
+        width: 40px;
+        height: 40px;
+    }
+    .kissopen-board__milestone-title {
+        flex: 1;
+        min-width: 0;
+    }
+    .kissopen-board__milestone-detail {
+        flex-basis: 100%;
+        padding-left: 52px;
+    }
+    .kissopen-board__decision-action {
+        max-width: 72px;
+    }
+    .kissopen-board__note {
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .kissopen-board__ask {
+        left: 16px;
+        right: 16px;
+    }
+    .kissopen-board__status {
+        margin-left: 0;
+    }
+}
+
+@container kissopen-home (max-width: 600px) {
+    .kissopen-home__page {
+        gap: 16px;
+        padding: 20px 16px;
+    }
+    .kissopen-home__header {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .kissopen-home__header-side {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .kissopen-home__title {
+        font-size: 28px;
+    }
+    .kissopen-home__card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+    .kissopen-home__card-heading,
+    .kissopen-home__card-title {
+        flex-wrap: wrap;
+    }
+    .kissopen-home__focus-copy {
+        flex-basis: 100%;
+        padding: 16px;
+    }
+    .kissopen-home__focus-title {
+        font-size: 22px;
+        line-height: 30px;
+    }
+    .kissopen-home__landscape {
+        display: none;
+    }
+    .kissopen-home__focus-item {
+        gap: 8px;
+        padding: 12px;
+    }
+    .kissopen-home__decision {
+        min-height: 0;
+    }
+    .kissopen-home__metrics {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    .kissopen-home__metric {
+        flex: 1 1 100%;
+    }
+    .kissopen-home__metric + .kissopen-home__metric {
+        border-left: 0;
+        padding-left: 0;
+    }
+}

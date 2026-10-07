@@ -1,0 +1,1714 @@
+/*
+ * Spinner — CSS reproductions of the cli-spinners braille loaders that still
+ * use layout shapes: `dots9`, `dots10`, `dots11`, `dots13`, and `sand`.
+ * Production `dots2` is instead drawn by `spinnerBrailleCanvas.ts`, where all
+ * eight dots can share one exact device-pixel stamp. The library's six-dot
+ * loaders — `dots`, `dots3` through `dots8` — are deliberately not included:
+ * they never light dot7 or dot8, so beside these they read as a differently
+ * shaped, lopsided cell. Names keep the upstream numbering so each variant is
+ * traceable to its original. Layout, colour, sizing, and the frame-parking
+ * equation all live in `spinner.css`; this file only says which CSS dots are
+ * lit on which frame.
+ *
+ * Encoding. A braille glyph is a 2x4 cell of dots numbered
+ *
+ *     dot1 dot4        left column   dot1 dot2 dot3 dot7
+ *     dot2 dot5        right column  dot4 dot5 dot6 dot8
+ *     dot3 dot6
+ *     dot7 dot8
+ *
+ * and U+2800 + a bitmask of them is the character. Each spinner's frames were
+ * decoded from that bitmask into one keyframes block per dot: a stop wherever
+ * that dot switches on or off, at `frameIndex / frameCount`.
+ *
+ * Fading. The cell still advances on the terminal's frame clock, but the dots
+ * are not hard-switched: each one fades in or out over 60% of a frame, so
+ * these keyframes interpolate (`animation-timing-function: linear`, set in
+ * `spinner.css`) rather than using the family's default `steps(1, end)` hold.
+ * The two ramps are the same length on purpose. An asymmetric pair — a quick
+ * attack with a long tail — makes the lit dot and the gap behind it travel at
+ * visibly different speeds, and the cell reads as jittering rather than
+ * turning.
+ *
+ * Frame counts live beside the variant names in `Spinner.tsx`; each duration
+ * below is 100ms per frame.
+ */
+
+/* ---- braille-9 — ⢹⢺⢼⣸⣇⡧⡗⡏ */
+
+/* cli-spinners `dots9`: 8 frames. */
+.kissopen-spinner[data-variant="braille-9"] {
+    --kissopen-spinner-duration: 800ms;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-9-a;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-9-b;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-9-c;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-9-d;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-9-e;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-9-f;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-9-g;
+}
+
+.kissopen-spinner[data-variant="braille-9"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-9-h;
+}
+
+/* dot1 */
+@keyframes kissopen-spinner-braille-9-a {
+    0% {
+        opacity: 1;
+    }
+
+    12.5% {
+        opacity: 1;
+    }
+
+    20% {
+        opacity: 0.18;
+    }
+
+    50% {
+        opacity: 0.18;
+    }
+
+    57.5% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot2 */
+@keyframes kissopen-spinner-braille-9-b {
+    0% {
+        opacity: 1;
+    }
+
+    7.5% {
+        opacity: 0.18;
+    }
+
+    12.5% {
+        opacity: 0.18;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    32.5% {
+        opacity: 0.18;
+    }
+
+    50% {
+        opacity: 0.18;
+    }
+
+    57.5% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot3 */
+@keyframes kissopen-spinner-braille-9-c {
+    0% {
+        opacity: 1;
+    }
+
+    7.5% {
+        opacity: 0.18;
+    }
+
+    25% {
+        opacity: 0.18;
+    }
+
+    32.5% {
+        opacity: 1;
+    }
+
+    37.5% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 0.18;
+    }
+
+    50% {
+        opacity: 0.18;
+    }
+
+    57.5% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot7 */
+@keyframes kissopen-spinner-braille-9-d {
+    0% {
+        opacity: 1;
+    }
+
+    7.5% {
+        opacity: 0.18;
+    }
+
+    37.5% {
+        opacity: 0.18;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot4 */
+@keyframes kissopen-spinner-braille-9-e {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    57.5% {
+        opacity: 0.18;
+    }
+
+    87.5% {
+        opacity: 0.18;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot5 */
+@keyframes kissopen-spinner-braille-9-f {
+    0% {
+        opacity: 0.18;
+    }
+
+    7.5% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    57.5% {
+        opacity: 0.18;
+    }
+
+    75% {
+        opacity: 0.18;
+    }
+
+    82.5% {
+        opacity: 1;
+    }
+
+    87.5% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot6 */
+@keyframes kissopen-spinner-braille-9-g {
+    0% {
+        opacity: 0.18;
+    }
+
+    7.5% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    57.5% {
+        opacity: 0.18;
+    }
+
+    62.5% {
+        opacity: 0.18;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    82.5% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot8 */
+@keyframes kissopen-spinner-braille-9-h {
+    0% {
+        opacity: 0.18;
+    }
+
+    7.5% {
+        opacity: 1;
+    }
+
+    62.5% {
+        opacity: 1;
+    }
+
+    70% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* ---- braille-10 — ⢄⢂⢁⡁⡈⡐⡠ */
+
+/* cli-spinners `dots10`: 7 frames. */
+.kissopen-spinner[data-variant="braille-10"] {
+    --kissopen-spinner-duration: 700ms;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-10-a;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-10-b;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-10-c;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-10-d;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-10-e;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-10-f;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-10-g;
+}
+
+.kissopen-spinner[data-variant="braille-10"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-10-h;
+}
+
+/* dot1 */
+@keyframes kissopen-spinner-braille-10-a {
+    0% {
+        opacity: 0.18;
+    }
+
+    28.5714% {
+        opacity: 0.18;
+    }
+
+    37.1429% {
+        opacity: 1;
+    }
+
+    57.1429% {
+        opacity: 1;
+    }
+
+    65.7143% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot2 */
+@keyframes kissopen-spinner-braille-10-b {
+    0% {
+        opacity: 0.18;
+    }
+
+    14.2857% {
+        opacity: 0.18;
+    }
+
+    22.8571% {
+        opacity: 1;
+    }
+
+    28.5714% {
+        opacity: 1;
+    }
+
+    37.1429% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot3 */
+@keyframes kissopen-spinner-braille-10-c {
+    0% {
+        opacity: 0.18;
+    }
+
+    8.5714% {
+        opacity: 1;
+    }
+
+    14.2857% {
+        opacity: 1;
+    }
+
+    22.8571% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot7 */
+@keyframes kissopen-spinner-braille-10-d {
+    0% {
+        opacity: 1;
+    }
+
+    8.5714% {
+        opacity: 0.18;
+    }
+
+    42.8571% {
+        opacity: 0.18;
+    }
+
+    51.4286% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot4 */
+@keyframes kissopen-spinner-braille-10-e {
+    0% {
+        opacity: 0.18;
+    }
+
+    57.1429% {
+        opacity: 0.18;
+    }
+
+    65.7143% {
+        opacity: 1;
+    }
+
+    71.4286% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot5 */
+@keyframes kissopen-spinner-braille-10-f {
+    0% {
+        opacity: 0.18;
+    }
+
+    71.4286% {
+        opacity: 0.18;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    85.7143% {
+        opacity: 1;
+    }
+
+    94.2857% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot6 */
+@keyframes kissopen-spinner-braille-10-g {
+    0% {
+        opacity: 1;
+    }
+
+    8.5714% {
+        opacity: 0.18;
+    }
+
+    85.7143% {
+        opacity: 0.18;
+    }
+
+    94.2857% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot8 */
+@keyframes kissopen-spinner-braille-10-h {
+    0% {
+        opacity: 0.18;
+    }
+
+    8.5714% {
+        opacity: 1;
+    }
+
+    42.8571% {
+        opacity: 1;
+    }
+
+    51.4286% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* ---- braille-11 — ⠁⠂⠄⡀⢀⠠⠐⠈ */
+
+/* cli-spinners `dots11`: 8 frames. */
+.kissopen-spinner[data-variant="braille-11"] {
+    --kissopen-spinner-duration: 800ms;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-11-a;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-11-b;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-11-c;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-11-d;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-11-e;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-11-f;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-11-g;
+}
+
+.kissopen-spinner[data-variant="braille-11"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-11-h;
+}
+
+/* dot1 */
+@keyframes kissopen-spinner-braille-11-a {
+    0% {
+        opacity: 0.18;
+    }
+
+    7.5% {
+        opacity: 1;
+    }
+
+    12.5% {
+        opacity: 1;
+    }
+
+    20% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot2 */
+@keyframes kissopen-spinner-braille-11-b {
+    0% {
+        opacity: 0.18;
+    }
+
+    12.5% {
+        opacity: 0.18;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    32.5% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot3 */
+@keyframes kissopen-spinner-braille-11-c {
+    0% {
+        opacity: 0.18;
+    }
+
+    25% {
+        opacity: 0.18;
+    }
+
+    32.5% {
+        opacity: 1;
+    }
+
+    37.5% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot7 */
+@keyframes kissopen-spinner-braille-11-d {
+    0% {
+        opacity: 0.18;
+    }
+
+    37.5% {
+        opacity: 0.18;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    57.5% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot4 */
+@keyframes kissopen-spinner-braille-11-e {
+    0% {
+        opacity: 1;
+    }
+
+    7.5% {
+        opacity: 0.18;
+    }
+
+    87.5% {
+        opacity: 0.18;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot5 */
+@keyframes kissopen-spinner-braille-11-f {
+    0% {
+        opacity: 0.18;
+    }
+
+    75% {
+        opacity: 0.18;
+    }
+
+    82.5% {
+        opacity: 1;
+    }
+
+    87.5% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot6 */
+@keyframes kissopen-spinner-braille-11-g {
+    0% {
+        opacity: 0.18;
+    }
+
+    62.5% {
+        opacity: 0.18;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    82.5% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot8 */
+@keyframes kissopen-spinner-braille-11-h {
+    0% {
+        opacity: 0.18;
+    }
+
+    50% {
+        opacity: 0.18;
+    }
+
+    57.5% {
+        opacity: 1;
+    }
+
+    62.5% {
+        opacity: 1;
+    }
+
+    70% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* ---- braille-13 — ⣼⣹⢻⠿⡟⣏⣧⣶ */
+
+/* cli-spinners `dots13`: 8 frames. */
+.kissopen-spinner[data-variant="braille-13"] {
+    --kissopen-spinner-duration: 800ms;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-13-a;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-13-b;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-13-c;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-13-d;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-13-e;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-13-f;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-13-g;
+}
+
+.kissopen-spinner[data-variant="braille-13"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-13-h;
+}
+
+/* dot1 */
+@keyframes kissopen-spinner-braille-13-a {
+    0% {
+        opacity: 0.18;
+    }
+
+    12.5% {
+        opacity: 0.18;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    87.5% {
+        opacity: 1;
+    }
+
+    95% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot2 */
+@keyframes kissopen-spinner-braille-13-b {
+    0% {
+        opacity: 1;
+    }
+
+    7.5% {
+        opacity: 0.18;
+    }
+
+    25% {
+        opacity: 0.18;
+    }
+
+    32.5% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot3 */
+@keyframes kissopen-spinner-braille-13-c {
+    0% {
+        opacity: 1;
+    }
+
+    12.5% {
+        opacity: 1;
+    }
+
+    20% {
+        opacity: 0.18;
+    }
+
+    37.5% {
+        opacity: 0.18;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot7 */
+@keyframes kissopen-spinner-braille-13-d {
+    0% {
+        opacity: 1;
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    32.5% {
+        opacity: 0.18;
+    }
+
+    50% {
+        opacity: 0.18;
+    }
+
+    57.5% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot4 */
+@keyframes kissopen-spinner-braille-13-e {
+    0% {
+        opacity: 0.18;
+    }
+
+    7.5% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    82.5% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot5 */
+@keyframes kissopen-spinner-braille-13-f {
+    0% {
+        opacity: 1;
+    }
+
+    62.5% {
+        opacity: 1;
+    }
+
+    70% {
+        opacity: 0.18;
+    }
+
+    87.5% {
+        opacity: 0.18;
+    }
+
+    95% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot6 */
+@keyframes kissopen-spinner-braille-13-g {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    57.5% {
+        opacity: 0.18;
+    }
+
+    75% {
+        opacity: 0.18;
+    }
+
+    82.5% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot8 */
+@keyframes kissopen-spinner-braille-13-h {
+    0% {
+        opacity: 1;
+    }
+
+    37.5% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 0.18;
+    }
+
+    62.5% {
+        opacity: 0.18;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* ---- braille-sand — ⠁⠂⠄⡀⡈⡐⡠⣀⣁⣂⣄⣌⣔⣤⣥⣦⣮⣶⣷⣿⡿⠿⢟⠟⡛⠛⠫⢋⠋⠍⡉⠉⠑⠡⢁ */
+
+/* cli-spinners `sand`: 35 frames. */
+.kissopen-spinner[data-variant="braille-sand"] {
+    --kissopen-spinner-duration: 3500ms;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-sand-a;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-sand-b;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-sand-c;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:first-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-sand-d;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(1) {
+    animation-name: kissopen-spinner-braille-sand-e;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(2) {
+    animation-name: kissopen-spinner-braille-sand-f;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(3) {
+    animation-name: kissopen-spinner-braille-sand-g;
+}
+
+.kissopen-spinner[data-variant="braille-sand"]
+    .kissopen-spinner__column:last-child
+    .kissopen-spinner__dot:nth-child(4) {
+    animation-name: kissopen-spinner-braille-sand-h;
+}
+
+/* dot1 */
+@keyframes kissopen-spinner-braille-sand-a {
+    0% {
+        opacity: 1;
+    }
+
+    2.8571% {
+        opacity: 1;
+    }
+
+    4.5714% {
+        opacity: 0.18;
+    }
+
+    22.8571% {
+        opacity: 0.18;
+    }
+
+    24.5714% {
+        opacity: 1;
+    }
+
+    25.7143% {
+        opacity: 1;
+    }
+
+    27.4286% {
+        opacity: 0.18;
+    }
+
+    40% {
+        opacity: 0.18;
+    }
+
+    41.7143% {
+        opacity: 1;
+    }
+
+    42.8571% {
+        opacity: 1;
+    }
+
+    44.5714% {
+        opacity: 0.18;
+    }
+
+    51.4286% {
+        opacity: 0.18;
+    }
+
+    53.1429% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* dot2 */
+@keyframes kissopen-spinner-braille-sand-b {
+    0% {
+        opacity: 0.18;
+    }
+
+    2.8571% {
+        opacity: 0.18;
+    }
+
+    4.5714% {
+        opacity: 1;
+    }
+
+    5.7143% {
+        opacity: 1;
+    }
+
+    7.4286% {
+        opacity: 0.18;
+    }
+
+    25.7143% {
+        opacity: 0.18;
+    }
+
+    27.4286% {
+        opacity: 1;
+    }
+
+    28.5714% {
+        opacity: 1;
+    }
+
+    30.2857% {
+        opacity: 0.18;
+    }
+
+    42.8571% {
+        opacity: 0.18;
+    }
+
+    44.5714% {
+        opacity: 1;
+    }
+
+    82.8571% {
+        opacity: 1;
+    }
+
+    84.5714% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot3 */
+@keyframes kissopen-spinner-braille-sand-c {
+    0% {
+        opacity: 0.18;
+    }
+
+    5.7143% {
+        opacity: 0.18;
+    }
+
+    7.4286% {
+        opacity: 1;
+    }
+
+    8.5714% {
+        opacity: 1;
+    }
+
+    10.2857% {
+        opacity: 0.18;
+    }
+
+    28.5714% {
+        opacity: 0.18;
+    }
+
+    30.2857% {
+        opacity: 1;
+    }
+
+    68.5714% {
+        opacity: 1;
+    }
+
+    70.2857% {
+        opacity: 0.18;
+    }
+
+    82.8571% {
+        opacity: 0.18;
+    }
+
+    84.5714% {
+        opacity: 1;
+    }
+
+    85.7143% {
+        opacity: 1;
+    }
+
+    87.4286% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot7 */
+@keyframes kissopen-spinner-braille-sand-d {
+    0% {
+        opacity: 0.18;
+    }
+
+    8.5714% {
+        opacity: 0.18;
+    }
+
+    10.2857% {
+        opacity: 1;
+    }
+
+    60% {
+        opacity: 1;
+    }
+
+    61.7143% {
+        opacity: 0.18;
+    }
+
+    68.5714% {
+        opacity: 0.18;
+    }
+
+    70.2857% {
+        opacity: 1;
+    }
+
+    71.4286% {
+        opacity: 1;
+    }
+
+    73.1429% {
+        opacity: 0.18;
+    }
+
+    85.7143% {
+        opacity: 0.18;
+    }
+
+    87.4286% {
+        opacity: 1;
+    }
+
+    88.5714% {
+        opacity: 1;
+    }
+
+    90.2857% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot4 */
+@keyframes kissopen-spinner-braille-sand-e {
+    0% {
+        opacity: 0.18;
+    }
+
+    11.4286% {
+        opacity: 0.18;
+    }
+
+    13.1429% {
+        opacity: 1;
+    }
+
+    14.2857% {
+        opacity: 1;
+    }
+
+    16% {
+        opacity: 0.18;
+    }
+
+    31.4286% {
+        opacity: 0.18;
+    }
+
+    33.1429% {
+        opacity: 1;
+    }
+
+    34.2857% {
+        opacity: 1;
+    }
+
+    36% {
+        opacity: 0.18;
+    }
+
+    45.7143% {
+        opacity: 0.18;
+    }
+
+    47.4286% {
+        opacity: 1;
+    }
+
+    48.5714% {
+        opacity: 1;
+    }
+
+    50.2857% {
+        opacity: 0.18;
+    }
+
+    54.2857% {
+        opacity: 0.18;
+    }
+
+    56% {
+        opacity: 1;
+    }
+
+    91.4286% {
+        opacity: 1;
+    }
+
+    93.1429% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot5 */
+@keyframes kissopen-spinner-braille-sand-f {
+    0% {
+        opacity: 0.18;
+    }
+
+    14.2857% {
+        opacity: 0.18;
+    }
+
+    16% {
+        opacity: 1;
+    }
+
+    17.1429% {
+        opacity: 1;
+    }
+
+    18.8571% {
+        opacity: 0.18;
+    }
+
+    34.2857% {
+        opacity: 0.18;
+    }
+
+    36% {
+        opacity: 1;
+    }
+
+    37.1429% {
+        opacity: 1;
+    }
+
+    38.8571% {
+        opacity: 0.18;
+    }
+
+    48.5714% {
+        opacity: 0.18;
+    }
+
+    50.2857% {
+        opacity: 1;
+    }
+
+    74.2857% {
+        opacity: 1;
+    }
+
+    76% {
+        opacity: 0.18;
+    }
+
+    91.4286% {
+        opacity: 0.18;
+    }
+
+    93.1429% {
+        opacity: 1;
+    }
+
+    94.2857% {
+        opacity: 1;
+    }
+
+    96% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot6 */
+@keyframes kissopen-spinner-braille-sand-g {
+    0% {
+        opacity: 0.18;
+    }
+
+    17.1429% {
+        opacity: 0.18;
+    }
+
+    18.8571% {
+        opacity: 1;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    21.7143% {
+        opacity: 0.18;
+    }
+
+    37.1429% {
+        opacity: 0.18;
+    }
+
+    38.8571% {
+        opacity: 1;
+    }
+
+    62.8571% {
+        opacity: 1;
+    }
+
+    64.5714% {
+        opacity: 0.18;
+    }
+
+    74.2857% {
+        opacity: 0.18;
+    }
+
+    76% {
+        opacity: 1;
+    }
+
+    77.1429% {
+        opacity: 1;
+    }
+
+    78.8571% {
+        opacity: 0.18;
+    }
+
+    94.2857% {
+        opacity: 0.18;
+    }
+
+    96% {
+        opacity: 1;
+    }
+
+    97.1429% {
+        opacity: 1;
+    }
+
+    98.8571% {
+        opacity: 0.18;
+    }
+
+    100% {
+        opacity: 0.18;
+    }
+}
+
+/* dot8 */
+@keyframes kissopen-spinner-braille-sand-h {
+    0% {
+        opacity: 1;
+    }
+
+    1.7143% {
+        opacity: 0.18;
+    }
+
+    20% {
+        opacity: 0.18;
+    }
+
+    21.7143% {
+        opacity: 1;
+    }
+
+    57.1429% {
+        opacity: 1;
+    }
+
+    58.8571% {
+        opacity: 0.18;
+    }
+
+    62.8571% {
+        opacity: 0.18;
+    }
+
+    64.5714% {
+        opacity: 1;
+    }
+
+    65.7143% {
+        opacity: 1;
+    }
+
+    67.4286% {
+        opacity: 0.18;
+    }
+
+    77.1429% {
+        opacity: 0.18;
+    }
+
+    78.8571% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    81.7143% {
+        opacity: 0.18;
+    }
+
+    97.1429% {
+        opacity: 0.18;
+    }
+
+    98.8571% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

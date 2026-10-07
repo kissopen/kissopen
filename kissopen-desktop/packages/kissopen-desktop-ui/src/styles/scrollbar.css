@@ -1,0 +1,207 @@
+/*
+ * One custom-painted scrollbar for every Kissopen-owned scrollport. The browser
+ * still owns scrolling; only its chrome is hidden. Ordinary surfaces place the
+ * fixed 8px track beside content when it overflows, file/code surfaces overlay
+ * it, and the composer alone keeps the lane before overflow.
+ *
+ * Automatic bars answer trusted reader input, hold for two seconds, and fade
+ * for 480ms. Always-visible bars have three deliberately close neutral levels:
+ * quiet, active surface, and direct track interaction. Geometry never changes.
+ */
+
+@property --kissopen-scrollbar-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: transparent;
+}
+
+[data-scrollbar-visibility="automatic"] {
+    --kissopen-scrollbar-rest-color: transparent;
+    --kissopen-scrollbar-surface-color: transparent;
+}
+
+[data-scrollbar-visibility="always"] {
+    --kissopen-scrollbar-rest-color: var(--kissopen-scrollbar-quiet-color);
+    --kissopen-scrollbar-surface-color: var(--kissopen-scrollbar-active-color);
+}
+
+[data-scrollbar-host] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-rest-color);
+}
+
+[data-scrollbar-host][data-scrollbar-surface] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-surface-color);
+}
+
+[data-scrollbar-host][data-scrollbar-active=""] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-active-color);
+    transition: none;
+}
+
+[data-scrollbar-host][data-scrollbar-active="idle"] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-rest-color);
+    transition: --kissopen-scrollbar-color 480ms linear;
+}
+
+[data-scrollbar-visibility="always"] [data-scrollbar-host][data-scrollbar-hover],
+[data-scrollbar-visibility="automatic"]
+    [data-scrollbar-host][data-scrollbar-active][data-scrollbar-hover],
+[data-scrollbar-host][data-scrollbar-dragging] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-interaction-color);
+}
+
+/* The composer is the sole always-visible exception in Automatic mode. */
+[data-scrollbar-host][data-scrollbar-always] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-quiet-color);
+}
+
+[data-scrollbar-host][data-scrollbar-always][data-scrollbar-surface],
+[data-scrollbar-host][data-scrollbar-always][data-scrollbar-active=""] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-active-color);
+}
+
+[data-scrollbar-host][data-scrollbar-always][data-scrollbar-hover],
+[data-scrollbar-host][data-scrollbar-always][data-scrollbar-dragging] {
+    --kissopen-scrollbar-color: var(--kissopen-scrollbar-interaction-color);
+}
+
+/* Viewport + two optional tracks + their corner are a genuine 2D control. */
+[data-scrollbar-host][data-scrollbar-placement] {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- A scroll viewport and its two perpendicular tracks form a two-dimensional control with a shared corner. */
+    display: grid;
+    position: relative;
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.kissopen-scroll-area__viewport,
+[data-scrollbar-host] > [data-scrollbar-viewport] {
+    grid-row: 1;
+    grid-column: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Only registered Kissopen scrollports lose native chrome. Pierre's internal
+   horizontal code columns retain their documented shadow-DOM fallback. */
+[data-scrollbar-viewport] {
+    scrollbar-width: none;
+}
+
+[data-scrollbar-viewport]::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.kissopen-scrollbar__track {
+    position: relative;
+    z-index: 2;
+    display: none;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    cursor: default;
+    pointer-events: none;
+    touch-action: none;
+}
+
+.kissopen-scrollbar__track[data-axis="vertical"] {
+    grid-row: 1;
+    grid-column: 2;
+    width: var(--kissopen-scrollbar-track);
+    margin-bottom: var(--kissopen-scrollbar-end-inset, 0px);
+}
+
+.kissopen-scrollbar__track[data-axis="horizontal"] {
+    grid-row: 2;
+    grid-column: 1;
+    height: var(--kissopen-scrollbar-track);
+}
+
+[data-scrollbar-host][data-scrollbar-overflow-y] > .kissopen-scrollbar__track[data-axis="vertical"],
+[data-scrollbar-host][data-scrollbar-placement="stable-gutter"]
+    > .kissopen-scrollbar__track[data-axis="vertical"],
+[data-scrollbar-host][data-scrollbar-overflow-x]
+    > .kissopen-scrollbar__track[data-axis="horizontal"],
+[data-scrollbar-host][data-scrollbar-placement="stable-gutter"]
+    > .kissopen-scrollbar__track[data-axis="horizontal"] {
+    display: block;
+}
+
+[data-scrollbar-host]:not([data-scrollbar-overflow-y])
+    > .kissopen-scrollbar__track[data-axis="vertical"]
+    > .kissopen-scrollbar__thumb,
+[data-scrollbar-host]:not([data-scrollbar-overflow-x])
+    > .kissopen-scrollbar__track[data-axis="horizontal"]
+    > .kissopen-scrollbar__thumb {
+    display: none;
+}
+
+[data-scrollbar-visibility="always"] [data-scrollbar-host] > .kissopen-scrollbar__track,
+[data-scrollbar-host][data-scrollbar-always] > .kissopen-scrollbar__track,
+[data-scrollbar-host][data-scrollbar-active] > .kissopen-scrollbar__track {
+    pointer-events: auto;
+}
+
+.kissopen-scrollbar__thumb {
+    --kissopen-scrollbar-cap: calc(var(--kissopen-scrollbar-ink) / 2);
+    --kissopen-scrollbar-outer-cap: calc(
+        var(--kissopen-scrollbar-cap) + var(--kissopen-scrollbar-edge-inset)
+    );
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    background-color: var(--kissopen-scrollbar-color);
+    background-clip: padding-box;
+    will-change: transform;
+}
+
+.kissopen-scrollbar__track[data-axis="vertical"] > .kissopen-scrollbar__thumb {
+    width: 100%;
+    min-height: 24px;
+    border-right: var(--kissopen-scrollbar-edge-inset) solid transparent;
+    border-radius: var(--kissopen-scrollbar-cap) var(--kissopen-scrollbar-outer-cap)
+        var(--kissopen-scrollbar-outer-cap) var(--kissopen-scrollbar-cap) /
+        var(--kissopen-scrollbar-cap);
+}
+
+.kissopen-scrollbar__track[data-axis="horizontal"] > .kissopen-scrollbar__thumb {
+    height: 100%;
+    min-width: 24px;
+    border-bottom: var(--kissopen-scrollbar-edge-inset) solid transparent;
+    border-radius: var(--kissopen-scrollbar-cap) / var(--kissopen-scrollbar-cap)
+        var(--kissopen-scrollbar-cap) var(--kissopen-scrollbar-outer-cap)
+        var(--kissopen-scrollbar-outer-cap);
+}
+
+/* File, diff, and editor tracks sit above full-width painted content. */
+[data-scrollbar-host][data-scrollbar-placement="overlay"]
+    > .kissopen-scrollbar__track[data-axis="vertical"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: var(--kissopen-scrollbar-end-inset, 0px);
+    margin-bottom: 0;
+}
+
+[data-scrollbar-host][data-scrollbar-placement="overlay"][data-scrollbar-overflow-x]
+    > .kissopen-scrollbar__track[data-axis="vertical"] {
+    bottom: calc(var(--kissopen-scrollbar-end-inset, 0px) + var(--kissopen-scrollbar-track));
+}
+
+[data-scrollbar-host][data-scrollbar-placement="overlay"]
+    > .kissopen-scrollbar__track[data-axis="horizontal"] {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+[data-scrollbar-host][data-scrollbar-placement="overlay"][data-scrollbar-overflow-y]
+    > .kissopen-scrollbar__track[data-axis="horizontal"] {
+    right: var(--kissopen-scrollbar-track);
+}

@@ -1,0 +1,254 @@
+/*
+ * C-276 WelcomeDeck — the slide deck itself: art, title, slogan, dots. It was
+ * the middle of C-250 WelcomeScreen until a second surface needed the same
+ * thing, and it is one component rather than two so a deck explaining Kissopen
+ * Social and the deck introducing the product cannot drift apart.
+ *
+ * The two measurements that matter are the ones that keep everything still
+ * while the deck advances. The art stage sits in a fixed 160px square, so a
+ * logo slide and a Lottie slide start their words at the same y. The words are
+ * stacked in a single cell (see `__panels`), so the block is as tall as the
+ * longest copy in the deck rather than as tall as whichever slide is showing —
+ * which is what stops the dots, and whatever the host puts under them, from
+ * walking up and down under the pointer.
+ *
+ * `data-tint="sky"` is the brand-scene presentation: white words and a white
+ * position control, for a deck sitting on one of the sky paintings rather than
+ * on a themed surface. Every dimension is on the 4px grid.
+ */
+
+.kissopen-welcome-deck,
+.kissopen-welcome-deck__stage,
+.kissopen-welcome-deck__panels,
+.kissopen-welcome-deck__panel,
+.kissopen-welcome-deck__dots,
+.kissopen-welcome-deck__dot,
+.kissopen-welcome-deck__dot-mark {
+    box-sizing: border-box;
+}
+
+.kissopen-welcome-deck {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+}
+
+/* ---- Art -------------------------------------------------------------- */
+
+/*
+ * Fixed on both axes and the same box for both slide kinds. The height is the
+ * load-bearing half: the moment a scene box and a logo box differ, every slide
+ * change moves the title, the dots, and the button. 160 here is the same number
+ * as `ART_SIZE` in the component, which is what the Lottie renderer rasterises
+ * into.
+ */
+.kissopen-welcome-deck__stage {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 160px;
+}
+
+/*
+ * The 卷 mark at full strength and with its glow: this is the screen that
+ * introduces the product. 128 × 109.7, its full four-turn drawing; the box is
+ * the component's own.
+ */
+.kissopen-welcome-deck__mark {
+    flex: none;
+}
+
+/* ---- Slide words ------------------------------------------------------ */
+
+/*
+ * The one-cell stack. Every slide's words occupy the same cell, so this block
+ * measures the tallest slide in the deck and keeps that height whichever slide
+ * is on screen: a two-line slogan following a one-line slogan cannot push the
+ * dots and the button down, and a pointer already resting on the action never
+ * has it move away. Flexbox lays siblings out in sequence and has no way to say
+ * "these all share one box, size it to the biggest".
+ */
+.kissopen-welcome-deck__panels {
+    /* eslint-disable-next-line kissopen-layout/use-flex-layout -- one-cell stack: every slide shares grid-area 1/1 so the block is as tall as the tallest slide and the dots and action below it never move */
+    display: grid;
+    flex: none;
+    width: 100%;
+}
+
+/*
+ * Stacked, top-aligned, and crossfading. Top-aligned because the title should
+ * sit directly under the art on every slide rather than drift with its own
+ * copy's length. `visibility` rather than opacity alone: faded-out words are
+ * still read aloud, and a deck that says all four slogans at once is worse than
+ * one with no animation. It flips at the end of the fade out and at the start
+ * of the fade in, so the outgoing slide is hidden exactly when it stops being
+ * visible.
+ */
+.kissopen-welcome-deck__panel {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 200ms ease,
+        visibility 0s linear 200ms;
+}
+
+.kissopen-welcome-deck__panel[data-active] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+        opacity 200ms ease,
+        visibility 0s;
+}
+
+/* The panel takes a tab stop because it holds no control of its own; its ring
+   is painted on the words rather than on the full-width cell. */
+.kissopen-welcome-deck__panel:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: 4px;
+    border-radius: var(--kissopen-radius-md);
+}
+
+.kissopen-welcome-deck__title {
+    margin: 0;
+    color: var(--text);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.03em;
+    text-align: center;
+}
+
+/*
+ * Narrow on purpose. Centred text is only readable in short lines, and the
+ * reference this screen is drawn from puts the slogan on two of them; 400px at
+ * 16px is about fifty characters a line.
+ */
+.kissopen-welcome-deck__copy {
+    max-width: 400px;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: center;
+}
+
+/* Both supplied sky paintings are brand scenes rather than ordinary themed
+   surfaces. Their copy and logo stay white in either appearance; only the
+   selected painting and its contrast scrim change. */
+.kissopen-welcome-deck[data-tint="sky"] .kissopen-welcome-deck__title,
+.kissopen-welcome-deck[data-tint="sky"] .kissopen-welcome-deck__copy {
+    color: var(--button-primary-tint);
+}
+
+/* ---- Dots ------------------------------------------------------------- */
+
+/*
+ * No gap: the hit boxes tile so there is no dead pixel between two targets, and
+ * the rhythm the reader sees is the 8px mark inside each 20px box — 12px of
+ * surface between marks. A gap here would buy nothing visually and cost the
+ * clickable area between the dots.
+ */
+.kissopen-welcome-deck__dots {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.kissopen-welcome-deck__dot {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--kissopen-radius-pill);
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+}
+
+.kissopen-welcome-deck__dot:focus-visible {
+    outline: 2px solid var(--radio-active);
+    outline-offset: -2px;
+}
+
+/*
+ * The unselected control colour rather than the hairline: a dot the reader
+ * cannot see is not a position indicator. The selected one is plain ink — the
+ * deck carries position, not accent.
+ */
+.kissopen-welcome-deck__dot-mark {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--radio-inactive);
+    transition: background-color 200ms ease;
+}
+
+.kissopen-welcome-deck__dot[data-active] .kissopen-welcome-deck__dot-mark {
+    background: var(--text);
+}
+
+/* On a photographic sky, position reads as one quiet white control instead of
+   a row of theme-coloured beads. Every tab keeps the same 28px hit box while
+   the selected mark stretches inside it, so advancing never moves its siblings. */
+.kissopen-welcome-deck[data-tint="sky"] .kissopen-welcome-deck__dot {
+    width: 28px;
+}
+
+.kissopen-welcome-deck[data-tint="sky"] .kissopen-welcome-deck__dot:focus-visible {
+    outline-color: var(--button-primary-tint);
+}
+
+.kissopen-welcome-deck[data-tint="sky"] .kissopen-welcome-deck__dot-mark {
+    width: 6px;
+    height: 6px;
+    background: color-mix(in srgb, var(--button-primary-tint) 44%, transparent);
+    transition:
+        width 200ms ease,
+        background-color 200ms ease;
+}
+
+.kissopen-welcome-deck[data-tint="sky"]
+    .kissopen-welcome-deck__dot:hover
+    .kissopen-welcome-deck__dot-mark {
+    background: color-mix(in srgb, var(--button-primary-tint) 72%, transparent);
+}
+
+.kissopen-welcome-deck[data-tint="sky"]
+    .kissopen-welcome-deck__dot[data-active]
+    .kissopen-welcome-deck__dot-mark {
+    width: 20px;
+    background: var(--button-primary-tint);
+}
+
+/*
+ * Reduced motion turns off the crossfade as well as the auto-advance the
+ * component holds back: a reader who asked for less movement and then chose a
+ * dot should get the slide, not a dissolve into it.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-welcome-deck__panel,
+    .kissopen-welcome-deck__panel[data-active],
+    .kissopen-welcome-deck__dot-mark {
+        transition: none;
+    }
+}

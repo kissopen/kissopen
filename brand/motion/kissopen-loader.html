@@ -1,0 +1,17 @@
+<!-- CSS 版加载动画：随文字色，可控尺寸。 -->
+<style>
+  .ko-loader { display: inline-block; width: 48px; }
+  .ko-loader svg { display: block; width: 100%; height: auto; }
+  .ko-loader path { fill: currentColor; stroke: currentColor; }
+  .ko-loader .ko-l { animation: ko-left 1.6s cubic-bezier(.4,0,.2,1) infinite; }
+  .ko-loader .ko-r { animation: ko-right 1.6s cubic-bezier(.4,0,.2,1) infinite; }
+  @keyframes ko-left  { 0%, 100% { transform: translateX(0) } 46%, 58% { transform: translateX(2px) } }
+  @keyframes ko-right { 0%, 100% { transform: translateX(0) } 46%, 58% { transform: translateX(-2px) } }
+  @media (prefers-reduced-motion: reduce) { .ko-loader .ko-l, .ko-loader .ko-r { animation: none } }
+</style>
+<span class="ko-loader" role="status" aria-label="加载中">
+  <svg viewBox="13.5 14.5 37 35" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <path class="ko-l" d="M16 17 L26 29 L26 35 L16 47 Z"/>
+    <path class="ko-r" d="M48 17 L38 29 L38 35 L48 47 Z"/>
+  </svg>
+</span>

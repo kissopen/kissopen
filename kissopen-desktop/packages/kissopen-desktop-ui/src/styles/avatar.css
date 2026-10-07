@@ -1,0 +1,203 @@
+/*
+ * Avatar — identity mark for humans (circle) and agents (rounded square).
+ * Sizes: xs 20 / sm 28 / md 36 / lg 44. Tones use Kissopen's direct color roles.
+ */
+
+.kissopen-avatar,
+.kissopen-avatar__initials,
+.kissopen-avatar__glyph,
+.kissopen-avatar__image,
+.kissopen-avatar__presence {
+    box-sizing: border-box;
+}
+
+.kissopen-avatar {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--kissopen-radius-pill);
+    /* The neutral mark — what a row gets when nothing about it is worth a
+       colour — is a quiet chip, not a filled tile. A filled tile has to be dark
+       to carry white initials, and no neutral role stays dark in both
+       appearances: an ink role inverts with the text it was made for, so the
+       tile turns into the brightest thing in a dark list. The ripple is the
+       surface's own faint opposite, so the chip stays the same small step above
+       whatever it sits on — the popover, a hovered row, a selected one — rather
+       than matching one of them and disappearing. */
+    background: var(--surface-ripple);
+    color: var(--text-secondary);
+    font-family: var(--kissopen-font-ui);
+    font-synthesis: none;
+    font-weight: 700;
+    letter-spacing: 0;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.kissopen-avatar[data-size="xs"] {
+    width: 20px;
+    height: 20px;
+    font-size: 8px;
+    line-height: 8px;
+}
+
+.kissopen-avatar[data-size="sm"] {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+    line-height: 10px;
+}
+
+.kissopen-avatar[data-size="md"] {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+    line-height: 12px;
+}
+
+.kissopen-avatar[data-size="lg"] {
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+    line-height: 14px;
+}
+
+.kissopen-avatar[data-type="agent"][data-size="xs"] {
+    border-radius: 6px;
+}
+
+.kissopen-avatar[data-type="agent"][data-size="sm"] {
+    border-radius: 7px;
+}
+
+.kissopen-avatar[data-type="agent"][data-size="md"] {
+    border-radius: 9px;
+}
+
+.kissopen-avatar[data-type="agent"][data-size="lg"] {
+    border-radius: 10px;
+}
+
+/* A colour tone is a filled tile and carries the primary action's white ink. */
+.kissopen-avatar:not([data-tone="slate"]) {
+    color: var(--button-primary-tint);
+}
+
+.kissopen-avatar[data-tone="violet"] {
+    background: var(--radio-active);
+}
+
+.kissopen-avatar[data-tone="ember"] {
+    background: var(--text-destructive);
+}
+
+.kissopen-avatar[data-tone="mint"] {
+    background: var(--success);
+}
+
+.kissopen-avatar[data-tone="ocean"] {
+    background: var(--text-link);
+}
+
+.kissopen-avatar[data-tone="rose"] {
+    background: var(--delete-action);
+}
+
+.kissopen-avatar[data-tone="amber"] {
+    background: var(--box-warning-border);
+}
+
+.kissopen-avatar[data-tone="slate"] {
+    background: var(--surface-ripple);
+}
+
+/* Black with white ink in both appearances, exactly as a primary action reads —
+   the FAB role is the one that inverts to white, which would leave the mark's
+   own initials invisible on it. */
+.kissopen-avatar[data-tone="brand"] {
+    background: var(--button-primary-background);
+}
+
+/* A supplied avatar image owns the entire mark. This is especially important
+ * for Kissopen's theme-selected logo, whose silhouette must not inherit a tile. */
+.kissopen-avatar[data-image] {
+    background: transparent;
+}
+
+.kissopen-avatar__initials {
+    display: block;
+}
+
+/* A glyph carries the tile's meaning instead of initials; it inherits the same
+ * tint and is box-centered by the font, so it needs no optical nudge. */
+.kissopen-avatar__glyph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Calibrated against the balanced O fixture's visible bounds. */
+.kissopen-avatar[data-size="sm"] .kissopen-avatar__initials {
+    transform: translateY(0.5px);
+}
+
+.kissopen-avatar[data-size="md"] .kissopen-avatar__initials {
+    transform: translateY(0.25px);
+}
+
+.kissopen-avatar[data-size="lg"] .kissopen-avatar__initials {
+    transform: translateY(1px);
+}
+
+@supports (-moz-appearance: none) {
+    .kissopen-avatar[data-size="sm"] .kissopen-avatar__initials,
+    .kissopen-avatar[data-size="md"] .kissopen-avatar__initials,
+    .kissopen-avatar[data-size="lg"] .kissopen-avatar__initials {
+        transform: none;
+    }
+}
+
+@supports (background: -webkit-named-image(i)) {
+    .kissopen-avatar[data-size="sm"] .kissopen-avatar__initials,
+    .kissopen-avatar[data-size="lg"] .kissopen-avatar__initials {
+        transform: none;
+    }
+}
+
+.kissopen-avatar__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+/* The Kissopen mark is a square brand glyph, not a portrait tile. It therefore
+ * keeps its full source geometry instead of inheriting an avatar radius. */
+.kissopen-avatar[data-image-theme="brand"],
+.kissopen-avatar[data-image-theme="brand"] .kissopen-avatar__image.kissopen-brand-logo {
+    border-radius: 0;
+}
+
+.kissopen-avatar[data-image-theme="brand"] .kissopen-avatar__image.kissopen-brand-logo {
+    padding: 1px;
+    object-fit: contain;
+}
+
+.kissopen-avatar__presence {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--groupped-background);
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--status-connected);
+}
+
+.kissopen-avatar[data-size="lg"] .kissopen-avatar__presence {
+    width: 10px;
+    height: 10px;
+}

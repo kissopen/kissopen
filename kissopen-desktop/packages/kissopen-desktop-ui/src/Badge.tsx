@@ -1,0 +1,155 @@
+import { Icon, type IconName } from "./Icon";
+export type BadgeVariant =
+    | "neutral"
+    | "accent"
+    | "success"
+    | "warning"
+    | "danger"
+    | "info"
+    | "outline";
+export type BadgeProps = {
+    className?: string;
+    icon?: IconName;
+    label: string;
+    variant?: BadgeVariant;
+};
+/** Status pill: NEEDS REVIEW, AGENT, IN PROGRESS… 18px mono uppercase. */
+export function Badge(props: BadgeProps) {
+    return (
+        <span
+            className={["kissopen-badge", props.className].filter(Boolean).join(" ")}
+            data-kissopen-desktop-ui="badge"
+            data-variant={props.variant ?? "neutral"}
+        >
+            {props.icon
+                ? ((name) => (
+                      <span className="kissopen-badge__icon" data-kissopen-desktop-ui="badge-icon">
+                          <Icon name={name} size={12} />
+                      </span>
+                  ))(props.icon)
+                : null}
+            <span className="kissopen-badge__label" data-kissopen-desktop-ui="badge-label">
+                {props.label}
+            </span>
+        </span>
+    );
+}
+export type CountBadgeProps = {
+    className?: string;
+    count: number;
+    tone?: "accent" | "neutral";
+};
+/** Unread-count pill: 18px round with mono lining/tabular figures. */
+export function CountBadge(props: CountBadgeProps) {
+    /* Stepped integral width (18/25/32…) instead of the intrinsic text width:
+     * digit advances are fractional, and a fractional-width pill lands
+     * right-aligned boxes off the device-pixel grid, visibly shifting the
+     * rasterized digits. */
+    const width = () => 18 + (String(props.count).length - 1) * 7;
+    return (
+        <span
+            className={["kissopen-count-badge", props.className].filter(Boolean).join(" ")}
+            data-kissopen-desktop-ui="count-badge"
+            data-tone={props.tone ?? "accent"}
+            style={{ width: `${width()}px` }}
+        >
+            <span
+                className="kissopen-count-badge__label"
+                data-kissopen-desktop-ui="count-badge-label"
+            >
+                {props.count}
+            </span>
+        </span>
+    );
+}
+export type ReactionChipProps = {
+    active?: boolean;
+    className?: string;
+    count: number;
+    emoji: string;
+    onSelect?: () => void;
+};
+/** Emoji reaction pill under a message: 24px, toggles an accent active state. */
+export function ReactionChip(props: ReactionChipProps) {
+    return (
+        <button
+            aria-label={`${props.emoji} ${props.count}`}
+            aria-pressed={props.active ? "true" : "false"}
+            className={["kissopen-reaction-chip", props.className].filter(Boolean).join(" ")}
+            data-active={props.active ? "" : undefined}
+            data-kissopen-desktop-ui="reaction-chip"
+            onClick={() => props.onSelect?.()}
+            type="button"
+        >
+            <span
+                className="kissopen-reaction-chip__emoji"
+                data-kissopen-desktop-ui="reaction-chip-emoji"
+            >
+                <span
+                    className="kissopen-reaction-chip__emoji-glyph"
+                    data-kissopen-desktop-ui="reaction-chip-emoji-glyph"
+                >
+                    {props.emoji}
+                </span>
+            </span>
+            <span
+                className="kissopen-reaction-chip__count"
+                data-kissopen-desktop-ui="reaction-chip-count"
+            >
+                {props.count}
+            </span>
+        </button>
+    );
+}
+export type KeyCapProps = {
+    className?: string;
+    /** Removes the cap from the accessibility tree when its owner announces the shortcut. */
+    decorative?: boolean;
+    keys: string;
+};
+const shortcutSymbols = new Set(["⌘", "⇧", "⌥", "⌃"]);
+function ShortcutSymbol(props: { symbol: string }) {
+    return (
+        <svg aria-hidden="true" data-shortcut-symbol={props.symbol} fill="none" viewBox="0 0 24 24">
+            {props.symbol === "⌘" ? (
+                <path d="M18 9a3 3 0 1 0-3-3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12Z" />
+            ) : null}
+            {props.symbol === "⇧" ? <path d="m12 1.8 9 9.5h-5v9.5H8v-9.5H3l9-9.5Z" /> : null}
+            {props.symbol === "⌥" ? <path d="M2.85 3.2h5l9 18h4M13.85 3.2h7M2.85 21.2h7" /> : null}
+            {props.symbol === "⌃" ? <path d="M3 21.2 12 2.3 21 21.2" /> : null}
+        </svg>
+    );
+}
+/** Keyboard shortcut hint, e.g. ⌘K in the title-bar search field. */
+export function KeyCap(props: KeyCapProps) {
+    return (
+        <kbd
+            aria-hidden={props.decorative ? "true" : undefined}
+            aria-label={props.decorative ? undefined : props.keys}
+            className={["kissopen-key-cap", props.className].filter(Boolean).join(" ")}
+            data-kissopen-desktop-ui="key-cap"
+        >
+            <span className="kissopen-key-cap__label" data-kissopen-desktop-ui="key-cap-label">
+                {Array.from(props.keys).map((key, index) => (
+                    <span
+                        className="kissopen-key-cap__key"
+                        data-kind={shortcutSymbols.has(key) ? "symbol" : "text"}
+                        key={`${key}-${index}`}
+                        data-kissopen-desktop-ui="key-cap-key"
+                    >
+                        {shortcutSymbols.has(key) ? (
+                            <ShortcutSymbol symbol={key} />
+                        ) : (
+                            <span
+                                className="kissopen-key-cap__text"
+                                data-kissopen-desktop-ui="key-cap-text"
+                            >
+                                {key}
+                            </span>
+                        )}
+                    </span>
+                ))}
+            </span>
+        </kbd>
+    );
+}

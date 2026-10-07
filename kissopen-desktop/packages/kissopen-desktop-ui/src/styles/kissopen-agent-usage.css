@@ -1,0 +1,281 @@
+/*
+ * KissopenAgent session usage panel (`/usage`): per-model token/cost table, session totals,
+ * context-window occupancy, and provider rate-limit windows. Presentational only.
+ *
+ * The rate-limit rows use the same four fixed columns as the provider-usage
+ * page — name, measure, share, reset — and stay the ink of the text until the
+ * share is worth colouring, so one limit reads the same in both places.
+ *
+ * It is a content block, not a card: whatever carries the reading names and
+ * frames it, so there is no title row, no fill, and no border here.
+ */
+
+.kissopen-agent-usage-panel-scroll {
+    container-type: inline-size;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    overflow: auto;
+}
+
+.kissopen-agent-usage-panel-scroll__content {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+    padding: 12px 8px;
+    box-sizing: border-box;
+}
+
+.kissopen-agent-usage {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--text);
+    font-family: var(--kissopen-font-ui);
+}
+
+.kissopen-agent-usage__empty,
+.kissopen-agent-usage__error {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-usage__error {
+    color: var(--status-error);
+}
+
+.kissopen-agent-usage__totals {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+}
+
+.kissopen-agent-usage__total {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.kissopen-agent-usage__total-value {
+    font-size: 20px;
+    font-weight: 650;
+    line-height: 26px;
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+.kissopen-agent-usage__total-label {
+    font-family: var(--kissopen-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+}
+
+/* Per-model accounting is a real two-dimensional table: five numeric columns
+   must share one measured width down every model row, which is why the markup
+   is a `<table>` rather than a flex row per model. */
+.kissopen-agent-usage__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+.kissopen-agent-usage__table thead th {
+    text-align: right;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-agent-usage__table thead th:first-child {
+    text-align: left;
+}
+
+.kissopen-agent-usage__model {
+    text-align: left;
+    font-weight: 500;
+    padding: 6px 8px;
+}
+
+.kissopen-agent-usage__num {
+    text-align: right;
+    padding: 6px 8px;
+}
+
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__table {
+    table-layout: fixed;
+    font-size: 11px;
+}
+
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__table thead th,
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__model,
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__num {
+    padding-right: 3px;
+    padding-left: 3px;
+}
+
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__table thead th:first-child {
+    width: 84px;
+}
+
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__model {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-agent-usage__row:not(:last-child) th,
+.kissopen-agent-usage__row:not(:last-child) td {
+    border-bottom: 1px solid var(--divider);
+}
+
+.kissopen-agent-usage__context {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.kissopen-agent-usage__quotas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--divider);
+}
+
+.kissopen-agent-usage__quota {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kissopen-agent-usage__quota-provider {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
+.kissopen-agent-usage__quota-empty {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-secondary);
+}
+
+.kissopen-agent-usage__quota-window {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-height: 20px;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--text);
+}
+
+.kissopen-agent-usage__quota-label {
+    flex: none;
+    width: 56px;
+}
+
+/* The only elastic cell in the row, so every bar in the panel starts and ends
+   on the same two edges and two windows can be compared by eye. */
+.kissopen-agent-usage__quota-bar {
+    flex: 1 1 auto;
+    min-width: 80px;
+    height: 4px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--surface-selected);
+    overflow: hidden;
+}
+
+.kissopen-agent-usage__quota-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--text);
+}
+
+.kissopen-agent-usage__quota-window[data-tone="warning"] .kissopen-agent-usage__quota-fill {
+    background: var(--box-warning-text);
+}
+
+.kissopen-agent-usage__quota-window[data-tone="critical"] .kissopen-agent-usage__quota-fill {
+    background: var(--status-error);
+}
+
+/* The share is text, so it takes the tone as ink rather than as a fill. */
+.kissopen-agent-usage__quota-percent {
+    flex: none;
+    width: 40px;
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+.kissopen-agent-usage__quota-window[data-tone="warning"] .kissopen-agent-usage__quota-percent {
+    color: var(--box-warning-text);
+}
+
+.kissopen-agent-usage__quota-window[data-tone="critical"] .kissopen-agent-usage__quota-percent {
+    color: var(--status-error);
+}
+
+/* Held at a fixed width, like the label and share cells, so the bars between
+   them line up down the panel. Wide enough for the longest local date this
+   formats ("resets Sep 22, 10:30 PM"), so no reset is ever cut short. */
+.kissopen-agent-usage__quota-reset {
+    flex: none;
+    width: 152px;
+    color: var(--text-secondary);
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__quota-window {
+    flex-wrap: wrap;
+    column-gap: 8px;
+    row-gap: 4px;
+}
+
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__quota-percent {
+    width: 36px;
+}
+
+.kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__quota-reset {
+    flex-basis: 100%;
+    width: auto;
+}
+
+@container (max-width: 300px) {
+    .kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__table {
+        font-size: 10px;
+    }
+
+    .kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__table thead th,
+    .kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__model,
+    .kissopen-agent-usage[data-placement="panel"] .kissopen-agent-usage__num {
+        padding-right: 2px;
+        padding-left: 2px;
+    }
+
+    .kissopen-agent-usage[data-placement="panel"]
+        .kissopen-agent-usage__table
+        thead
+        th:first-child {
+        width: 64px;
+    }
+}

@@ -1,0 +1,107 @@
+# Stage 1: install dependencies with workspace context
+FROM node:20-alpine AS deps
+
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+
+WORKDIR /repo
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY scripts ./scripts
+COPY patches ./patches
+
+RUN mkdir -p packages/kissopen-app packages/kissopen-wire
+
+COPY packages/kissopen-app/package.json packages/kissopen-app/
+COPY packages/kissopen-wire/package.json packages/kissopen-wire/
+
+# Workspace postinstall requirements
+COPY packages/kissopen-app/patches packages/kissopen-app/patches
+
+# The repo defaults to a hoisted linker for local development. Keep this Docker
+# install isolated so unrelated workspace native deps do not get built here.
+RUN SKIP_KISSOPEN_WIRE_BUILD=1 pnpm install \
+    --frozen-lockfile \
+    --filter kissopen-app... \
+    --config.node-linker=isolated \
+    --config.shamefully-hoist=false
+
+# Stage 2: build the web app
+FROM deps AS builder
+
+ARG POSTHOG_API_KEY=""
+ARG REVENUE_CAT_STRIPE=""
+ARG KISSOPEN_SERVER_URL=""
+ARG KISSOPEN_BUILD_COMMIT_SHA=""
+ARG KISSOPEN_BUILD_COMMIT_TIMESTAMP=""
+
+ENV NODE_ENV=production
+ENV APP_ENV=production
+ENV EXPO_PUBLIC_POSTHOG_API_KEY=$POSTHOG_API_KEY
+ENV EXPO_PUBLIC_REVENUE_CAT_STRIPE=$REVENUE_CAT_STRIPE
+ENV EXPO_PUBLIC_KISSOPEN_SERVER_URL=$KISSOPEN_SERVER_URL
+ENV KISSOPEN_BUILD_COMMIT_SHA=$KISSOPEN_BUILD_COMMIT_SHA
+ENV KISSOPEN_BUILD_COMMIT_TIMESTAMP=$KISSOPEN_BUILD_COMMIT_TIMESTAMP
+
+COPY packages/kissopen-wire ./packages/kissopen-wire
+COPY packages/kissopen-app ./packages/kissopen-app
+
+RUN pnpm --filter @kissopen/kissopen-wire build
+RUN pnpm --filter kissopen-app exec expo export --platform web --output-dir dist
+
+# Stage 3: runtime with Nginx
+FROM nginx:alpine AS runner
+
+COPY --from=builder /repo/packages/kissopen-app/dist /usr/share/nginx/html
+
+# Remove default nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Create custom nginx configuration directly in the Dockerfile
+RUN echo 'server { \
+    listen 80; \
+    \
+    location /_expo/ { \
+        root   /usr/share/nginx/html; \
+        try_files $uri =404; \
+    } \
+    \
+    location /assets/ { \
+        root   /usr/share/nginx/html; \
+        try_files $uri =404; \
+    } \
+    \
+    location /.well-known/ { \
+        root   /usr/share/nginx/html; \
+        try_files $uri =404; \
+    } \
+    \
+    location / { \
+        root   /usr/share/nginx/html; \
+        index  index.html index.htm; \
+        try_files $uri $uri.html $uri/index.html $uri/index.htm $uri/ /index.html /index.htm =404; \
+    } \
+    \
+    error_page 500 502 503 504 /50x.html; \
+    location = /50x.html { \
+        root /usr/share/nginx/html; \
+        try_files $uri @redirect_to_index; \
+        internal; \
+    } \
+    \
+    error_page 404 = @handle_404; \
+    \
+    location @handle_404 { \
+        root /usr/share/nginx/html; \
+        try_files /404.html @redirect_to_index; \
+        internal; \
+    } \
+    \
+    location @redirect_to_index { \
+        return 302 /; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
+# Expose the standard nginx port
+EXPOSE 80
+
+# Nginx starts automatically in the foreground with CMD ["nginx", "-g", "daemon off;"]

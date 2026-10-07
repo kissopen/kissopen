@@ -1,0 +1,131 @@
+/*
+Chromium paints an opaque backdrop behind the page whenever `color-scheme` is
+set — the theme sets it on :root — and a transparent window cannot show through
+that. `normal` drops it, and the transparent backgrounds let the desktop show.
+The surfaces that float over other people's screens say so by stamping the
+root; they draw their own surface, so they never wanted the UA one.
+*/
+:root[data-kissopen-surface="overlay"] {
+    color-scheme: normal;
+    background: transparent;
+}
+:root[data-kissopen-surface="overlay"] body {
+    background: transparent;
+}
+
+/*
+The bar at the bottom of the screen.
+
+It floats over other applications, so it carries its own ground and its own
+edge rather than inheriting a window's: there is no window behind it. The
+shadow is what separates it from whatever it is standing on, which is never
+the same two times.
+*/
+/*
+The frame the window is sized to. No padding: the bar fills the window
+exactly, and its shadow is the operating system's, drawn outside the window
+the way a menu's is. A shadow drawn inside with CSS needs a margin to land in,
+and that margin reads as a faint background block behind the dialog — which is
+exactly what it looked like.
+*/
+.kissopen-quick-bar-frame {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.kissopen-quick-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    /*
+     * No radius, border or clipping of its own: the window it fills is rounded
+     * and shadowed by the system, and a second radius drawn here would either
+     * miss the system's by a pixel and seam, or fight it at the corners.
+     */
+    background: var(--surface);
+    width: 100%;
+}
+
+.kissopen-quick-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 14px 14px 16px;
+}
+
+/* The mark's own box (30 × 25.7) comes from the component. */
+.kissopen-quick-bar-mark {
+    flex: none;
+}
+
+/*
+A textarea rather than an input, because Shift+Enter has to be able to add a
+line — the same arrangement every other composer in this product uses. It
+grows no taller than three lines: past that the bar has stopped being a bar.
+*/
+.kissopen-quick-bar-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    resize: none;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.4;
+    max-height: calc(1.4em * 3);
+    padding: 0;
+}
+
+.kissopen-quick-bar-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.kissopen-quick-bar-send {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--surface-inverse);
+    color: var(--text-inverse);
+    cursor: pointer;
+}
+
+.kissopen-quick-bar-send:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.kissopen-quick-bar-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 14px 10px 16px;
+    border-top: 1px solid var(--divider);
+    background: var(--surface-high);
+}
+
+.kissopen-quick-bar-note {
+    color: var(--text-secondary);
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-quick-bar-link {
+    flex: none;
+    border: 0;
+    background: transparent;
+    color: var(--text-link);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    padding: 0;
+}
