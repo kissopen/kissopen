@@ -1,0 +1,101 @@
+name: CI
+
+# GitHub runs workflows only from the repository root. The workflows under
+# kissopen/.github and kissopen-desktop/.github are kept as release references
+# for those workspaces, but this file is what validates every push and pull
+# request.
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    scripts:
+        name: Root scripts
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+            - name: Check root script syntax
+              run: for file in scripts/*.mjs; do node --check "$file"; done
+            - name: Validate the Agent artifact lock
+              run: node --input-type=module -e "import { artifactLockRead } from './scripts/agent-artifacts.mjs'; await artifactLockRead();"
+
+    desktop:
+        name: Desktop typecheck and tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        defaults:
+            run:
+                working-directory: kissopen-desktop
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+              with:
+                  package_json_file: kissopen-desktop/package.json
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: pnpm
+                  cache-dependency-path: kissopen-desktop/pnpm-lock.yaml
+            - run: pnpm install --frozen-lockfile
+            - name: Typecheck
+              run: |
+                  pnpm --dir packages/kissopen-desktop-state typecheck
+                  pnpm --dir packages/kissopen-desktop-ui typecheck
+                  pnpm --dir packages/kissopen-desktop-app typecheck
+                  pnpm --dir packages/kissopen-desktop-electron typecheck
+                  pnpm --dir packages/kissopen-desktop-gym typecheck
+            - name: Unit tests
+              run: |
+                  pnpm --dir packages/kissopen-desktop-state test
+                  pnpm --dir packages/kissopen-desktop-app test
+                  pnpm --dir packages/kissopen-desktop-electron test
+            - name: Build Electron main, preload and renderer
+              run: NODE_OPTIONS=--import=tsx pnpm --dir packages/kissopen-desktop-electron build
+
+    mobile:
+        name: Mobile/Web typecheck
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        defaults:
+            run:
+                working-directory: kissopen
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+              with:
+                  package_json_file: kissopen/package.json
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: pnpm
+                  cache-dependency-path: kissopen/pnpm-lock.yaml
+            - run: pnpm install --frozen-lockfile
+            - name: Typecheck
+              run: |
+                  pnpm --filter @kissopen/kissopen-wire typecheck
+                  pnpm --filter kissopen-app typecheck
+
+    website:
+        name: Website build
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+            - run: npm --prefix website run build
