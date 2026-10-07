@@ -1,8 +1,8 @@
 # Independent KissOpen service
 
-Target: `kissopen.com`, origin server `45.128.210.49`. This is independent of the
-commercial service. Do not copy commercial accounts, signing secrets, model
-credentials, billing databases or deployment environment files.
+Target: `kissopen.com`, origin server `45.128.210.49`. Use dedicated service
+configuration and credentials. Keep signing secrets, model credentials,
+databases and deployment environment files private.
 
 ## Current status
 
@@ -74,8 +74,8 @@ or successful installation is not evidence of that end-to-end check.
 The account release is now `/opt/kissopen-accounts/releases/20261006-local-plugins`.
 The independent catalog at `/srv/kissopen-plugin-catalog/20261006` contains 51
 published packages, details and available icons. Package sizes and SHA-256 values
-were verified locally, by the local desktop importer, and after transfer. No
-commercial accounts, credentials or installed workspace state were imported.
+were verified locally, by the local desktop importer, and after transfer.
+Existing account credentials and installed workspace state were preserved.
 `CN_CLOUD_PLUGIN_CATALOG` selects it; Nginx exposes its public data assets under
 `/downloads/plugins/`, preserving unrelated sites, account authentication and
 loopback-only services. Cloud execution remains disabled.
@@ -100,7 +100,7 @@ Register separate OAuth applications and set these exact callback URLs:
 Use a Google **Web application** client; the secret is exchanged only by this
 server, never by a desktop/mobile client. The NodeLoc application uses
 `openid profile`, not the separately reviewed `email` scope. GitHub uses
-`read:user`. Do not reuse the commercial product's OAuth applications.
+`read:user`. Use dedicated OAuth applications for this deployment.
 
 Configuration template:
 `packages/kissopen-server/.env.community.example`. The real environment file
@@ -116,8 +116,8 @@ community login endpoints. Its standalone mode supports PGlite and local file
 storage without requiring Redis or S3. It can also serve a built web client.
 The restored `account-service/` Go service supplies the original profile, billing,
 usage, theme, invite and administration APIs through an independent database.
-It is deployed separately. Its configuration must not reuse the commercial database,
-payment, signing or model secrets. Local Agent execution stays on the user's device;
+It is deployed separately, with its own database and private credentials.
+Local Agent execution stays on the user's device;
 cloud execution requires independently configured resources. No cloud executor is
 automatically started by adding account support.
 

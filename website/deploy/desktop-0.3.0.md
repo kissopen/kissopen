@@ -4,7 +4,7 @@ First stable KissOpen desktop distribution for Apple Silicon and Intel.
 
 - Uses the independent KissOpen account and device services.
 - Runs the bundled local Agent with your own model providers, including custom API URL/key providers and model selection.
-- Includes projects, conversations, files, custom themes, local plugins and local scheduled tasks. Home and project dashboards are not included.
+- Includes projects, conversations, files, custom themes, local plugins and local scheduled tasks.
 - Signed desktop updates use only `https://kissopen.com/downloads/desktop/stable/latest-mac.yml`. Updates download in the background and require the user's install action. Development and preview builds do not check this feed.
 - Mobile can connect to the signed-in desktop through the independent service. This release does not publish or submit an iOS/Android package.
 
@@ -12,7 +12,7 @@ Desktop version: **0.3.0**. Bundled Agent: **0.4.71-preview.8**, pinned by the i
 
 ## Verification and activation
 
-User-authorized local signing/notarization is used because this extracted repository has no release workflow yet. Public source publication is separate and remains pending; no commercial Git history or unreviewed repository snapshot is published with these installers.
+This release used user-authorized local signing/notarization. Source publication and installer releases are separate processes, each with its own verification gates.
 
 The native release script checks Developer ID signing, Apple notarization/stapling, Gatekeeper, DMG integrity, application identity/version, bundled Agent architecture/SHA-256, original desktop license and the independent updater origin/channel. The build must finish successfully before any assets or website links are activated.
 

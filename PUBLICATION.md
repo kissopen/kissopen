@@ -1,15 +1,14 @@
 # Initial source publication — 2026-10-07
 
-The initial public source snapshot has no private commercial Git history. The
-client, Agent and account/relay service are published as three independent
+The client, Agent and account/relay service are published as three independent
 repositories under https://github.com/kissopen.
 
 ## Publication checks
 
 - Reviewed the actual staged source export, not the full local working directory.
-- Excluded the old commercial account backend, superseded mobile server/CLI/Agent
-  copies, obsolete commercial desktop Web package, Firebase project configuration,
-  signing material, local user data and packaged Agent executables.
+- Scoped the source export to maintained client packages. Kept superseded
+  reference copies, private service configuration, signing material, local user
+  data and packaged Agent executables outside the published source.
 - Preserved the pinned SDK archive used by desktop and scanned its extracted files.
 - Retained upstream MIT/Apache notices and added the missing Kimi Code license.
 - Gitleaks 8.30.1 source scans passed after excluding Firebase configuration.

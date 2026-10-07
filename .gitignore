@@ -27,7 +27,7 @@ test-results/
 /kissopen-desktop/vendor/agent/*
 !/kissopen-desktop/vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
 
-# Superseded commercial/reference copies stay local. The independent public
+# Superseded reference copies stay local. The independent public
 # server and Agent are maintained in their own repositories.
 /account-service/
 /kissopen/packages/kissopen-server/

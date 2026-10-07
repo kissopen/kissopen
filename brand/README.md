@@ -2,7 +2,7 @@
 
 Vendored from the supplied `modeloc/design/assets` delivery on 2026-10-05.
 The original SVG outlines, platform icons and VI documentation are preserved.
-No commercial WorPar artwork is used by the open-source UI.
+All clients use the supplied KissOpen visual identity.
 
 - Display name: **KissOpen**, in every language.
 - Lockup: the supplied outlined Chakra Petch wordmark, never live UI text.

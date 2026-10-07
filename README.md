@@ -8,7 +8,7 @@ from another device.
 [简体中文](README.zh-CN.md) · [Agent](https://github.com/kissopen/kissopen-agent) ·
 [Server](https://github.com/kissopen/kissopen-server)
 
-## What is included
+## Features
 
 - Desktop client with conversations, projects, files and an integrated browser.
 - Mobile/Web client connected to your desktop Agent through an account relay.
@@ -18,9 +18,8 @@ from another device.
 - Natural-language scheduled tasks, saved and executed by the local Agent.
 - Username/password, optional 2FA and configurable GitHub/Google/NodeLoc OAuth.
 
-Commercial home/project dashboards, hosted model execution, billing, subscriptions
-and point purchases are not part of this edition. Some inherited, disconnected
-client helpers remain in source; this is not a ground-up rewrite.
+Your configured providers handle model inference. The local Agent owns tool
+execution, plugins and scheduled tasks.
 
 ## Repositories
 
@@ -30,9 +29,8 @@ client helpers remain in source; this is not a ground-up rewrite.
 | [kissopen-agent](https://github.com/kissopen/kissopen-agent) | Agent daemon, SDK, providers, tools, terminal and local scheduler |
 | [kissopen-server](https://github.com/kissopen/kissopen-server) | OAuth/accounts, encrypted relay, device RPC, profiles, themes and plugin catalog |
 
-Each repository starts with a source snapshot, not the private commercial Git
-history. Superseded server/CLI reference copies, credentials, user data and
-locally packaged executables are excluded from this repository.
+The three repositories are maintained independently, connected through the
+Agent SDK and shared client/server protocols.
 
 ## Development
 
