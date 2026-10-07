@@ -3,9 +3,11 @@ import { digestStringAsync, CryptoDigestAlgorithm } from "expo-crypto";
 import { Platform } from "react-native";
 import { decodeBase64 } from "@/encryption/base64";
 
-/** A provider identity can recover only its own device key after authorization.
- * Keys never go to the account service. Sign-out clears session/data, not this
- * device's recovery key, just as signing out does not destroy a saved backup. */
+/** This device's copy of a workspace key, stored per server origin and identity.
+ * It is not the only copy: communityWorkspaceConnect escrows the key with the
+ * account server, which encrypts it at rest but can recover it (see SECURITY.md),
+ * and returns it to any device that signs in to the same account. Sign-out
+ * clears session/data, not this saved copy. On web it lives in localStorage. */
 async function storageKey(origin: string, identityId: string) {
   return (
     "kissopen.oss.workspace-key." +
