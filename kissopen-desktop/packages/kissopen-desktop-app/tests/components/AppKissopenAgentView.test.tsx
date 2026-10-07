@@ -111,6 +111,7 @@ function workspace(): KissopenAgentWorkspaceStore {
         fileTreeExpanded: new Set<string>(),
         fileTreeCollapsed: new Set<string>(),
         workspaceFilesLoading: false,
+        projectAdd: { pending: false },
     };
     return {
         get: () => snapshot,
@@ -208,7 +209,10 @@ it("heads the local sidebar with the shared brand mark, not a local-only title",
     // the two modes stay one component rendered twice rather than a local variant.
     const logo = container.querySelector('[data-kissopen-desktop-ui="sidebar-brand-logo"]');
     expect(logo).not.toBeNull();
-    expect(logo?.getAttribute("aria-hidden")).toBe("true");
+    // The mark is the KissOpen lockup, which names the product to assistive tech.
+    const lockup = logo?.querySelector('[data-kissopen-desktop-ui="lockup"]');
+    expect(lockup?.getAttribute("role")).toBe("img");
+    expect(lockup?.getAttribute("aria-label")).toBe("KissOpen");
     expect(container.querySelector('[data-kissopen-desktop-ui="sidebar-title"]')).toBeNull();
 
     // The plain title row and its chevron affordance are gone.
