@@ -11,7 +11,7 @@
 # September 14 - Photo uploads and session resume
 
 - Large iPhone photos — resized before upload, with size checks on the converted image. Reported by [@Jtome46](https://github.com/Jtome46).
-- Session resume — resume sessions already in your app, even if your machine no longer remembers them. Requires the updated WorPar CLI.
+- Session resume — resume sessions already in your app, even if your machine no longer remembers them. Requires the updated KissOpen CLI.
 - Community Credits: [@chphch](https://github.com/chphch), [@a37836323](https://github.com/a37836323), [@suntaoathome](https://github.com/suntaoathome), [@f-liva](https://github.com/f-liva).
 
 # September 5 - New models, clearer changes
@@ -35,7 +35,7 @@ Thank you [@qqshDA](https://github.com/qqshDA) and [@theflysurfer](https://githu
 - **Avatar styles are back** - Brutalist, Pixelated, Gradient - plus Black & White.
 - **Tools open by default** - edits and outputs inline in chat. Prefer one-liners? Settings → Appearance.
 - **"Don't ask again" sticks** - permission grants are finally remembered.
-- **On a Mac?** Native desktop app - [WorPar Desktop](https://github.com/slopus/happy-desktop).
+- **On a Mac?** Native desktop app - [KissOpen Desktop](https://github.com/kissopen/kissopen).
 
 Issues? Crazy ideas? Find us on Twitter - [@bra1n_dump](https://x.com/bra1n_dump) or [@Ex3NDR](https://x.com/Ex3NDR). [GitHub issues](https://github.com/slopus/happy/issues) and [Discord](https://discord.gg/fX9WBAhyfD) work too.
 
@@ -130,7 +130,7 @@ Desktop got a full refresh with a file browser, built-in editor, and zen mode. S
 - Smarter push notifications - suppressed when you're already in the app.
 - Unread dots persist on sessions until you open them.
 - Redesigned sidebar with file browser, code editor, and zen mode.
-- Fixed stale sessions refusing to load, blank screen on launch, dual cursors in remote mode, `claude --resume` not finding WorPar sessions.
+- Fixed stale sessions refusing to load, blank screen on launch, dual cursors in remote mode, `claude --resume` not finding KissOpen sessions.
 
 ## Experimental
 
@@ -192,7 +192,7 @@ Sessions start instantly now. No more manual CLI startup.
 
 # August 29 - GitHub integration
 
-Your GitHub identity in WorPar.
+Your GitHub identity in KissOpen.
 
 - Connect your GitHub account via OAuth.
 - Avatar, name, and bio sync to the app.

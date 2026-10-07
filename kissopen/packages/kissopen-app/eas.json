@@ -91,14 +91,13 @@
     "global-preview-store": {
       "ios": {
         "appleId": "app@nodeloc.com",
-        "bundleIdentifier": "com.worpar.app.preview"
+        "bundleIdentifier": "com.kissopen.opensource.app.preview"
       }
     },
     "global-production": {
       "ios": {
         "appleId": "app@nodeloc.com",
-        "ascAppId": "6818844945",
-        "bundleIdentifier": "com.worpar.app"
+        "bundleIdentifier": "com.kissopen.opensource.app"
       }
     },
     "cn-preview-store": {

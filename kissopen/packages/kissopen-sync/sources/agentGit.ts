@@ -182,7 +182,7 @@ export async function getKissopenAgentGitState(
     const parsed = parseFailureOrThrow(
         response,
         KissopenAgentGitStateResponseSchema,
-        'WorPar Agent returned an invalid Git state.',
+        'KissOpen Agent returned an invalid Git state.',
     );
     if (!parsed.success) throw new Error(parsed.error);
     return parsed.git;
@@ -285,7 +285,7 @@ async function readSide(
         ? KissopenAgentGitReadFileResponseSchema
         : KissopenAgentGitReadFileAtRevisionResponseSchema;
     const parsed = schema.safeParse(response);
-    if (!parsed.success) throw new Error('WorPar Agent returned an invalid file response.');
+    if (!parsed.success) throw new Error('KissOpen Agent returned an invalid file response.');
     if (!parsed.data.success) throw new Error(parsed.data.error);
     return { path, content: parsed.data.content };
 }
@@ -299,11 +299,11 @@ export async function readKissopenAgentGitFile(
     requireSupportedSession(session);
 
     const parsedFile = KissopenAgentGitFileSchema.safeParse(file);
-    if (!parsedFile.success) throw new Error('WorPar Agent returned an invalid Git file.');
+    if (!parsedFile.success) throw new Error('KissOpen Agent returned an invalid Git file.');
     const change = parsedFile.data;
 
     if (!parseGitRevision(gitBase)) {
-        throw new Error('WorPar Agent returned an invalid Git comparison base.');
+        throw new Error('KissOpen Agent returned an invalid Git comparison base.');
     }
 
     const unsupported = unsupportedFileMessage(change);
@@ -346,7 +346,7 @@ export async function readKissopenAgentGitFile(
             if (!content) continue;
             const inspected = inspectBase64(content.content);
             if (!inspected) {
-                throw new Error('WorPar Agent returned invalid file contents.');
+                throw new Error('KissOpen Agent returned invalid file contents.');
             }
             if (inspected.decodedBytes > KISSOPEN_AGENT_GIT_MAX_BYTES) {
                 throw new Error('This file is too large to preview on the phone.');
@@ -365,7 +365,7 @@ export async function readKissopenAgentGitFile(
     const oldBytes = before ? inspectBase64(before.content) : { normalized: '', decodedBytes: 0 };
     const newBytes = after ? inspectBase64(after.content) : { normalized: '', decodedBytes: 0 };
     if (!oldBytes || !newBytes) {
-        throw new Error('WorPar Agent returned invalid file contents.');
+        throw new Error('KissOpen Agent returned invalid file contents.');
     }
     if (oldBytes.decodedBytes > KISSOPEN_AGENT_GIT_MAX_BYTES || newBytes.decodedBytes > KISSOPEN_AGENT_GIT_MAX_BYTES) {
         throw new Error('This file is too large to preview on the phone.');
