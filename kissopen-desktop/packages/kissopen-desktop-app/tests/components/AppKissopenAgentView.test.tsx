@@ -111,6 +111,7 @@ function workspace(): KissopenAgentWorkspaceStore {
         fileTreeExpanded: new Set<string>(),
         fileTreeCollapsed: new Set<string>(),
         workspaceFilesLoading: false,
+        projectAdd: { pending: false },
     };
     return {
         get: () => snapshot,
