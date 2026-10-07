@@ -52,31 +52,20 @@ pnpm --dir kissopen --filter kissopen-app start
 pnpm --dir kissopen web
 ```
 
-The account/relay service is a separate deployment. Follow the
-[server self-hosting guide](https://github.com/kissopen/kissopen-server/blob/main/docs/self-hosting.md)
-for private configuration. Never commit OAuth secrets or workspace master keys.
-Remote access to desktop files and tasks requires the desktop Agent to be online.
+For account and relay setup, follow the
+[server self-hosting guide](https://github.com/kissopen/kissopen-server/blob/main/docs/self-hosting.md).
 
-### Desktop and the Agent artifact boundary
+### Desktop
 
-Desktop depends on the versioned SDK archive in `kissopen-desktop/vendor/agent/`.
-It does not import a sibling Agent source tree. The SDK and binary versions and
-checksums are pinned in `agent-artifacts.lock.json`.
-
-Agent executables are deliberately not committed to Git. Build the corresponding
-Agent version in its own repository, export its product artifact set, then import
-that set using the SHA-256 of its manifest obtained from your trusted build:
+Build and export the pinned Agent version in
+[kissopen-agent](https://github.com/kissopen/kissopen-agent), then import the
+artifact set using its manifest's SHA-256 and start the desktop client:
 
 ```sh
 pnpm agent:import /path/to/product-artifacts TRUSTED_MANIFEST_SHA256
 pnpm --dir kissopen-desktop install
 pnpm desktop
 ```
-
-The artifact importer verifies the complete set before updating the pin. It does
-not silently download or trust an arbitrary executable. A new artifact version
-changes the pin and lockfile and must be reviewed together. macOS packaging uses
-the existing signing/notarization gates; a source push is not a binary release.
 
 When building Electron directly, use the TypeScript loader required by the
 source-based shared packages:
@@ -94,24 +83,13 @@ pnpm --dir website build
 ```
 
 The website supports English, Simplified/Traditional Chinese, Japanese, Korean
-and Russian. No production deployment happens during these commands.
+and Russian.
 
-## Status and security
+## Contributing
 
-This is an initial public source snapshot under active development, not a claim
-that all release/security gates have passed. Dependency audit findings remain;
-run `pnpm audit --prod` in each workspace before deployment. Inherited documents
-and nested release workflows may describe upstream behavior, not configured
-KissOpen publication pipelines. Do not execute them against production blindly.
+Issues, ideas and pull requests are welcome. See the
+[contribution guide](CONTRIBUTING.md) to get involved.
 
-Workspace keys may be encrypted and escrowed by the account server. The server
-can recover those keys: do not describe this mode as server-blind end-to-end
-encryption. See [Security](SECURITY.md) and [Contributing](CONTRIBUTING.md).
-The [publication verification record](PUBLICATION.md) lists the checks and
-outstanding dependency advisories for this snapshot.
+## License
 
-## License and attribution
-
-KissOpen additions are MIT licensed. Original Happy Desktop/Happy Coder copyright
-notices and third-party licenses are preserved; see [NOTICE](NOTICE.md) and the
-package-level licenses. Independently distributed plugins retain their own licenses.
+[MIT](LICENSE) · [Third-party notices](NOTICE.md)

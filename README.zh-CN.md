@@ -25,10 +25,10 @@
 | [kissopen-agent](https://github.com/kissopen/kissopen-agent) | 本地 Agent、SDK、模型、工具、终端、定时执行器 |
 | [kissopen-server](https://github.com/kissopen/kissopen-server) | 账号、OAuth、中继、设备 RPC、资料、主题和插件目录 |
 
-开发启动及 Agent 构建/导入命令见 [英文 README](README.md#development)。桌面使用
-版本化 SDK 与校验过的 Agent 安装包，不直接依赖旁边的源码目录。私钥、
-账号凭证和用户工作区应保存在仓库之外。
+## 参与贡献
 
-这是首次公开的源码快照，仍有依赖安全告警，尚不代表完成正式发行安全审计。
-服务端托管的工作区密钥可以由服务端恢复，不是“服务器无法解密”的端到端加密。
-各目录保留上游版权和许可证，详见 [NOTICE](NOTICE.md)。
+欢迎提交 Issue、改进建议和 Pull Request，详见 [贡献指南](CONTRIBUTING.md)。
+
+## 许可证
+
+[MIT](LICENSE) · [第三方版权声明](NOTICE.md)
