@@ -133,7 +133,7 @@ export const zhHans: TranslationStructure = {
         developer: '开发者',
         developerTools: '开发者工具',
         about: '关于',
-        aboutFooter: 'KissOpen是一个 Codex 和 Claude Code 移动客户端。它采用端到端加密，您的账户仅存储在本地设备上。与 Anthropic 无关联。',
+        aboutFooter: 'KissOpen是一个 Codex 和 Claude Code 移动客户端。您的会话使用工作区密钥加密。使用账号登录时，账号服务器会保存一份可恢复的密钥副本，供您的其他设备使用。与 Anthropic 无关联。',
         whatsNew: '更新日志',
         whatsNewSubtitle: '查看最新更新和改进',
         reportIssue: '报告问题',
@@ -834,7 +834,7 @@ export const zhHans: TranslationStructure = {
         connectionDetails: '连接详情',
         publicKey: '公钥',
         encryption: '加密',
-        endToEndEncrypted: '端到端加密',
+        workspaceKeyEncrypted: '使用工作区密钥加密',
         acceptConnection: '接受连接',
         connecting: '连接中...',
         reject: '拒绝',
@@ -881,7 +881,7 @@ export const zhHans: TranslationStructure = {
     onboarding: {
         ...en.onboarding,
         headline: '从手机连接你的 Agent',
-        tagline: '接续电脑上的工作，工作区保持端到端加密。',
+        tagline: '接续电脑上的工作，会话使用工作区密钥加密。',
         installTitle: '等待你的电脑连接',
         installBodyPrefix: '在 KissOpen 桌面端登录同一个账号，电脑会自动显示在这里，无需扫码。下载地址：',
         installBodyLink: 'kissopen.com',
@@ -892,7 +892,7 @@ export const zhHans: TranslationStructure = {
     welcome: {
         // Main welcome screen for unauthenticated users
         title: 'Codex 和 Claude Code 移动客户端',
-        subtitle: '端到端加密，您的账户仅存储在您的设备上。',
+        subtitle: '您的会话使用工作区密钥加密。',
         createAccount: '创建账户',
         linkOrRestoreAccount: '链接或恢复账户',
         loginWithMobileApp: '使用移动应用登录',

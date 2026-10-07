@@ -130,7 +130,7 @@ export const en = {
         developer: 'Developer',
         developerTools: 'Developer Tools',
         about: 'About',
-        aboutFooter: 'KissOpen is a Codex and Claude Code mobile client. It\'s fully end-to-end encrypted and your account is stored only on your device. Not affiliated with Anthropic.',
+        aboutFooter: 'KissOpen is a Codex and Claude Code mobile client. Your sessions are encrypted with your workspace key. If you sign in with an account, its server keeps a recoverable copy of that key for your other devices. Not affiliated with Anthropic.',
         whatsNew: 'What\'s New',
         whatsNewSubtitle: 'See the latest updates and improvements',
         reportIssue: 'Report an Issue',
@@ -865,7 +865,7 @@ export const en = {
         connectionDetails: 'Connection Details',
         publicKey: 'Public Key',
         encryption: 'Encryption',
-        endToEndEncrypted: 'End-to-end encrypted',
+        workspaceKeyEncrypted: 'Encrypted with your workspace key',
         acceptConnection: 'Accept Connection',
         connecting: 'Connecting...',
         reject: 'Reject',
@@ -912,7 +912,7 @@ export const en = {
     welcome: {
         // Main welcome screen for unauthenticated users
         title: 'Codex and Claude Code mobile client',
-        subtitle: 'End-to-end encrypted and your account is stored only on your device.',
+        subtitle: 'Your sessions are encrypted with your workspace key.',
         createAccount: 'Create account',
         linkOrRestoreAccount: 'Link or restore account',
         loginWithMobileApp: 'Login with mobile app',
@@ -922,7 +922,7 @@ export const en = {
         // Three-step first run on phones: welcome, install, scan.
         step: ({ step, total }: { step: number; total: number }) => `Step ${step} of ${total}`,
         headline: 'Run Claude Code and Codex from your phone',
-        tagline: 'End-to-end encrypted. No email, no password.',
+        tagline: 'Your sessions are encrypted with your workspace key.',
         getStarted: 'Get Started',
         restoreExisting: 'Restore an existing account',
         installTitle: 'Install KissOpen Desktop',

@@ -132,7 +132,7 @@ export const zhHant: TranslationStructure = {
         developer: '開發者',
         developerTools: '開發者工具',
         about: '關於',
-        aboutFooter: 'KissOpen是一個 Codex 和 Claude Code 行動用戶端。它採用端對端加密，您的帳戶僅儲存在本機裝置上。與 Anthropic 無關聯。',
+        aboutFooter: 'KissOpen是一個 Codex 和 Claude Code 行動用戶端。您的工作階段使用工作區金鑰加密。使用帳戶登入時，帳戶伺服器會保存一份可復原的金鑰副本，供您的其他裝置使用。與 Anthropic 無關聯。',
         whatsNew: '更新日誌',
         whatsNewSubtitle: '查看最新更新和改進',
         reportIssue: '回報問題',
@@ -833,7 +833,7 @@ export const zhHant: TranslationStructure = {
         connectionDetails: '連線詳情',
         publicKey: '公鑰',
         encryption: '加密',
-        endToEndEncrypted: '端對端加密',
+        workspaceKeyEncrypted: '使用工作區金鑰加密',
         acceptConnection: '接受連線',
         connecting: '連線中...',
         reject: '拒絕',
@@ -880,7 +880,7 @@ export const zhHant: TranslationStructure = {
     onboarding: {
         ...en.onboarding,
         headline: '從手機連接你的 Agent',
-        tagline: '接續電腦上的工作，工作區保持端對端加密。',
+        tagline: '接續電腦上的工作，工作階段使用工作區金鑰加密。',
         installTitle: '等待你的電腦連接',
         installBodyPrefix: '在 KissOpen 桌面版登入同一個帳號，電腦會自動顯示在這裡，無需掃碼。下載地址：',
         installBodyLink: 'kissopen.com',
@@ -891,7 +891,7 @@ export const zhHant: TranslationStructure = {
     welcome: {
         // Main welcome screen for unauthenticated users
         title: 'Codex 和 Claude Code 行動用戶端',
-        subtitle: '端對端加密，您的帳戶僅儲存在您的裝置上。',
+        subtitle: '您的工作階段使用工作區金鑰加密。',
         createAccount: '建立帳戶',
         linkOrRestoreAccount: '連結或恢復帳戶',
         loginWithMobileApp: '使用行動應用程式登入',

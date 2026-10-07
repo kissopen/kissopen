@@ -197,7 +197,7 @@ export default function TerminalConnectScreen() {
                 />
                 <Item
                     title={t('terminal.encryption')}
-                    detail={t('terminal.endToEndEncrypted')}
+                    detail={t('terminal.workspaceKeyEncrypted')}
                     icon={<Ionicons name="lock-closed-outline" size={29} color={theme.colors.home.green} />}
                     showChevron={false}
                 />
