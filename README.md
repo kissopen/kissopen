@@ -64,8 +64,16 @@ artifact set using its manifest's SHA-256 and start the desktop client:
 ```sh
 pnpm agent:import /path/to/product-artifacts TRUSTED_MANIFEST_SHA256
 pnpm --dir kissopen-desktop install
-pnpm desktop
+pnpm desktop            # development build for this computer's platform
+pnpm desktop:package    # installable package for this computer's platform
 ```
+
+`pnpm desktop` uses the Agent binary for the computer you run it on. The
+pinned Agent release in [`agent-artifacts.lock.json`](agent-artifacts.lock.json)
+currently includes macOS (Apple Silicon and Intel) only. On Linux or Windows,
+import an Agent release that includes your platform first; otherwise the
+command stops with an error naming the missing target. macOS packaging signs
+and notarizes, so it needs the Apple signing credentials.
 
 When building Electron directly, use the TypeScript loader required by the
 source-based shared packages:
