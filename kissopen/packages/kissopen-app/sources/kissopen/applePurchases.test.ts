@@ -7,13 +7,13 @@ const mock = vi.hoisted(() => ({
     api: { appleCatalog: vi.fn(), appleSync: vi.fn() },
 }));
 vi.mock('react-native-purchases', () => ({ default: mock.sdk }));
-vi.mock('expo-application', () => ({ applicationId: 'com.worpar.app' }));
+vi.mock('expo-application', () => ({ applicationId: 'com.kissopen.opensource.app' }));
 vi.mock('@/appIdentity', () => ({ appMarket: 'global' }));
 vi.mock('./api/client', () => ({ client: mock.api }));
 vi.mock('./sessionEvents', () => ({ consumerSessionVersion: () => mock.version }));
 
 const catalog: AppleCatalog = {
-    market: 'global', bundle_id: 'com.worpar.app',
+    market: 'global', bundle_id: 'com.kissopen.opensource.app',
     enabled: true, public_key: 'appl_public', app_user_id: 'consumer_1', can_subscribe: true, subscription: null, purchases: [],
     products: [
         { product_id: 'plus.monthly', kind: 'plan', item_id: 'plus', name: 'Plus', points: 0 },
@@ -39,7 +39,7 @@ describe('Apple consumer purchases', () => {
     it.each([
         { market: 'cn', bundle_id: 'com.yiqijuan.app' },
         { market: 'global', bundle_id: 'com.kissopen.app' },
-        { market: 'global', bundle_id: 'com.worpar.app.preview' },
+        { market: 'global', bundle_id: 'com.kissopen.opensource.app.preview' },
     ])('rejects a catalog that does not belong to the running native app: %j', async mismatched => {
         mock.api.appleCatalog.mockResolvedValue({ ...catalog, ...mismatched });
         const { applePurchases } = await import('./applePurchases');
