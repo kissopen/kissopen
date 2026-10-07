@@ -131,7 +131,7 @@ export const ca: TranslationStructure = {
         developer: 'Desenvolupador',
         developerTools: 'Eines de desenvolupador',
         about: 'Quant a',
-        aboutFooter: 'KissOpen és un client mòbil de Codex i Claude Code. Tot està xifrat punt a punt i el teu compte es guarda només al teu dispositiu. No està afiliat amb Anthropic.',
+        aboutFooter: 'KissOpen és un client mòbil de Codex i Claude Code. Les teves sessions es xifren amb la clau del teu espai de treball. Si inicies sessió amb un compte, el seu servidor en guarda una còpia recuperable per als teus altres dispositius. No està afiliat amb Anthropic.',
         whatsNew: 'Novetats',
         whatsNewSubtitle: 'Mira les últimes actualitzacions i millores',
         reportIssue: 'Informa d\'un problema',
@@ -833,7 +833,7 @@ export const ca: TranslationStructure = {
         connectionDetails: 'Detalls de la connexió',
         publicKey: 'Clau pública',
         encryption: 'Xifratge',
-        endToEndEncrypted: 'Xifrat punt a punt',
+        workspaceKeyEncrypted: 'Xifrat amb la clau del teu espai de treball',
         acceptConnection: 'Accepta la connexió',
         connecting: 'Connectant...',
         reject: 'Rebutja',
@@ -884,7 +884,7 @@ export const ca: TranslationStructure = {
     welcome: {
         // Main welcome screen for unauthenticated users
         title: 'Client mòbil de Codex i Claude Code',
-        subtitle: 'Xifrat punt a punt i el teu compte s\'emmagatzema només al teu dispositiu.',
+        subtitle: 'Les teves sessions es xifren amb la clau del teu espai de treball.',
         createAccount: 'Crea un compte',
         linkOrRestoreAccount: 'Enllaça o restaura un compte',
         loginWithMobileApp: 'Inicia sessió amb l\'aplicació mòbil',

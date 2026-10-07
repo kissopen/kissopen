@@ -117,7 +117,7 @@ export const ru: TranslationStructure = {
         developer: 'Разработчик',
         developerTools: 'Инструменты разработчика',
         about: 'О программе',
-        aboutFooter: 'KissOpen — мобильное приложение для работы с Codex и Claude Code. Использует сквозное шифрование, все данные аккаунта хранятся только на вашем устройстве. Не связано с Anthropic.',
+        aboutFooter: 'KissOpen — мобильное приложение для работы с Codex и Claude Code. Ваши сессии шифруются ключом рабочего пространства. Если вы входите с аккаунтом, его сервер хранит восстановимую копию этого ключа для других ваших устройств. Не связано с Anthropic.',
         whatsNew: 'Что нового',
         whatsNewSubtitle: 'Посмотреть последние обновления и улучшения',
         reportIssue: 'Сообщить о проблеме',
@@ -839,7 +839,7 @@ export const ru: TranslationStructure = {
         connectionDetails: 'Детали подключения',
         publicKey: 'Публичный ключ',
         encryption: 'Шифрование',
-        endToEndEncrypted: 'Сквозное шифрование',
+        workspaceKeyEncrypted: 'Шифрование ключом рабочего пространства',
         acceptConnection: 'Принять подключение',
         connecting: 'Подключение...',
         reject: 'Отклонить',
@@ -890,7 +890,7 @@ export const ru: TranslationStructure = {
     welcome: {
         // Main welcome screen for unauthenticated users
         title: 'Мобильный клиент Codex и Claude Code',
-        subtitle: 'Сквозное шифрование, аккаунт хранится только на вашем устройстве.',
+        subtitle: 'Ваши сессии шифруются ключом рабочего пространства.',
         createAccount: 'Создать аккаунт',
         linkOrRestoreAccount: 'Связать или восстановить аккаунт',
         loginWithMobileApp: 'Войти через мобильное приложение',

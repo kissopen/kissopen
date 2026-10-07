@@ -133,7 +133,7 @@ export const ja: TranslationStructure = {
         developer: '開発者',
         developerTools: '開発者ツール',
         about: 'このアプリについて',
-        aboutFooter: 'KissOpenはCodexとClaude Codeのモバイルクライアントです。完全なエンドツーエンド暗号化を採用し、アカウントはデバイスにのみ保存されます。Anthropicとは提携していません。',
+        aboutFooter: 'KissOpenはCodexとClaude Codeのモバイルクライアントです。セッションはワークスペースキーで暗号化されます。アカウントでサインインすると、アカウントのサーバーが他のデバイス用に復元可能なキーのコピーを保管します。Anthropicとは提携していません。',
         whatsNew: '新機能',
         whatsNewSubtitle: '最新のアップデートと改善を確認',
         reportIssue: '問題を報告',
@@ -834,7 +834,7 @@ export const ja: TranslationStructure = {
         connectionDetails: '接続の詳細',
         publicKey: '公開鍵',
         encryption: '暗号化',
-        endToEndEncrypted: 'エンドツーエンド暗号化',
+        workspaceKeyEncrypted: 'ワークスペースキーで暗号化',
         acceptConnection: '接続を承認',
         connecting: '接続中...',
         reject: '拒否',
@@ -885,7 +885,7 @@ export const ja: TranslationStructure = {
     welcome: {
         // Main welcome screen for unauthenticated users
         title: 'CodexとClaude Codeのモバイルクライアント',
-        subtitle: 'エンドツーエンド暗号化され、アカウントはデバイスにのみ保存されます。',
+        subtitle: 'セッションはワークスペースキーで暗号化されます。',
         createAccount: 'アカウントを作成',
         linkOrRestoreAccount: 'アカウントをリンクまたは復元',
         loginWithMobileApp: 'モバイルアプリでログイン',

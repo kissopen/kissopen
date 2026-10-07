@@ -131,7 +131,7 @@ export const es: TranslationStructure = {
         developer: 'Desarrollador',
         developerTools: 'Herramientas de desarrollador',
         about: 'Acerca de',
-        aboutFooter: 'KissOpen es un cliente móvil para Codex y Claude Code. Todo está cifrado de extremo a extremo y tu cuenta se guarda solo en tu dispositivo. No está afiliado con Anthropic.',
+        aboutFooter: 'KissOpen es un cliente móvil para Codex y Claude Code. Tus sesiones se cifran con la clave de tu espacio de trabajo. Si inicias sesión con una cuenta, su servidor guarda una copia recuperable de esa clave para tus otros dispositivos. No está afiliado con Anthropic.',
         whatsNew: 'Novedades',
         whatsNewSubtitle: 'Ve las últimas actualizaciones y mejoras',
         reportIssue: 'Reportar un problema',
@@ -833,7 +833,7 @@ export const es: TranslationStructure = {
         connectionDetails: 'Detalles de conexión',
         publicKey: 'Clave pública',
         encryption: 'Cifrado',
-        endToEndEncrypted: 'Cifrado de extremo a extremo',
+        workspaceKeyEncrypted: 'Cifrado con la clave de tu espacio de trabajo',
         acceptConnection: 'Aceptar conexión',
         connecting: 'Conectando...',
         reject: 'Rechazar',
@@ -884,7 +884,7 @@ export const es: TranslationStructure = {
     welcome: {
         // Main welcome screen for unauthenticated users
         title: 'Cliente móvil de Codex y Claude Code',
-        subtitle: 'Cifrado de extremo a extremo y tu cuenta se guarda solo en tu dispositivo.',
+        subtitle: 'Tus sesiones se cifran con la clave de tu espacio de trabajo.',
         createAccount: 'Crear cuenta',
         linkOrRestoreAccount: 'Vincular o restaurar cuenta',
         loginWithMobileApp: 'Iniciar sesión con aplicación móvil',
