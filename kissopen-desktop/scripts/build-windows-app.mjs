@@ -19,7 +19,7 @@ if (!pnpm) throw new Error("Run this builder through pnpm desktop:win:release.")
 const environment = {
     ...process.env,
     KISSOPEN_DESKTOP_FLAVOR: flavorName,
-    KISSOPEN_LOCAL_WEB_ORIGIN: "https://local.app.kissopen.com",
+    KISSOPEN_LOCAL_WEB_ORIGIN: "https://local.app.happy.engineering",
 };
 await rm(join(desktop, "dist"), { recursive: true, force: true });
 /*

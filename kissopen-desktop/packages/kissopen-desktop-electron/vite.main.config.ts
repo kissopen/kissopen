@@ -10,7 +10,7 @@ const flavor = process.env.KISSOPEN_DESKTOP_FLAVOR === "local-web" ? "local-web"
 const localWebOrigin =
     flavor === "local-web"
         ? process.env.KISSOPEN_LOCAL_WEB_ORIGIN ||
-          "https://local.app.kissopen.com"
+          "https://local.app.kissopen.com/downloads/kissopen-preview/"
         : null;
 
 export default defineConfig({
