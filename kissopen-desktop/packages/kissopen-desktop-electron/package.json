@@ -23,7 +23,7 @@
         "build:profile": "KISSOPEN_DESKTOP_PROFILE=1 vite build && vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts",
         "build:profile:optimized": "KISSOPEN_DESKTOP_PROFILE=1 KISSOPEN_DESKTOP_PROFILE_MODE=optimized pnpm run build:profile",
         "prebuild:local-shell": "rm -rf dist",
-        "build:local-shell": "KISSOPEN_DESKTOP_FLAVOR=local-web KISSOPEN_LOCAL_WEB_ORIGIN=https://local.app.kissopen.com vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts",
+        "build:local-shell": "KISSOPEN_DESKTOP_FLAVOR=local-web KISSOPEN_LOCAL_WEB_ORIGIN=https://local.app.happy.engineering vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts",
         "build:local-web-ui": "KISSOPEN_LOCAL_WEB_SITE=1 vite build --outDir release/local-web-site",
         "predist:mac": "pnpm --dir ../.. desktop:assets",
         "dist:mac": "pnpm build && electron-builder --mac",
