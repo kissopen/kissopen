@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: kissopen-app
-        image: docker.korshakov.com/kissopen-app:{version}
+        image: registry.example.com/kissopen-app:{version} # replace with your container registry
         ports:
         - containerPort: 80
         livenessProbe:

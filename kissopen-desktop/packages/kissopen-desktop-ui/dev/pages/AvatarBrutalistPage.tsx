@@ -9,7 +9,7 @@ const IDS = [
     "ses_1b74",
     "prj_kissopen",
     "prj_kissopen_agent",
-    "steve@korshakov.com",
+    "alex@example.com",
     "Claude",
     "Codex",
     "worktree/main",

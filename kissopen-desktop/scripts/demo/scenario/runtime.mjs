@@ -113,9 +113,9 @@ async function fixtureWrite(p, definition) {
             env: {
                 ...processBaseEnvironment(p),
                 GIT_AUTHOR_NAME: "Kissopen Demo",
-                GIT_AUTHOR_EMAIL: "demo@happy.engineering",
+                GIT_AUTHOR_EMAIL: "demo@example.com",
                 GIT_COMMITTER_NAME: "Kissopen Demo",
-                GIT_COMMITTER_EMAIL: "demo@happy.engineering",
+                GIT_COMMITTER_EMAIL: "demo@example.com",
             },
         });
     await git("init", "--quiet", "--initial-branch=main");
