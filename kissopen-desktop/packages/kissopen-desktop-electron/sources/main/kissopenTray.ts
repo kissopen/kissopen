@@ -160,7 +160,7 @@ function trayMenu(targets: KissopenTrayTargets): Menu {
                 "kissopen",
                 t("Version {version} · tap to open", { version: appVersion }),
             ),
-            toolTip: t("Open WorPar"),
+            toolTip: t("Open KissOpen"),
             click: () => targets.open(),
         },
         { type: "separator" },

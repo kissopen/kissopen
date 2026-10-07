@@ -221,7 +221,7 @@ export function kissopenAgentHttpProxyCreate(
             const address = server.address() as AddressInfo | null;
             if (!address) {
                 server.close();
-                reject(new Error("The WorPar Agent HTTP proxy did not bind a loopback port."));
+                reject(new Error("The KissOpen Agent HTTP proxy did not bind a loopback port."));
                 return;
             }
             expectedHost = `127.0.0.1:${address.port}`;
@@ -234,7 +234,7 @@ export function kissopenAgentHttpProxyCreate(
             resolvePromise({
                 url,
                 replace: (next) => {
-                    if (closed) throw new Error("The WorPar Agent HTTP proxy is closed.");
+                    if (closed) throw new Error("The KissOpen Agent HTTP proxy is closed.");
                     backing = backingCreate(next);
                 },
                 close: () => {

@@ -42,6 +42,6 @@ export async function desktopPreviewFeedResolve(): Promise<string> {
             continue;
         if (newest === undefined || kissopenAgentVersionNewer(version, newest)) newest = version;
     }
-    if (newest === undefined) throw new Error("No compatible WorPar Nightly release is available.");
+    if (newest === undefined) throw new Error("No compatible KissOpen Nightly release is available.");
     return `https://api.firstcache.cc/downloads/desktop/v${newest}/`;
 }

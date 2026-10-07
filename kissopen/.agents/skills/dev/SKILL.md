@@ -166,7 +166,7 @@ togglable from the dev settings screen).
 
 ## Releasing
 
-Do not publish by hand. Use `/release` — it handles npm publish, git tags, GitHub releases, and the smoke check.
+Do not publish by hand. This repository has no release automation for the mobile/web client yet; the CLI, Agent and server are released from their own repositories.
 
 ## Troubleshooting
 
@@ -180,5 +180,5 @@ Do not publish by hand. Use `/release` — it handles npm publish, git tags, Git
 
 - Never use `npm install` or `yarn install` — only pnpm.
 - Never add a `dev` / `cli` tsx-based script back to kissopen-cli. The build step is not optional — daemon spawns the built binary and would desync.
-- Never bring back `release-it`. Releases go through `/release`.
+- Never bring back `release-it`.
 - Never introduce `~/.kissopen-dev` as a default. It exists as an opt-in via `KISSOPEN_HOME_DIR`, nothing more.

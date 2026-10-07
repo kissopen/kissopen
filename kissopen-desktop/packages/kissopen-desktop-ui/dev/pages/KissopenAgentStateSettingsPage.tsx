@@ -17,7 +17,7 @@ const cloud = JSON.stringify(
         disconnecting: false,
         environment: "production",
         status: "connected",
-        user: { email: "steve@korshakov.com", id: "user_01M0VHKVABK55EDXXTTN41FS28" },
+        user: { email: "alex@example.com", id: "user_01M0VHKVABK55EDXXTTN41FS28" },
     },
     null,
     2,
@@ -26,7 +26,7 @@ const cloud = JSON.stringify(
 const profile = JSON.stringify(
     {
         dirty: false,
-        email: "steve@korshakov.com",
+        email: "alex@example.com",
         loading: false,
         name: "Steve Korshakov",
         saving: false,

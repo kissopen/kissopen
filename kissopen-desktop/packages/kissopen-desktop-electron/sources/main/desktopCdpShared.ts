@@ -59,7 +59,7 @@ export async function desktopCdpSharedAcquire(
     contents: WebContents,
     label: string,
 ): Promise<DesktopCdpLease> {
-    if (contents.isDestroyed()) throw new Error("The WorPar renderer is not available.");
+    if (contents.isDestroyed()) throw new Error("The KissOpen renderer is not available.");
 
     let state = sharedStates.get(contents);
     if (state === undefined || state.closed) {

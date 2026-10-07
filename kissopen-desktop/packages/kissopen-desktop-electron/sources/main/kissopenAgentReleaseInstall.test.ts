@@ -20,7 +20,7 @@ afterEach(async () => {
     }
 });
 
-describe("WorPar Agent release installation on the real filesystem", () => {
+describe("KissOpen Agent release installation on the real filesystem", () => {
     it("flushes, installs, and selects a verified executable", async () => {
         const fixture = await createRelease();
         const binary = await kissopenAgentReleaseInstall(fixture.release, fixture.paths, {

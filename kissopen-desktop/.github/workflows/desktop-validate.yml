@@ -59,10 +59,10 @@ jobs:
               env:
                   GH_TOKEN: ${{ github.token }}
               run: |
-                  TAG="$(gh release view --repo slopus/kissopen-agent --json tagName --jq .tagName)"
+                  TAG="$(gh release view --repo kissopen/kissopen-agent --json tagName --jq .tagName)"
                   VERSION="${TAG#v}"
                   mkdir -p "$RUNNER_TEMP/kissopen-agent"
-                  gh release download "$TAG" --repo slopus/kissopen-agent \
+                  gh release download "$TAG" --repo kissopen/kissopen-agent \
                     --pattern "kissopen-agent-${VERSION}-linux-x64.tar.gz" \
                     --dir "$RUNNER_TEMP/kissopen-agent"
                   tar -xzf "$RUNNER_TEMP/kissopen-agent/kissopen-agent-${VERSION}-linux-x64.tar.gz" \

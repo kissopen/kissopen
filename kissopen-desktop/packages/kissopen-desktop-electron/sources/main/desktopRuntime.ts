@@ -139,7 +139,7 @@ export class DesktopRuntime implements AsyncDisposable {
         this.activeTopology = active;
         this.snapshotValue = {
             phase: "starting",
-            message: "Connecting to your local WorPar Agent daemon…",
+            message: "Connecting to your local KissOpen Agent daemon…",
             request: desktopTopologyRequest(active),
             targets: this.targets(),
             update: idleUpdate,
@@ -204,14 +204,14 @@ export class DesktopRuntime implements AsyncDisposable {
     ): Promise<LocalKissopenAgentOnboardingState> {
         const connection = this.localConnectionRequire(expectedConnectionId);
         const client = this.localKissopenAgentClient();
-        if (!client) throw new Error("The local WorPar Agent daemon is unavailable.");
+        if (!client) throw new Error("The local KissOpen Agent daemon is unavailable.");
         const state = await connectedKissopenAgentOnboardingResolve(client);
         if (
             this.snapshotValue.phase !== "ready" ||
             this.snapshotValue.connectionId !== expectedConnectionId ||
             this.kissopenAgentConnection !== connection
         )
-            throw new Error("The local WorPar Agent changed while WorPar was examining it.");
+            throw new Error("The local KissOpen Agent changed while KissOpen was examining it.");
         return state;
     }
 
@@ -222,7 +222,7 @@ export class DesktopRuntime implements AsyncDisposable {
         return this.serial(async () => {
             this.localConnectionRequire(expectedConnectionId);
             const client = this.localKissopenAgentClient();
-            if (!client) throw new Error("The local WorPar Agent daemon is unavailable.");
+            if (!client) throw new Error("The local KissOpen Agent daemon is unavailable.");
             const current = await client.getProfile();
             return (
                 await client.updateProfile(input, {
@@ -236,7 +236,7 @@ export class DesktopRuntime implements AsyncDisposable {
         return this.serial(async () => {
             this.localConnectionRequire(expectedConnectionId);
             const client = this.localKissopenAgentClient();
-            if (!client) throw new Error("The local WorPar Agent daemon is unavailable.");
+            if (!client) throw new Error("The local KissOpen Agent daemon is unavailable.");
             const catalog = await client.listProjects();
             this.localConnectionRequire(expectedConnectionId);
             return catalog.projects.length > 0 ? "used" : "fresh";
@@ -250,7 +250,7 @@ export class DesktopRuntime implements AsyncDisposable {
         return this.serial(async () => {
             this.localConnectionRequire(expectedConnectionId);
             const client = this.localKissopenAgentClient();
-            if (!client) throw new Error("The local WorPar Agent daemon is unavailable.");
+            if (!client) throw new Error("The local KissOpen Agent daemon is unavailable.");
             await client.registerProject({ path });
             return { path };
         });
@@ -263,7 +263,7 @@ export class DesktopRuntime implements AsyncDisposable {
             this.snapshotValue.connectionId !== expectedConnectionId ||
             !this.kissopenAgentConnection
         )
-            throw new Error("The local WorPar Agent changed before WorPar could finish.");
+            throw new Error("The local KissOpen Agent changed before KissOpen could finish.");
         return this.kissopenAgentConnection;
     }
 
@@ -332,7 +332,7 @@ export class DesktopRuntime implements AsyncDisposable {
             this.snapshotValue.mode !== "local" ||
             !this.kissopenAgentConnection
         )
-            throw new Error("The local WorPar Agent daemon is unavailable.");
+            throw new Error("The local KissOpen Agent daemon is unavailable.");
         const host = this.kissopenAgentConnection.client;
         return target.connectionId === null ? host : host.connection(target.connectionId);
     }
@@ -450,7 +450,7 @@ export class DesktopRuntime implements AsyncDisposable {
             )
                 return;
             const topology = this.settings?.topologies.find(({ id }) => id === topologyId);
-            if (!topology) throw new Error("The selected WorPar topology does not exist.");
+            if (!topology) throw new Error("The selected KissOpen topology does not exist.");
             await this.startValidated(topology, true);
         });
     }
@@ -515,7 +515,7 @@ export class DesktopRuntime implements AsyncDisposable {
         if (!inPlace)
             this.publish({
                 phase: "starting",
-                message: "Connecting to your local WorPar Agent daemon…",
+                message: "Connecting to your local KissOpen Agent daemon…",
                 request,
                 targets: this.targets(),
                 update: this.snapshotValue.update,
@@ -669,7 +669,7 @@ async function connectedKissopenAgentOnboardingResolve(
 
 function kissopenAgentUnreachableState(error: unknown): LocalKissopenAgentOnboardingState {
     return {
-        message: displayError(error).slice(0, 2_048) || "WorPar Agent could not be reached.",
+        message: displayError(error).slice(0, 2_048) || "KissOpen Agent could not be reached.",
         state: "kissopen_agent_unreachable",
     };
 }

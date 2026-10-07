@@ -604,7 +604,7 @@ async function completeOnboarding(page: Page): Promise<void> {
         .locator('[data-kissopen-desktop-ui="welcome-screen"]')
         .waitFor({ state: "visible", timeout: 5_000 })
         .catch(() => undefined);
-    let welcomeClicked = await clickButtonIfVisible(page, "Go WorPar");
+    let welcomeClicked = await clickButtonIfVisible(page, "Go KissOpen");
     let sawOnboarding = false;
     const clickIfVisible = async (label: string | RegExp): Promise<boolean> => {
         return clickButtonIfVisible(page, label);

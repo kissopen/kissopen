@@ -23,7 +23,7 @@ export async function desktopRendererDebuggerStart(
     webContents: WebContents,
     onDetached: (reason: string) => void,
 ): Promise<DesktopRendererDebugger> {
-    if (webContents.isDestroyed()) throw new Error("The WorPar renderer is not available.");
+    if (webContents.isDestroyed()) throw new Error("The KissOpen renderer is not available.");
 
     const cdp = await desktopCdpSharedAcquire(webContents, "renderer-debugger");
     const token = randomBytes(24).toString("hex");

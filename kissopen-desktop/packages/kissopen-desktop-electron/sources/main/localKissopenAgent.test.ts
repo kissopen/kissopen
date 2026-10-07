@@ -15,8 +15,8 @@ afterEach(async () => {
     );
 });
 
-describe("local WorPar Agent connection", () => {
-    it("connects to an exact daemon named by KISSOPEN_AGENT_SERVER_SOCKET_PATH and KISSOPEN_AGENT_SERVER_TOKEN_PATH, never discovering or starting WorPar Agent", async () => {
+describe("local KissOpen Agent connection", () => {
+    it("connects to an exact daemon named by KISSOPEN_AGENT_SERVER_SOCKET_PATH and KISSOPEN_AGENT_SERVER_TOKEN_PATH, never discovering or starting KissOpen Agent", async () => {
         const root = await mkdtemp(join(tmpdir(), "kissopen-local-kissopen-agent-"));
         directories.push(root);
         const tokenPath = join(root, "token");

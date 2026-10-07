@@ -257,7 +257,7 @@ const SETTINGS_JUMPS: readonly {
         sectionLabel: t("Account"),
         icon: "users",
         keywords:
-            "profile name email photo worpar KissOpen kissopen account connect disconnect workos",
+            "profile name email photo KissOpen kissopen account connect disconnect workos",
     },
     {
         id: "settings:instructions",

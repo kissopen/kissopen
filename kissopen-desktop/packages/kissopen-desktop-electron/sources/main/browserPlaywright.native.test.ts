@@ -13,11 +13,11 @@ import mainConfig from "../../vite.main.config";
 it.skipIf(process.env.KISSOPEN_BROWSER_NATIVE_TESTS !== "1")(
     "operates cross-site embedded frames, bounded batches, waits and retained login sessions",
     async () => {
-        const temporary = await mkdtemp(join(tmpdir(), "worpar-browser-native-tests-"));
+        const temporary = await mkdtemp(join(tmpdir(), "kissopen-browser-native-tests-"));
         const target = resolve(temporary);
         if (
             dirname(target) !== resolve(tmpdir()) ||
-            !basename(target).startsWith("worpar-browser-native-tests-")
+            !basename(target).startsWith("kissopen-browser-native-tests-")
         )
             throw new Error("Unsafe native test cleanup target");
         const require = createRequire(import.meta.url);
@@ -57,7 +57,7 @@ it.skipIf(process.env.KISSOPEN_BROWSER_NATIVE_TESTS !== "1")(
             const environment: NodeJS.ProcessEnv = {
                 ...process.env,
                 KISSOPEN_HOME_DIR: temporary,
-                WORPAR_BROWSER_TEST_DIRECTORY: temporary,
+                KISSOPEN_BROWSER_TEST_DIRECTORY: temporary,
             };
             delete environment.ELECTRON_RUN_AS_NODE;
             child = spawn(

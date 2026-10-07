@@ -449,7 +449,7 @@ export function KissopenAgentSettingsBlueprintPage() {
                     title="Account"
                 >
                     <KissopenAgentProfileSettings
-                        email="steve@korshakov.com"
+                        email="alex@example.com"
                         name="Steve Korshakov"
                         onEmailChange={noop}
                         onNameChange={noop}
@@ -1113,8 +1113,8 @@ export function KissopenAgentSettingsBlueprintPage() {
                 </KissopenAgentSettingsShell>
             </FullScreenSpecimen>
             <FullScreenSpecimen
-                detail="No third-party providers enabled: keep the WorPar plan without an empty provider section"
-                label="Usage — WorPar only"
+                detail="No third-party providers enabled: keep the KissOpen plan without an empty provider section"
+                label="Usage — KissOpen only"
                 number="08e"
             >
                 <KissopenAgentSettingsShell

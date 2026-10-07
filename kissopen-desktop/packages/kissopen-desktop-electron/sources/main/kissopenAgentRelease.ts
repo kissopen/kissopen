@@ -102,7 +102,7 @@ export async function kissopenAgentReleaseVersion(
     options: KissopenAgentReleaseOptions = {},
 ): Promise<KissopenAgentRelease> {
     if (!new RegExp(SEMANTIC_VERSION_PATTERN, "u").test(version)) {
-        throw new Error(`The requested WorPar Agent version is invalid: ${version}`);
+        throw new Error(`The requested KissOpen Agent version is invalid: ${version}`);
     }
     const target = releaseTarget(
         options.platform ?? process.platform,
@@ -115,7 +115,7 @@ export async function kissopenAgentReleaseVersion(
     const resolved = releaseResolve(release, target, options.channel ?? "stable");
     if (resolved.version !== version) {
         throw new Error(
-            `The update service returned WorPar Agent ${resolved.version} for ${version}.`,
+            `The update service returned KissOpen Agent ${resolved.version} for ${version}.`,
         );
     }
     return resolved;
@@ -156,7 +156,7 @@ export async function kissopenAgentReleasesList(
     if (candidates.size === 0) {
         if (recent.status === "rejected") throw recent.reason;
         if (latest.status === "rejected") throw latest.reason;
-        throw new Error("No supported WorPar Agent releases are available for this machine.");
+        throw new Error("No supported KissOpen Agent releases are available for this machine.");
     }
     return [...candidates.values()].sort((left, right) =>
         kissopenAgentVersionNewer(left.version, right.version)
@@ -211,7 +211,7 @@ export async function kissopenAgentReleaseDownload(
     try {
         const finalPath = kissopenAgentBinaryPath(paths, release.version);
         if (!(await executableFile(finalPath))) {
-            options.onStatus?.(`Downloading WorPar Agent ${release.version}.`);
+            options.onStatus?.(`Downloading KissOpen Agent ${release.version}.`);
             await rm(join(paths.versionsDirectory, release.version), {
                 force: true,
                 recursive: true,
@@ -231,13 +231,13 @@ export async function kissopenAgentReleaseDownload(
 
 function releaseTarget(platform: NodeJS.Platform, arch: NodeJS.Architecture): string {
     if (arch !== "arm64" && arch !== "x64") {
-        throw new Error(`WorPar Agent does not publish a binary for ${platform}-${arch}.`);
+        throw new Error(`KissOpen Agent does not publish a binary for ${platform}-${arch}.`);
     }
     // KISSOPEN Agent publishes no win32-arm64 build; Windows on ARM runs the x64
     // binary under the OS's own emulation, so one target covers both.
     if (platform === "win32") return "win32-x64";
     if (platform !== "darwin" && platform !== "linux") {
-        throw new Error(`WorPar Agent does not publish a binary for ${platform}-${arch}.`);
+        throw new Error(`KissOpen Agent does not publish a binary for ${platform}-${arch}.`);
     }
     return `${platform}-${arch}`;
 }
@@ -252,13 +252,13 @@ function releaseResolve(
         !kissopenAgentVersionAllowed(version, channel) ||
         release.prerelease !== (kissopenAgentVersionKind(version) === "preview")
     )
-        throw new Error(`WorPar Agent ${version} is not available on this update channel.`);
+        throw new Error(`KissOpen Agent ${version} is not available on this update channel.`);
     const assetName = `kissopen-agent-${version}-${target}.tar.gz`;
     const asset = release.assets.find((candidate) => candidate.name === assetName);
     if (asset === undefined)
-        throw new Error(`WorPar Agent ${version} has no release for ${target}.`);
+        throw new Error(`KissOpen Agent ${version} has no release for ${target}.`);
     if (asset.digest === null) {
-        throw new Error(`WorPar Agent ${version} does not publish a checksum for ${target}.`);
+        throw new Error(`KissOpen Agent ${version} does not publish a checksum for ${target}.`);
     }
     // Bun's compiler appends `.exe` to a Windows-target binary, and the release
     // pipeline keeps that name inside the archive.
@@ -275,7 +275,7 @@ async function releaseFetch(
 ): Promise<Release> {
     const value = await githubReleaseJsonFetch(url, fetch_, signal);
     if (!releaseValid(value) || value.draft) {
-        throw new Error("The update service returned an invalid WorPar Agent release.");
+        throw new Error("The update service returned an invalid KissOpen Agent release.");
     }
     releaseAssetUrlsRequireHttps(value);
     return value;
@@ -291,7 +291,7 @@ async function releasesFetch(
         signal,
     );
     if (!Array.isArray(value) || value.length > RELEASE_PAGE_SIZE)
-        throw new Error("The update service returned an invalid WorPar Agent release list.");
+        throw new Error("The update service returned an invalid KissOpen Agent release list.");
     const releases: Release[] = [];
     for (const entry of value) {
         if (!releaseValid(entry) || entry.draft) continue;
@@ -311,10 +311,10 @@ function releaseAssetUrlsRequireHttps(release: Release): void {
         try {
             url = new URL(asset.browser_download_url);
         } catch {
-            throw new Error("The update service returned an invalid WorPar Agent release URL.");
+            throw new Error("The update service returned an invalid KissOpen Agent release URL.");
         }
         if (url.protocol !== "https:") {
-            throw new Error("The update service returned an insecure WorPar Agent release URL.");
+            throw new Error("The update service returned an insecure KissOpen Agent release URL.");
         }
     }
 }
@@ -322,7 +322,7 @@ function releaseAssetUrlsRequireHttps(release: Release): void {
 function releaseVersion(release: Release): string {
     const version = release.tag_name.startsWith("v") ? release.tag_name.slice(1) : "";
     if (!new RegExp(SEMANTIC_VERSION_PATTERN, "u").test(version)) {
-        throw new Error(`A WorPar Agent release tag is invalid: ${release.tag_name}`);
+        throw new Error(`A KissOpen Agent release tag is invalid: ${release.tag_name}`);
     }
     return version;
 }
@@ -346,7 +346,7 @@ async function releaseInstall(options: {
         await rm(archivePath, { force: true });
         const extracted = await lstat(stagedBinaryPath);
         if (!extracted.isFile() || extracted.size < 1 || extracted.size > MAXIMUM_BINARY_BYTES)
-            throw new Error("The WorPar Agent release did not contain a binary.");
+            throw new Error("The KissOpen Agent release did not contain a binary.");
         await chmod(stagedBinaryPath, 0o700);
         await rename(stagedBinaryPath, normalizedBinaryPath);
         // Windows FlushFileBuffers requires a handle opened with write access.
@@ -386,21 +386,21 @@ async function archiveDownload(
         },
         signal: AbortSignal.timeout(RELEASE_DOWNLOAD_TIMEOUT_MS),
     });
-    responseHttpsRequire(response, "WorPar Agent release download");
+    responseHttpsRequire(response, "KissOpen Agent release download");
     if (!response.ok || response.body === null) {
         throw new Error(
-            `The update service returned HTTP ${String(response.status)} while downloading WorPar Agent.`,
+            `The update service returned HTTP ${String(response.status)} while downloading KissOpen Agent.`,
         );
     }
     const expectedDigest = asset.digest?.slice("sha256:".length).toLowerCase();
-    if (expectedDigest === undefined) throw new Error("The WorPar Agent checksum is missing.");
+    if (expectedDigest === undefined) throw new Error("The KissOpen Agent checksum is missing.");
     const hash = createHash("sha256");
     let bytes = 0;
     const verify = new Transform({
         transform(chunk: Buffer, _encoding, callback) {
             bytes += chunk.length;
             if (bytes > MAXIMUM_ARCHIVE_BYTES || bytes > asset.size) {
-                callback(new Error("The WorPar Agent release archive is larger than declared."));
+                callback(new Error("The KissOpen Agent release archive is larger than declared."));
                 return;
             }
             hash.update(chunk);
@@ -416,10 +416,10 @@ async function archiveDownload(
         createWriteStream(destination, { flags: "wx", mode: 0o600 }),
     );
     if (bytes !== asset.size) {
-        throw new Error("The WorPar Agent release archive size does not match its manifest.");
+        throw new Error("The KissOpen Agent release archive size does not match its manifest.");
     }
     if (hash.digest("hex") !== expectedDigest) {
-        throw new Error("The WorPar Agent release archive checksum does not match.");
+        throw new Error("The KissOpen Agent release archive checksum does not match.");
     }
 }
 
@@ -447,7 +447,7 @@ async function archiveExtract(
     const listing = await fileRun(tar, ["-tzf", archivePath]);
     const entries = listing.trim().split("\n");
     if (entries.length !== 1 || entries[0] !== archivedBinaryName) {
-        throw new Error("The WorPar Agent release archive has unexpected contents.");
+        throw new Error("The KissOpen Agent release archive has unexpected contents.");
     }
     await fileRun(tar, ["-xzf", archivePath, "-C", destination, archivedBinaryName]);
 }
@@ -502,7 +502,7 @@ async function installLockAcquire(
 
         if (!announcedWait) {
             announcedWait = true;
-            onStatus?.("Waiting for another process to finish downloading WorPar Agent.");
+            onStatus?.("Waiting for another process to finish downloading KissOpen Agent.");
         }
         const owner = await installLockRead(path);
         const age = await lockAge(path);
@@ -516,7 +516,7 @@ async function installLockAcquire(
             continue;
         }
         if (Date.now() >= deadline) {
-            throw new Error("Timed out waiting for another process to install WorPar Agent.");
+            throw new Error("Timed out waiting for another process to install KissOpen Agent.");
         }
         await delay(LOCK_POLL_MS);
     }

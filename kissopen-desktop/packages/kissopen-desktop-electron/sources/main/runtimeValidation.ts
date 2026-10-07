@@ -14,7 +14,7 @@ export function desktopStartRequestValidate(request: unknown): DesktopStartReque
         Object.keys(request).every((key) => key === "mode")
     )
         return { mode: "local" };
-    throw new Error("WorPar Desktop supports local WorPar Agent mode only.");
+    throw new Error("KissOpen Desktop supports local KissOpen Agent mode only.");
 }
 
 export function desktopTopologyFromRequest(
@@ -31,7 +31,7 @@ export function desktopTopologyRequest(_topology: DesktopTopology): DesktopStart
 
 export function desktopTopologyTarget(topology: DesktopTopology): DesktopTopologyTarget {
     return {
-        detail: `System WorPar Agent · ${topology.id.slice(-6)}`,
+        detail: `System KissOpen Agent · ${topology.id.slice(-6)}`,
         id: topology.id,
         kind: "local",
         label: "This Mac",
@@ -44,8 +44,8 @@ export function desktopActiveTarget(
     kissopenAgentVersion?: string,
     kissopenAgentHttpUrl?: string,
 ): DesktopActiveTarget {
-    if (!kissopenAgentVersion) throw new Error("The local WorPar Agent version is unavailable.");
-    if (!kissopenAgentHttpUrl) throw new Error("The local WorPar Agent HTTP proxy is unavailable.");
+    if (!kissopenAgentVersion) throw new Error("The local KissOpen Agent version is unavailable.");
+    if (!kissopenAgentHttpUrl) throw new Error("The local KissOpen Agent HTTP proxy is unavailable.");
     return {
         ...desktopTopologyTarget(topology),
         authentication: "kissopenAgent",
@@ -66,7 +66,7 @@ export function desktopDaemonVersionValidate(value: unknown): string {
         /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/u.test(value)
     )
         return value;
-    throw new Error("The requested WorPar Agent version is invalid.");
+    throw new Error("The requested KissOpen Agent version is invalid.");
 }
 
 export function desktopTopologyIdValidate(value: unknown): string {

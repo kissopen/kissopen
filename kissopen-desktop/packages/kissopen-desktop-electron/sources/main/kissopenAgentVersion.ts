@@ -43,7 +43,7 @@ export function kissopenAgentVersionNewer(candidate: string, current: string): b
 
 function versionParse(version: string): { core: bigint[]; prerelease: string[] } {
     const match = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?$/u.exec(version);
-    if (!match) throw new Error(`WorPar Agent version is invalid: ${version}`);
+    if (!match) throw new Error(`KissOpen Agent version is invalid: ${version}`);
     return {
         core: [BigInt(match[1]!), BigInt(match[2]!), BigInt(match[3]!)],
         prerelease: match[4]?.split(".") ?? [],

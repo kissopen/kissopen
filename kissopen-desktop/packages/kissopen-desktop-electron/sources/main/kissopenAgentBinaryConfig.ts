@@ -35,11 +35,11 @@ export async function kissopenAgentBinarySelect(
     await chmod(paths.distDirectory, 0o700);
     const downloadedVersions = await kissopenAgentBinaryDownloaded(paths);
     if (!downloadedVersions.includes(selectedVersion)) {
-        throw new Error(`WorPar Agent ${selectedVersion} is not completely installed.`);
+        throw new Error(`KissOpen Agent ${selectedVersion} is not completely installed.`);
     }
     const config: KissopenAgentBinaryConfig = { downloadedVersions, selectedVersion };
     if (!kissopenAgentBinaryConfigValid(config)) {
-        throw new Error("The downloaded WorPar Agent versions could not be recorded.");
+        throw new Error("The downloaded KissOpen Agent versions could not be recorded.");
     }
     const temporaryPath = `${paths.binaryConfigPath}.${process.pid}.${randomUUID()}.tmp`;
     const handle = await open(temporaryPath, "wx", 0o600);

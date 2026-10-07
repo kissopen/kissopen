@@ -16,7 +16,7 @@ const releaseVersion = process.env.RELEASE_VERSION ?? packageJson.version;
 if (!/^\d+\.\d+\.\d+(?:-preview\.(?:0|[1-9]\d*))?$/u.test(releaseVersion))
     throw new Error("RELEASE_VERSION must be a stable or numbered preview version.");
 packageJson.version = releaseVersion;
-const localWebOrigin = "https://local.app.happy.engineering";
+const localWebOrigin = "https://local.app.kissopen.com";
 const flavor = argument("--flavor", ["all", ...desktopFlavorNames], "all");
 const architecture = argument("--arch", ["all", "arm64", "x64"], "all");
 const flavors = flavor === "all" ? desktopFlavorNames : [flavor];

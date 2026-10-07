@@ -41,7 +41,7 @@ export function legacyCliConnectorCreate(launchEnvironment: () => Promise<NodeJS
             // Both explicit actions share the same cached preparation operation.
             if (!prepared) await this.prepare(current);
             const cli = prepared;
-            if (!cli) throw new Error("Prepare the WorPar CLI before connecting your phone.");
+            if (!cli) throw new Error("Prepare the KissOpen CLI before connecting your phone.");
             connecting ??= (async () => {
                 // Do not install during authentication or trust a replaced global binary.
                 if (
@@ -56,7 +56,7 @@ export function legacyCliConnectorCreate(launchEnvironment: () => Promise<NodeJS
                 ) {
                     prepared = undefined;
                     throw new Error(
-                        "The WorPar CLI changed during setup. Try again to prepare it safely.",
+                        "The KissOpen CLI changed during setup. Try again to prepare it safely.",
                     );
                 }
                 requireCurrent(current);
@@ -70,7 +70,7 @@ export function legacyCliConnectorCreate(launchEnvironment: () => Promise<NodeJS
                 } catch {
                     // Never forward arbitrary subprocess output: it can contain credentials.
                     throw new Error(
-                        "WorPar could not link the terminal CLI. Check that your existing CLI uses the same account and server as WorPar Mobile, then try again. For details, run WorPar auth desktop in your terminal.",
+                        "KissOpen could not link the terminal CLI. Check that your existing CLI uses the same account and server as KissOpen Mobile, then try again. For details, run `kissopen auth desktop` in your terminal.",
                     );
                 }
                 requireCurrent(current);
@@ -84,7 +84,7 @@ export function legacyCliConnectorCreate(launchEnvironment: () => Promise<NodeJS
 }
 
 function requireCurrent(current: () => boolean): void {
-    if (!current()) throw new Error("WorPar Mobile setup changed. Try connecting again.");
+    if (!current()) throw new Error("KissOpen Mobile setup changed. Try connecting again.");
 }
 
 async function prepare(
@@ -98,12 +98,12 @@ async function prepare(
         nativeEnvironment.KISSOPEN_AGENT_SERVER_TOKEN_PATH?.trim()
     )
         throw new Error(
-            "Automatic terminal linking is unavailable for a custom WorPar Agent connection. Use the CLI on that Agent's machine.",
+            "Automatic terminal linking is unavailable for a custom KissOpen Agent connection. Use the CLI on that Agent's machine.",
         );
     const probe = await localRuntimeProbe();
     if (!probe.nodeCommand)
         throw new Error(
-            "Install Node.js with npm to connect Claude Code and Codex to WorPar Mobile.",
+            "Install Node.js with npm to connect Claude Code and Codex to KissOpen Mobile.",
         );
     const node = await realpath(probe.nodeCommand);
     const environment: NodeJS.ProcessEnv = {
@@ -145,7 +145,7 @@ async function prepare(
         entry = await realpath(override);
         if (!(await supported(entry)))
             throw new Error(
-                "The review CLI does not support safe desktop linking. Rebuild the WorPar CLI.",
+                "The review CLI does not support safe desktop linking. Rebuild the KissOpen CLI.",
             );
     } else {
         const npm = await npmEntryResolve(environment[pathKey] ?? "");
@@ -162,13 +162,13 @@ async function prepare(
                 );
             } catch {
                 throw new Error(
-                    "WorPar could not update the terminal CLI. Check your npm installation and permissions, then try again.",
+                    "KissOpen could not update the terminal CLI. Check your npm installation and permissions, then try again.",
                 );
             }
             installed = await kissopenEntryResolve(root);
             if (!installed || !(await supported(installed)))
                 throw new Error(
-                    "The published WorPar CLI does not support safe desktop linking yet. Your existing sign-in has not been replaced. Try again after the compatible CLI is available.",
+                    "The published KissOpen CLI does not support safe desktop linking yet. Your existing sign-in has not been replaced. Try again after the compatible CLI is available.",
                 );
         }
         entry = installed;
@@ -202,7 +202,7 @@ async function npmEntryResolve(path: string): Promise<string> {
         }
     }
     throw new Error(
-        "WorPar could not find npm beside your Node.js installation. Install Node.js with npm and try again.",
+        "KissOpen could not find npm beside your Node.js installation. Install Node.js with npm and try again.",
     );
 }
 
@@ -246,7 +246,7 @@ function command(
             [...args],
             { env, timeout, windowsHide: true, encoding: "utf8", maxBuffer: 1024 * 1024 },
             (error, stdout) => {
-                if (error) reject(new Error("The WorPar CLI command did not complete."));
+                if (error) reject(new Error("The KissOpen CLI command did not complete."));
                 else resolvePromise(stdout);
             },
         );

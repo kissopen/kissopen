@@ -100,7 +100,7 @@ async function resolve(url: string) {
     };
 }
 
-it("addresses a local session by its WorPar Agent, its project, and then itself", async () => {
+it("addresses a local session by its KissOpen Agent, its project, and then itself", async () => {
     const result = await resolve("/chats/local/prj_one/ses_one");
     expect(result.leaf).toBe("/_workspace/chats/$kissopenAgentId/$groupId/$chatId");
     expect(result.params).toEqual({
@@ -124,7 +124,7 @@ it("keeps the session list and one session under the same persistent workspace l
     expect((await resolve("/chats/local/prj_one/ses_one")).routeIds).toContain("/_workspace");
 });
 
-it("sends the root to the local WorPar Agent session list", async () => {
+it("sends the root to the local KissOpen Agent session list", async () => {
     const result = await resolve("/");
     expect(result.href).toBe("/chats/local");
     expect(result.leaf).toBe("/_workspace/chats/$kissopenAgentId");

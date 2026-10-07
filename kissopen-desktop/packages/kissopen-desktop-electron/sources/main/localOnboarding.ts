@@ -394,7 +394,7 @@ export class LocalOnboarding implements Disposable {
 
     /** Finishes the desktop decisions without discovering or registering a project. */
     async chiefOfStaffComplete(): Promise<void> {
-        await this.durable("WorPar could not finish setup", ["project"], async (working) => {
+        await this.durable("KissOpen could not finish setup", ["project"], async (working) => {
             await this.recordWrite({ ...this.record, chiefOfStaffSetup: true }, working.current);
         });
     }
@@ -413,7 +413,7 @@ export class LocalOnboarding implements Disposable {
      * on KISSOPEN's initiative.
      */
     async projectChoose(): Promise<void> {
-        await this.durable("WorPar could not open that project", ["project"], async (working) => {
+        await this.durable("KissOpen could not open that project", ["project"], async (working) => {
             // Which Kissopen Agent said it was unused. Every conclusion below belongs to
             // this connection alone: a Kissopen Agent that has since been replaced answered
             // a different question, and its successor's answer is not this one's
@@ -431,7 +431,7 @@ export class LocalOnboarding implements Disposable {
             // asked for, so nothing is said about it.
             if (!picked || !mine()) return;
             if (connection === undefined || this.freshness !== "fresh") {
-                this.message = "WorPar Agent is not ready for a first project yet.";
+                this.message = "KissOpen Agent is not ready for a first project yet.";
                 return;
             }
             // Last look before the one thing here that changes someone else's
@@ -464,8 +464,8 @@ export class LocalOnboarding implements Disposable {
                 const rereading = reread();
                 if (!mine()) return;
                 this.message = rereading
-                    ? `WorPar could not confirm whether that project was registered: ${displayError(error)} Nothing has been repeated; WorPar is asking WorPar Agent what actually happened.`
-                    : `WorPar could not confirm whether that project was registered: ${displayError(error)} Nothing has been repeated.`;
+                    ? `KissOpen could not confirm whether that project was registered: ${displayError(error)} Nothing has been repeated; KissOpen is asking KissOpen Agent what actually happened.`
+                    : `KissOpen could not confirm whether that project was registered: ${displayError(error)} Nothing has been repeated.`;
                 this.messageAwaitsFreshness = rereading;
                 return;
             }
@@ -490,10 +490,10 @@ export class LocalOnboarding implements Disposable {
     async profileCreate(input: { readonly email: string; readonly name: string }): Promise<void> {
         const connection = this.freshnessConnection;
         await this.durable(
-            "WorPar could not create that profile",
+            "KissOpen could not create that profile",
             ["profileRequired"],
             async (working) => {
-                if (connection === undefined) throw new Error("The local WorPar Agent changed.");
+                if (connection === undefined) throw new Error("The local KissOpen Agent changed.");
                 await this.options.runtime.localOnboardingProfileCreate(connection, input);
                 if (working.current()) this.freshnessInvalidate();
             },
@@ -616,7 +616,7 @@ export class LocalOnboarding implements Disposable {
                 // dropped rather than shown as if they were current.
                 this.probed = undefined;
                 this.retryRequestedFor = undefined;
-                this.probeMessage = `WorPar could not examine this machine: ${displayError(error)}`;
+                this.probeMessage = `KissOpen could not examine this machine: ${displayError(error)}`;
                 this.probeRetrySchedule();
             } finally {
                 if (this.probeRunId === runId) this.probing = undefined;
@@ -1234,13 +1234,13 @@ function registrationRefusal(error: unknown): string | undefined {
         case "path_missing":
             return "That folder no longer exists. Choose one that does.";
         case "path_inaccessible":
-            return "WorPar Agent cannot read that folder. Choose one you have access to.";
+            return "KissOpen Agent cannot read that folder. Choose one you have access to.";
         case "managed_workspace_unavailable":
-            return "WorPar Agent cannot prepare workspaces for that repository yet. Choose another project to start with.";
+            return "KissOpen Agent cannot prepare workspaces for that repository yet. Choose another project to start with.";
         case "invalid_request":
-            return "WorPar Agent did not accept how WorPar asked for that project, so nothing was registered. Try choosing the folder again.";
+            return "KissOpen Agent did not accept how KissOpen asked for that project, so nothing was registered. Try choosing the folder again.";
         case "project_id_conflict":
-            return "WorPar Agent is already using the identity WorPar chose for that project, so nothing was registered. Try choosing the folder again.";
+            return "KissOpen Agent is already using the identity KissOpen chose for that project, so nothing was registered. Try choosing the folder again.";
     }
 }
 

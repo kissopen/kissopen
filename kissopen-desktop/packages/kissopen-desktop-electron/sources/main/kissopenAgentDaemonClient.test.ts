@@ -11,7 +11,7 @@ import {
 } from "./kissopenAgentDaemonClient";
 
 describe("kissopenAgentDaemonPathsResolve", () => {
-    it("matches WorPar Agent's default and environment-overridden daemon paths", () => {
+    it("matches KissOpen Agent's default and environment-overridden daemon paths", () => {
         const homeDirectory =
             process.platform === "win32" ? join("C:\\Users", "steve") : "/Users/steve";
         expect(kissopenAgentDaemonPathsResolve({}, homeDirectory)).toEqual({

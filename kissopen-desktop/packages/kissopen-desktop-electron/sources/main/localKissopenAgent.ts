@@ -74,7 +74,7 @@ export interface LocalDaemonBinarySource {
 
 export class KissopenAgentBinaryMissingError extends Error {
     constructor() {
-        super("WorPar Agent has not been downloaded yet.");
+        super("KissOpen Agent has not been downloaded yet.");
         this.name = "KissopenAgentBinaryMissingError";
     }
 }
@@ -238,7 +238,7 @@ export function localKissopenAgentConnectorCreate(
                 // custom Kissopen Agent checkout's, say — not "whatever the shared daemon
                 // happens to be". Attaching to anything else defeats the point
                 // of naming it, so this never falls through to discovery.
-                debug(`WorPar Agent daemon: exact connection at ${explicitSocketPath}`);
+                debug(`KissOpen Agent daemon: exact connection at ${explicitSocketPath}`);
                 return exactDaemonConnect(
                     { socketPath: explicitSocketPath, tokenPath: explicitTokenPath },
                     clientCreate,
@@ -256,7 +256,7 @@ export function localKissopenAgentConnectorCreate(
                 const daemonPaths = kissopenAgentDaemonPathsResolve(environment);
                 let startError: unknown;
                 try {
-                    debug(`WorPar Agent executable: ${selected.path}`);
+                    debug(`KissOpen Agent executable: ${selected.path}`);
                     await host.execFile(selected.path, ["start"], { env: environment });
                 } catch (error) {
                     startError = error;
@@ -265,8 +265,8 @@ export function localKissopenAgentConnectorCreate(
                 if (!daemon) {
                     throw new Error(
                         startError
-                            ? `WorPar Agent could not be started: ${errorMessage(startError)}`
-                            : "Timed out while waiting for WorPar Agent.",
+                            ? `KissOpen Agent could not be started: ${errorMessage(startError)}`
+                            : "Timed out while waiting for KissOpen Agent.",
                         startError ? { cause: startError } : undefined,
                     );
                 }
@@ -309,7 +309,7 @@ export function discoveryOutputParse(shellOutput: string): {
     const markerIndex = shellOutput.indexOf(nodePathMarker);
     if (markerIndex < 0)
         throw new Error(
-            "The login shell did not return a machine-readable WorPar Agent environment.",
+            "The login shell did not return a machine-readable KissOpen Agent environment.",
         );
     const records = shellOutput.slice(markerIndex).split("\0");
     let nodeCommand: string | undefined;
@@ -421,7 +421,7 @@ async function exactDaemonConnect(
     const token = await kissopenAgentDaemonTokenRead(paths.tokenPath);
     if (!token)
         throw new Error(
-            `No WorPar Agent daemon token was found at ${paths.tokenPath}. KISSOPEN_AGENT_SERVER_SOCKET_PATH and KISSOPEN_AGENT_SERVER_TOKEN_PATH name one exact daemon, so WorPar will not fall back to another one.`,
+            `No KissOpen Agent daemon token was found at ${paths.tokenPath}. KISSOPEN_AGENT_SERVER_SOCKET_PATH and KISSOPEN_AGENT_SERVER_TOKEN_PATH name one exact daemon, so KissOpen will not fall back to another one.`,
         );
     const client = clientCreate({
         socketPath: paths.socketPath,
@@ -431,7 +431,7 @@ async function exactDaemonConnect(
     try {
         health = await client.health();
     } catch (error) {
-        throw new Error(`Could not reach the WorPar Agent daemon at ${paths.socketPath}.`, {
+        throw new Error(`Could not reach the KissOpen Agent daemon at ${paths.socketPath}.`, {
             cause: error,
         });
     }
@@ -487,7 +487,7 @@ async function readyHealthWait(
         if (health.status === "ready") return health;
         await wait(50);
     }
-    throw new Error("The shared WorPar Agent daemon did not become ready.");
+    throw new Error("The shared KissOpen Agent daemon did not become ready.");
 }
 
 function errorMessage(error: unknown): string {

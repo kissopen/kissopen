@@ -90,7 +90,7 @@ export async function kissopenAgentRendererSessionCreate(
         proxy,
         windowRegister(contents, document, development, mediaOnly = false) {
             if (contents.session !== session)
-                throw new Error("WorPar Agent renderer session mismatch.");
+                throw new Error("KissOpen Agent renderer session mismatch.");
             const id = contents.id;
             windows.set(id, { contents, document, development, mediaOnly });
             contents.once("destroyed", () => windows.delete(id));

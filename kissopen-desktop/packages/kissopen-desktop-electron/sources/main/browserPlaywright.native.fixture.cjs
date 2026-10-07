@@ -4,7 +4,7 @@ const { writeFileSync } = require("node:fs");
 const { join } = require("node:path");
 const assert = require("node:assert/strict");
 const { pathToFileURL } = require("node:url");
-const directory = process.env.WORPAR_BROWSER_TEST_DIRECTORY;
+const directory = process.env.KISSOPEN_BROWSER_TEST_DIRECTORY;
 if (!directory) throw new Error("Disposable test directory required");
 app.setPath("userData", directory);
 app.commandLine.appendSwitch("site-per-process");

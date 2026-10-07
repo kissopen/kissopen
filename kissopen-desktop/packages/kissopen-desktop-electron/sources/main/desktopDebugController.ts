@@ -75,7 +75,7 @@ export class DesktopDebugController {
                     previous.status === "stopped"
                         ? stopped
                         : {
-                              error: "WorPar Agent disconnected; its inspector may still be listening. Reconnect to stop it.",
+                              error: "KissOpen Agent disconnected; its inspector may still be listening. Reconnect to stop it.",
                               status: "unavailable",
                               ...(previous.url ? { url: previous.url } : {}),
                           },
@@ -110,9 +110,9 @@ export class DesktopDebugController {
                 const daemon = this.#options.daemon();
                 if (!daemon) {
                     const previous = this.#targets.daemon;
-                    if (!previous.url) throw new Error("The local WorPar Agent is not connected.");
+                    if (!previous.url) throw new Error("The local KissOpen Agent is not connected.");
                     this.#targetSet("daemon", {
-                        error: "WorPar Agent is disconnected; its inspector may still be listening. Reconnect to stop it.",
+                        error: "KissOpen Agent is disconnected; its inspector may still be listening. Reconnect to stop it.",
                         status: "unavailable",
                         url: previous.url,
                     });
@@ -129,7 +129,7 @@ export class DesktopDebugController {
                               url: result.inspectorUrl,
                           }
                         : {
-                              error: "WorPar Agent disconnected after starting; its inspector may still be listening. Reconnect to stop it.",
+                              error: "KissOpen Agent disconnected after starting; its inspector may still be listening. Reconnect to stop it.",
                               status: "unavailable",
                               url: result.inspectorUrl,
                           },
@@ -138,7 +138,7 @@ export class DesktopDebugController {
             }
             const renderer = this.#options.renderer();
             if (!renderer || renderer.isDestroyed())
-                throw new Error("The WorPar renderer is not available.");
+                throw new Error("The KissOpen renderer is not available.");
             if (this.#rendererDebugger) {
                 this.#targetSet("renderer", {
                     status: "running",
@@ -182,7 +182,7 @@ export class DesktopDebugController {
                         "daemon",
                         previous.url
                             ? {
-                                  error: "WorPar Agent is disconnected; its inspector may still be listening. Reconnect to stop it.",
+                                  error: "KissOpen Agent is disconnected; its inspector may still be listening. Reconnect to stop it.",
                                   status: "unavailable",
                                   url: previous.url,
                               }
