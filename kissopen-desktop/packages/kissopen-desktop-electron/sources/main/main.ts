@@ -136,7 +136,7 @@ import { DesktopDaemonController } from "./desktopDaemonController";
 import { cloudAuthProductionRedirectUri } from "../shared/cloudAuthConfig";
 
 if (process.platform !== "darwin" && process.platform !== "linux" && process.platform !== "win32") {
-    console.error("WorPar Place desktop is available only on macOS, Linux, and Windows.");
+    console.error("KissOpen desktop is available only on macOS, Linux, and Windows.");
     app.exit(1);
 }
 const buildIdentity = desktopBuildIdentityRead(app.isPackaged, app.getAppPath());
@@ -241,7 +241,7 @@ function dockAppearanceApply(): void {
 /*
  * The title carries the checkout as well, because that is what Mission Control,
  * the Window menu, and the app switcher's window list have room to show. The
- * ordinary checkout on the default branch is simply "WorPar Dev": it is the one
+ * ordinary checkout on the default branch is simply "KissOpen Dev": it is the one
  * window with nothing to distinguish it from, and naming it twice says nothing.
  */
 function windowTitle(): string {
@@ -484,7 +484,7 @@ if (
           ? app.setAsDefaultProtocolClient(cloudAuthProtocol, process.execPath, [process.argv[1]])
           : app.setAsDefaultProtocolClient(cloudAuthProtocol))
 )
-    console.warn(`WorPar could not register the ${cloudAuthProtocol}: callback protocol.`);
+    console.warn(`KissOpen could not register the ${cloudAuthProtocol}: callback protocol.`);
 
 app.on("open-url", (event, candidate) => {
     const callback = cloudAuthCallbackRead(candidate);
@@ -517,7 +517,7 @@ function desktopDebugPublish(snapshot: DesktopDebugSnapshot): void {
 function desktopDaemonSenderRequire(sender: WebContents): void {
     const presenting = windowLifecycle.get();
     if (!presenting || presenting.webContents !== sender)
-        throw new Error("This window cannot control WorPar Agent.");
+        throw new Error("This window cannot control KissOpen Agent.");
 }
 
 function desktopDebugSenderRequire(sender: WebContents): void {
@@ -568,16 +568,16 @@ function desktopDebugDaemonStartIfReady(snapshot: ReturnType<DesktopRuntime["get
         .then((debugSnapshot) => {
             const target = debugSnapshot.daemon;
             if (target.status === "running" && target.url) {
-                desktopDebugLog(`WorPar Agent daemon inspector: ${target.url}`);
+                desktopDebugLog(`KissOpen Agent daemon inspector: ${target.url}`);
             } else {
                 desktopDebugError(
-                    `WorPar Agent daemon inspector did not start (${target.status})${
+                    `KissOpen Agent daemon inspector did not start (${target.status})${
                         target.error ? `: ${target.error}` : ""
                     }`,
                 );
             }
         })
-        .catch((error) => desktopDebugError("WorPar Agent daemon inspector startup failed", error));
+        .catch((error) => desktopDebugError("KissOpen Agent daemon inspector startup failed", error));
 }
 
 function desktopProfilerPublish(snapshot: DesktopProfilerSnapshot): void {
@@ -613,7 +613,7 @@ async function directoryPickShow(owner: BrowserWindow | undefined): Promise<stri
     const options: OpenDialogOptions = {
         buttonLabel: t("Choose"),
         properties: ["openDirectory", "createDirectory"],
-        title: t("Choose a WorPar Agent working directory"),
+        title: t("Choose a KissOpen Agent working directory"),
     };
     const result = owner
         ? await dialog.showOpenDialog(owner, options)
@@ -663,7 +663,7 @@ function legacyCliSenderCurrent(event: Electron.IpcMainInvokeEvent): () => boole
     const presentation = presentationIdentity();
     const initial = runtime.get();
     if (initial.phase !== "ready" || initial.mode !== "local")
-        throw new Error("Connect your local WorPar Agent before setting up the terminal CLI.");
+        throw new Error("Connect your local KissOpen Agent before setting up the terminal CLI.");
     return () => {
         const current = runtime.get();
         return (
@@ -2014,10 +2014,10 @@ void app
         ipcMain.handle(desktopIpc.cloudAuthOpen, (event, candidate: unknown) => {
             desktopDaemonSenderRequire(event.sender);
             if (typeof candidate !== "string")
-                throw new Error("WorPar Agent returned an invalid Cloud authorization URL.");
+                throw new Error("KissOpen Agent returned an invalid Cloud authorization URL.");
             const url = new URL(candidate);
             if (url.protocol !== "https:")
-                throw new Error("WorPar Agent returned an invalid Cloud authorization URL.");
+                throw new Error("KissOpen Agent returned an invalid Cloud authorization URL.");
             return shell.openExternal(url.href);
         });
         /*
@@ -2138,7 +2138,7 @@ void app
         ipcMain.handle(desktopIpc.browserProxyApply, (event, target: unknown) => {
             desktopDaemonSenderRequire(event.sender);
             if (event.senderFrame !== event.sender.mainFrame)
-                throw new Error("Only WorPar can configure a browser profile.");
+                throw new Error("Only KissOpen can configure a browser profile.");
             return browserProxyApply(desktopBrowserProxyTargetValidate(target));
         });
         const browserSenderRequire = (event: Electron.IpcMainInvokeEvent) => {
@@ -2248,7 +2248,7 @@ void app
             // address this build is not already serving.
             const preview = mediaPreviewResolve(raw, mediaPreviewBases());
             if (!preview)
-                throw new Error("That file is not served by a WorPar Agent in this window.");
+                throw new Error("That file is not served by a KissOpen Agent in this window.");
             mediaPreviewShow(preview);
         });
         ipcMain.handle(desktopIpc.mediaPreviewGet, (event) =>
@@ -2376,7 +2376,7 @@ void app
     })
     .catch((error: unknown) => {
         dialog.showErrorBox(
-            t("WorPar could not start"),
+            t("KissOpen could not start"),
             error instanceof Error ? error.message : t("The desktop runtime failed to initialize."),
         );
         app.quit();

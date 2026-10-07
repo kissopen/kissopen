@@ -50,7 +50,7 @@ export function ChineseMessagePage() {
                 chatId: "chinese-prose",
                 sequence: "2",
                 changePts: "1",
-                sender: { id: "agent", displayName: "WorPar", username: "worpar", kind: "agent" },
+                sender: { id: "agent", displayName: "KissOpen", username: "kissopen", kind: "agent" },
                 text: body,
                 attachments: [],
                 reactions: [],
@@ -137,8 +137,8 @@ export function ChineseMessagePage() {
                                     subtitle={t("云端")}
                                     agentAuthor={{
                                         id: "agent",
-                                        displayName: "WorPar",
-                                        username: "worpar",
+                                        displayName: "KissOpen",
+                                        username: "kissopen",
                                         kind: "agent",
                                     }}
                                     conversationId="chinese-project"
@@ -154,8 +154,8 @@ export function ChineseMessagePage() {
                         <ConversationView
                             agentAuthor={{
                                 id: "agent",
-                                displayName: "WorPar",
-                                username: "worpar",
+                                displayName: "KissOpen",
+                                username: "kissopen",
                                 kind: "agent",
                             }}
                             conversationId="chinese-prose"

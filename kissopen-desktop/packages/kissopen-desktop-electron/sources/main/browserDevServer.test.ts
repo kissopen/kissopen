@@ -132,7 +132,7 @@ describe("browserLocalKissopenAgentPlugin", () => {
         const connect = vi
             .fn<() => Promise<LocalKissopenAgentConnection>>()
             .mockRejectedValueOnce(
-                new Error("Timed out while waiting for the normal WorPar Agent daemon."),
+                new Error("Timed out while waiting for the normal KissOpen Agent daemon."),
             )
             .mockResolvedValueOnce(connectionWith(() => Promise.resolve(healthReady("0.0.55"))));
         const middleware = middlewareOf(browserLocalKissopenAgentPlugin({ connect }));

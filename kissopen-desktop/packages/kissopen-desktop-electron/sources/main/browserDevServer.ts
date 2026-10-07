@@ -223,7 +223,7 @@ async function handleRequest(
             value: {
                 activeTarget: {
                     authentication: "kissopenAgent",
-                    detail: "Normal local WorPar Agent daemon",
+                    detail: "Normal local KissOpen Agent daemon",
                     id: "browser-local",
                     kind: "local",
                     label: "Local browser",

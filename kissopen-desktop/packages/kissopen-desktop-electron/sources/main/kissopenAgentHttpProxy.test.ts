@@ -11,7 +11,7 @@ import {
     KISSOPEN_AGENT_TERMINAL_PROTOCOL,
 } from "./kissopenAgentTerminalBridge";
 
-describe("authenticated WorPar Agent loopback proxy", () => {
+describe("authenticated KissOpen Agent loopback proxy", () => {
     let proxy: KissopenAgentHttpProxyHandle | undefined;
 
     afterEach(() => proxy?.close());

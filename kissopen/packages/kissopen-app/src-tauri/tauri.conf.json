@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "WorPar",
+        "title": "KissOpen",
         "width": 1680,
         "height": 1050,
         "minWidth": 720,

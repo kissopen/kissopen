@@ -117,7 +117,7 @@ export class DesktopDaemonController {
             this.publish({
                 ...installationProject(this.snapshotValue, selected),
                 error: undefined,
-                message: "Checking for WorPar Agent updates…",
+                message: "Checking for KissOpen Agent updates…",
                 operation: "checking",
             });
             try {
@@ -134,10 +134,10 @@ export class DesktopDaemonController {
                     availableVersion: release.version,
                     error: undefined,
                     message: updateAvailable
-                        ? `WorPar Agent ${release.version} is available.`
+                        ? `KissOpen Agent ${release.version} is available.`
                         : installedVersion
-                          ? "WorPar Agent is up to date."
-                          : "WorPar Agent is ready to download.",
+                          ? "KissOpen Agent is up to date."
+                          : "KissOpen Agent is ready to download.",
                     operation: "idle",
                     updateAvailable,
                     versions: await this.versionsProject(),
@@ -197,7 +197,7 @@ export class DesktopDaemonController {
             ...this.snapshotValue,
             download: undefined,
             error: undefined,
-            message: `Downloading WorPar Agent ${release.version}…`,
+            message: `Downloading KissOpen Agent ${release.version}…`,
             operation: "downloading",
         });
         try {
@@ -214,8 +214,8 @@ export class DesktopDaemonController {
             error: undefined,
             message:
                 this.snapshotValue.installation === "missing"
-                    ? `WorPar Agent ${release.version} is ready to start.`
-                    : `WorPar Agent ${release.version} is ready to install.`,
+                    ? `KissOpen Agent ${release.version} is ready to start.`
+                    : `KissOpen Agent ${release.version} is ready to install.`,
             operation: "idle",
             versions: await this.versionsProject(),
             ...(await this.readyVersionRead()),
@@ -231,7 +231,7 @@ export class DesktopDaemonController {
         if (!kissopenAgentVersionAllowed(version, this.channel)) {
             const selected = await kissopenAgentBinarySelected(this.paths);
             if (selected?.version === version) return;
-            throw new Error("This WorPar Agent version is not available on this update channel.");
+            throw new Error("This KissOpen Agent version is not available on this update channel.");
         }
         if ((await kissopenAgentBinaryDownloaded(this.paths)).includes(version)) return;
         if (!this.updatesEnabled)
@@ -311,11 +311,11 @@ export class DesktopDaemonController {
         version: string | undefined,
     ): Promise<void> {
         return (async () => {
-            if (!this.managed) throw new Error("This WorPar Agent is managed outside WorPar.");
+            if (!this.managed) throw new Error("This KissOpen Agent is managed outside KissOpen.");
             if (reason === "install" && version === undefined)
-                throw new Error("No WorPar Agent update has been downloaded.");
+                throw new Error("No KissOpen Agent update has been downloaded.");
             const selected = version ?? (await kissopenAgentBinarySelected(this.paths))?.version;
-            if (selected === undefined) throw new Error("WorPar Agent is not installed.");
+            if (selected === undefined) throw new Error("KissOpen Agent is not installed.");
             // The step the sequence is on, kept because a failure has to say
             // where it stopped and the error itself does not know. It starts on
             // the first step: everything before the drain is preparation for it,
@@ -379,8 +379,8 @@ export class DesktopDaemonController {
                     installation: "installed",
                     installedVersion: selected,
                     message: updateAvailable
-                        ? `WorPar Agent ${availableVersion} is available.`
-                        : "WorPar Agent is up to date.",
+                        ? `KissOpen Agent ${availableVersion} is available.`
+                        : "KissOpen Agent is up to date.",
                     operation: "idle",
                     runtime: "ready",
                     updateAvailable,
@@ -485,9 +485,9 @@ export class DesktopDaemonController {
                 throw new Error(
                     "The bundled Agent is missing. Reinstall the kissopen preview; online Agent downloads are disabled.",
                 );
-            if (!this.managed) throw new Error("This WorPar Agent is managed outside WorPar.");
+            if (!this.managed) throw new Error("This KissOpen Agent is managed outside KissOpen.");
             if (this.snapshotValue.installation !== "missing")
-                throw new Error("WorPar Agent is already installed.");
+                throw new Error("KissOpen Agent is already installed.");
             const release = await this.stageOrFail(async () => {
                 const found =
                     this.latestRelease ??
@@ -500,7 +500,7 @@ export class DesktopDaemonController {
                 ...this.snapshotValue,
                 availableVersion: release.version,
                 error: undefined,
-                message: `WorPar Agent ${release.version} is ready to start.`,
+                message: `KissOpen Agent ${release.version} is ready to start.`,
                 operation: "idle",
                 readyVersion: release.version,
                 updateAvailable: false,
@@ -517,15 +517,15 @@ export class DesktopDaemonController {
      */
     start(): Promise<void> {
         return this.serial(async () => {
-            if (!this.managed) throw new Error("This WorPar Agent is managed outside WorPar.");
+            if (!this.managed) throw new Error("This KissOpen Agent is managed outside KissOpen.");
             if (this.snapshotValue.installation !== "missing")
-                throw new Error("WorPar Agent is already installed.");
+                throw new Error("KissOpen Agent is already installed.");
             const version = this.snapshotValue.readyVersion;
-            if (version === undefined) throw new Error("WorPar Agent is still downloading.");
+            if (version === undefined) throw new Error("KissOpen Agent is still downloading.");
             this.publish({
                 ...this.snapshotValue,
                 error: undefined,
-                message: `Starting WorPar Agent ${version}…`,
+                message: `Starting KissOpen Agent ${version}…`,
                 operation: "installing",
                 runtime: "starting",
             });
@@ -545,7 +545,7 @@ export class DesktopDaemonController {
                 this.publish({
                     ...this.snapshotValue,
                     error: undefined,
-                    message: "WorPar Agent is up to date.",
+                    message: "KissOpen Agent is up to date.",
                     operation: "idle",
                     runtime: "ready",
                     versions: await this.versionsProject(),
@@ -620,7 +620,7 @@ export class DesktopDaemonController {
                 );
             // Ahead of the download rather than inside the restart: an agent
             // Kissopen does not manage is not one to fetch bytes for either.
-            if (!this.managed) throw new Error("This WorPar Agent is managed outside WorPar.");
+            if (!this.managed) throw new Error("This KissOpen Agent is managed outside KissOpen.");
             const release = await this.stageOrFail(async () => {
                 const found =
                     this.latestRelease ??
@@ -642,7 +642,7 @@ export class DesktopDaemonController {
      */
     versionSelect(version: string): Promise<void> {
         return this.serial(async () => {
-            if (!this.managed) throw new Error("This WorPar Agent is managed outside WorPar.");
+            if (!this.managed) throw new Error("This KissOpen Agent is managed outside KissOpen.");
             await this.stageOrFail(() => this.stageVersion(version));
             await this.restartCore("install", version);
         });

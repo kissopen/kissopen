@@ -348,7 +348,7 @@ export class KissopenAgentDaemonClient {
                 reject(
                     new KissopenAgentDaemonHttpError(
                         status,
-                        `WorPar Agent browser proxy returned ${String(status)}.`,
+                        `KissOpen Agent browser proxy returned ${String(status)}.`,
                     ),
                 );
             };
@@ -422,7 +422,7 @@ export class KissopenAgentDaemonClient {
                 fail(
                     new KissopenAgentDaemonHttpError(
                         response.statusCode ?? 500,
-                        "The WorPar Agent terminal attachment was refused.",
+                        "The KissOpen Agent terminal attachment was refused.",
                     ),
                 );
             };
@@ -511,18 +511,18 @@ function kissopenAgentPath(path: string): string {
     try {
         parsed = new URL(path, "http://kissopen");
     } catch {
-        throw new Error("The WorPar Agent request path is invalid.");
+        throw new Error("The KissOpen Agent request path is invalid.");
     }
     if (
         parsed.origin !== "http://kissopen" ||
         (parsed.pathname !== "/v0" && !parsed.pathname.startsWith("/v0/"))
     )
-        throw new Error("Only WorPar Agent /v0 routes may cross the desktop bridge.");
+        throw new Error("Only KissOpen Agent /v0 routes may cross the desktop bridge.");
     return `${parsed.pathname}${parsed.search}`;
 }
 
 function abortedError(): Error {
-    return new Error("The WorPar Agent request was aborted.");
+    return new Error("The KissOpen Agent request was aborted.");
 }
 
 async function unixSocketFetch(

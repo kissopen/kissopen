@@ -6,7 +6,8 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/slopus/happy-desktop.git"
+        "url": "git+https://github.com/kissopen/kissopen.git",
+        "directory": "kissopen-desktop"
     },
     "type": "module",
     "scripts": {

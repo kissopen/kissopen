@@ -930,7 +930,7 @@ export class KissopenStore {
             doc: theme.doc,
         };
         await this.transport.downloadText(
-            `${theme.name}.worpar-theme.json`,
+            `${theme.name}.kissopen-theme.json`,
             JSON.stringify(write, null, 2),
         );
     };

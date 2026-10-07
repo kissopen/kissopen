@@ -42,12 +42,12 @@ export function kissopenAgentBrowserProxyCreate(
     };
     const openHttpProxy = async () => {
         const openingGeneration = generation;
-        if (closed) throw new Error("The WorPar Agent browser proxy is closed.");
+        if (closed) throw new Error("The KissOpen Agent browser proxy is closed.");
         const tunnel = await options.openHttpProxy();
         if (closed || openingGeneration !== generation) {
             tunnel.destroy();
             throw new Error(
-                "The WorPar Agent connection changed while opening the browser tunnel.",
+                "The KissOpen Agent connection changed while opening the browser tunnel.",
             );
         }
         return tunnel;
@@ -140,7 +140,7 @@ async function proxyRequest(
     } catch (error) {
         tunnel?.destroy();
         if (!response.headersSent) response.writeHead(502);
-        response.end(error instanceof Error ? error.message : "WorPar Agent proxy unavailable.");
+        response.end(error instanceof Error ? error.message : "KissOpen Agent proxy unavailable.");
     }
 }
 

@@ -206,7 +206,7 @@ async function drainBeginAwait(
         }
         onStarting(Date.now() - started >= KILLABLE_AFTER_MS);
         if (Date.now() >= deadline) {
-            throw new Error("WorPar Agent was still starting after 5 minutes.");
+            throw new Error("KissOpen Agent was still starting after 5 minutes.");
         }
         await killableDelay(START_POLL_MS, killSignal);
     }
@@ -251,7 +251,7 @@ async function drainAwait(
         );
         if (Date.now() >= deadline) {
             throw new Error(
-                `WorPar Agent was still finishing ${waitingSummary(waitingFor)} after 15 minutes.`,
+                `KissOpen Agent was still finishing ${waitingSummary(waitingFor)} after 15 minutes.`,
             );
         }
         await killableDelay(DRAIN_POLL_MS, killSignal);
@@ -289,7 +289,7 @@ async function processExitAwait(pid: number, timeoutMs: number): Promise<void> {
     const deadline = Date.now() + timeoutMs;
     while (processExists(pid)) {
         if (Date.now() >= deadline) {
-            throw new Error("WorPar Agent accepted the shutdown but did not exit.");
+            throw new Error("KissOpen Agent accepted the shutdown but did not exit.");
         }
         await delay(EXIT_POLL_MS);
     }
@@ -303,7 +303,7 @@ async function readyAwait(
 ): Promise<void> {
     for (;;) {
         if (Date.now() >= deadline) {
-            throw new Error("The new WorPar Agent was not ready after 5 minutes.");
+            throw new Error("The new KissOpen Agent was not ready after 5 minutes.");
         }
         const health = await startupHealthRead(paths, deadline);
         if (

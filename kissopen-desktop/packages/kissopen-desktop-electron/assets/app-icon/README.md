@@ -1,6 +1,6 @@
 # Application icon assets
 
-The app icon is the 一起卷 / WorPar 卷 mark in its framed form, from the product
+The app icon is the KissOpen mark in its framed form, from the product
 owner's design: a rounded square (corner = side × 0.225) filled with a
 neutral-700 → neutral-900 gradient (`#3A3C50` → `#1B1D2C`), the purple roll
 (`#9184D9`, with a soft glow) entering from its left edge and rolling into a

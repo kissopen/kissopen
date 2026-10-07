@@ -333,7 +333,7 @@ export class DesktopProfilerController {
 
     start(request: DesktopProfilerRequest = {}): Promise<DesktopProfilerSnapshot> {
         if (this.#status === "starting" || this.#status === "running")
-            return Promise.reject(new Error("A WorPar profile is already running."));
+            return Promise.reject(new Error("A KissOpen profile is already running."));
         if (this.#status === "stopping")
             return Promise.reject(new Error("The profile is stopping."));
         const duration =
@@ -372,14 +372,14 @@ export class DesktopProfilerController {
     close(): Promise<void> {
         if (this.#finishPromise) return this.#finishPromise;
         if (this.#status === "running" || this.#status === "starting")
-            return this.#finish(true, "WorPar is quitting.");
+            return this.#finish(true, "KissOpen is quitting.");
         return Promise.resolve();
     }
 
     async #start(durationMs: number): Promise<void> {
         const contents = this.#options.renderer();
         if (!contents || contents.isDestroyed())
-            throw new Error("The WorPar renderer is not available.");
+            throw new Error("The KissOpen renderer is not available.");
         this.#contents = contents;
         this.#captureRendererGeneration = this.#rendererGeneration;
         this.#sessionId = randomBytes(12).toString("hex");
@@ -518,7 +518,7 @@ export class DesktopProfilerController {
             this.#status = "error";
             this.#error = errorMessage(error, "The profiler capture failed.");
             this.#publish();
-            console.error("WorPar profiler capture failed.", error);
+            console.error("KissOpen profiler capture failed.", error);
         });
     }
 
