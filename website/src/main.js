@@ -153,11 +153,6 @@ const menu=$('.menu-button');
 menu.addEventListener('click',() => { const open=menu.getAttribute('aria-expanded') !== 'true'; menu.setAttribute('aria-expanded',String(open)); $('#mobile-nav').hidden=!open; });
 $('#mobile-nav').addEventListener('click',event => { if(event.target.closest('a,button')) { $('#mobile-nav').hidden=true; menu.setAttribute('aria-expanded','false'); } });
 document.addEventListener('keydown',event => { if(event.key==='Escape' && !$('#mobile-nav').hidden) { $('#mobile-nav').hidden=true; menu.setAttribute('aria-expanded','false'); menu.focus(); } });
-$$('[data-dialog]').forEach(button => button.addEventListener('click',() => $(`#${button.dataset.dialog}-dialog`).showModal()));
-$$('dialog').forEach(dialog => {
-  dialog.querySelector('.close-dialog').addEventListener('click',() => dialog.close());
-  dialog.addEventListener('click',event => { const box=dialog.getBoundingClientRect(); if(event.target === dialog && (event.clientX<box.left || event.clientX>box.right || event.clientY<box.top || event.clientY>box.bottom)) dialog.close(); });
-});
 $('#site-language').addEventListener('change',event => {
   // A locale is explicit, not inferred from browser settings. Keep the section
   // and shared appearance/motion preferences when switching the page language.

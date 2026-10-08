@@ -3,7 +3,8 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, extname, sep } from 'node:path';
 import { render } from '../src/site.mjs';
-import { localeForPath } from '../src/locales.mjs';
+import { renderDownload } from '../src/download.mjs';
+import { localeForPath, downloadLocaleForPath, downloadPath } from '../src/locales.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const built = process.argv.includes('--built');
 const base = resolve(root, built ? 'dist' : '.');
@@ -15,15 +16,21 @@ http.createServer(async (req, res) => {
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405); res.end(); return; }
     let body, type;
     const locale = localeForPath(pathname);
-    if (locale) {
+    const downloadLocale = downloadLocaleForPath(pathname);
+    if (['/downloads', '/downloads/'].includes(pathname)) { res.writeHead(308, {Location:'/download/'}); res.end(); return; }
+    if (downloadLocale) {
+      if (!pathname.endsWith('/') && !pathname.endsWith('/index.html')) { res.writeHead(308,{Location:pathname+'/'}); res.end(); return; }
+      body = built ? await readFile(resolve(base,'.'+downloadPath(downloadLocale)+'index.html')) : renderDownload(downloadLocale.id,JSON.parse(await readFile(root+'releases.json','utf8')),JSON.parse(await readFile(root+'release-details.json','utf8')));
+      type = types['.html'];
+    } else if (locale) {
       if (pathname !== '/' && !pathname.endsWith('/') && !pathname.endsWith('/index.html')) {
         res.writeHead(308, { Location: pathname + '/' }); res.end(); return;
       }
       body = built ? await readFile(resolve(base, '.' + locale.path + 'index.html')) : render(locale.id, JSON.parse(await readFile(root + 'releases.json', 'utf8')));
       type = types['.html'];
     } else {
-      if (!/^\/(assets\/[^?]+|style\.css|main\.js|robots\.txt|sitemap\.xml)$/.test(pathname)) throw Error('not found');
-      const file = resolve(base, !built && ['/style.css', '/main.js'].includes(pathname) ? 'src' + pathname : '.' + pathname);
+      if (!/^\/(assets\/[^?]+|style\.css|main\.js|download\.css|download\.js|robots\.txt|sitemap\.xml)$/.test(pathname)) throw Error('not found');
+      const file = resolve(base, !built && ['/style.css', '/main.js', '/download.css', '/download.js'].includes(pathname) ? 'src' + pathname : '.' + pathname);
       if (!file.startsWith(base + sep)) throw Error('not found');
       body = await readFile(file); type = types[extname(file)] || 'application/octet-stream';
     }

@@ -37,3 +37,5 @@ html[lang=ru] h1{font-size:clamp(38px,4.5vw,66px)}
 .connection-fields>div>span{overflow-wrap:anywhere}
 @media(max-width:800px){footer>div{flex-wrap:wrap}.footer-language{margin-left:0}html[lang=ru] h1{font-size:clamp(31px,5.5vw,52px)}}
 @media(max-width:540px){.footer-language{width:100%}.footer-language select{margin-left:auto;min-width:165px}.frequency-controls button{padding:4px 10px}.feature-foot output{white-space:normal;text-align:left}.hero-actions{flex-wrap:wrap;gap:16px}.hero-note{overflow-wrap:anywhere}}
+
+.github-icon,.github-icon path{fill:currentColor;stroke:none}.github-link .github-icon{width:19px;height:19px}.github-link:hover{color:var(--accent)}.button.github-link{gap:12px}.mobile-nav .github-link{display:inline-flex;align-items:center;gap:9px}

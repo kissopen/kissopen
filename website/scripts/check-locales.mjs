@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { render } from '../src/site.mjs';
-import { locales, localeForPath } from '../src/locales.mjs';
+import { renderDownload } from '../src/download.mjs';
+import { locales, localeForPath, downloadPath, downloadLocaleForPath } from '../src/locales.mjs';
 
 const releases = JSON.parse(await readFile(new URL('../releases.json', import.meta.url), 'utf8'));
+const details = JSON.parse(await readFile(new URL('../release-details.json', import.meta.url), 'utf8'));
 let reference;
 for (const locale of locales) {
   const html = render(locale.id, releases);
@@ -24,7 +26,12 @@ for (const locale of locales) {
   assert.ok(html.includes('<noscript><nav class="language-fallback"'));
   assert.ok(!html.includes('class="language"'));
   assert.ok(!html.includes('undefined'));
-  assert.ok(html.includes(releases.macArm64) && html.includes(releases.macIntel));
+  assert.ok(html.includes(`href="${downloadPath(locale)}"`) && !html.includes('data-dialog="download"'));
+  const downloads = renderDownload(locale.id, releases, details);
+  assert.equal(downloadLocaleForPath(downloadPath(locale)).id,locale.id);
+  assert.ok(downloads.includes(`href="https://kissopen.com${downloadPath(locale)}"`));
+  for (const key of ['windows','macArm64','macIntel','android']) assert.ok(downloads.includes(`href="${releases[key]}"`) && downloads.includes(details[key].sha256));
+  assert.equal(await readFile(new URL('../dist'+downloadPath(locale)+'index.html',import.meta.url),'utf8'),downloads);
   for (const [key, value] of Object.entries(copy)) {
     assert.ok(Array.isArray(value) ? value.every(text => typeof text === 'string' && text.length) : typeof value === 'string' && value.length, locale.id + ':' + key);
     if (['selected', 'pluginCount'].includes(key)) assert.ok(value.includes('{n}'));
@@ -36,5 +43,5 @@ assert.ok(render().startsWith('<!doctype html><html lang="en">'));
 assert.equal(localeForPath('/en/').id, 'en');
 assert.equal(localeForPath('/v1/community/auth/start'), undefined);
 const sitemap = await readFile(new URL('../dist/sitemap.xml', import.meta.url), 'utf8');
-assert.equal((sitemap.match(/<url>/g) || []).length, 6);
+assert.equal((sitemap.match(/<url>/g) || []).length, 12);
 console.log('Default English and legacy /en/ compatibility verified.');

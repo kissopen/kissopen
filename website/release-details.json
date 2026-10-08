@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-08",
+  "windows": {
+    "version": "0.3.0",
+    "bytes": 243899082,
+    "sha256": "66c188583806d3c1e5c8000468caab109380441da0125bcfa44081115c9486d0",
+    "checksum": "https://kissopen.com/downloads/desktop/stable/kissopen-0.3.0-x64.exe.sha256"
+  },
+  "macArm64": {
+    "version": "0.3.1",
+    "bytes": 282207247,
+    "sha256": "f14187e2bf71d5e2a6092b45eb6dc2901358f61c9f8c771a7562ef38e180bd28",
+    "checksum": "https://kissopen.com/downloads/desktop/stable/SHA256SUMS"
+  },
+  "macIntel": {
+    "version": "0.3.1",
+    "bytes": 296660733,
+    "sha256": "add8b86e71502e2485df3cf65a88d8de3af911b77333a412ea3ec6d2bd083fd3",
+    "checksum": "https://kissopen.com/downloads/desktop/stable/SHA256SUMS"
+  },
+  "android": {
+    "version": "0.2.29",
+    "bytes": 95623170,
+    "sha256": "de5904caa2f0a90572c97e394d3aaa1a97309bdb6bf689f41c42cb306ae31a32",
+    "checksum": "https://kissopen.com/downloads/android/stable/kissopen-0.2.29-android-release.apk.sha256"
+  }
+}
