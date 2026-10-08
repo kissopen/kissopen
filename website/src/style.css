@@ -77,16 +77,17 @@ html[lang=ru] h1{font-size:clamp(38px,4.5vw,66px)}
 @media(max-width:540px){.cli-install{padding:23px 18px;margin-bottom:24px}.cli-heading h2{font-size:24px}.cli-tabs{padding:0 16px;gap:28px}.cli-command{padding:15px 12px 15px 16px;gap:6px}.cli-command code{font-size:12px}.cli-launch{flex-direction:column;align-items:stretch;gap:10px}.cli-launch .cli-command{max-width:none}.cli-reference code{font-size:11px}}
 
 /* Installation stays in the left reading column beside the hero artwork. */
-.hero-copy{width:62%;max-width:680px;min-width:0}
-.hero-copy h1{font-size:clamp(44px,4.8vw,70px)}
-.hero-copy .hero-description{font-size:16px;max-width:590px;margin-top:22px}
-.cli-home{pointer-events:auto;margin:26px 0 0;padding:0;border:0;border-radius:0;background:none}
+.hero-copy{width:58%;max-width:640px;min-width:0}
+#product{min-height:390px;padding:52px 0}
+#product #constellation{height:330px;top:30px;width:40%}
+#product .hero-art-caption{bottom:28px}
+.hero-copy h1.eyebrow{font-size:10px;line-height:1.6;letter-spacing:.18em;font-weight:700;margin-bottom:22px}
+.cli-home{pointer-events:auto;margin:0;padding:0;border:0;border-radius:0;background:none}
 .cli-home .cli-terminal{background:var(--surface)}
 .cli-home .cli-tabs{gap:25px;padding:0 20px;scrollbar-width:thin}
 .cli-home .cli-tabs [role=tab]{font-size:13px;padding:12px 0 10px}
 .cli-home .cli-command{padding:12px 14px 12px 20px;min-height:68px}
 .cli-home .cli-command code{font-size:13px;line-height:1.8}
-.cli-home .cli-method-note{padding:0 20px 14px;font-size:10px}
 .cli-home-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:11px;color:var(--muted)}
 .cli-home-footer code{color:var(--text);font:12px ui-monospace,SFMono-Regular,Consolas,monospace;margin-left:8px}
 .cli-home-footer a{display:inline-flex;align-items:center;gap:5px}
@@ -95,6 +96,6 @@ html[lang=ru] h1{font-size:clamp(38px,4.5vw,66px)}
 .cli-home .cli-feedback{margin:0;min-height:0}
 .cli-home .cli-feedback:not(:empty){margin-top:8px}
 .hero-copy .hero-actions{margin-top:24px}
-@media(max-width:1100px){.hero-copy{width:65%}.hero-copy h1{font-size:clamp(40px,5vw,60px)}}
-@media(max-width:800px){.hero-copy{width:100%;max-width:640px}.hero-copy h1{font-size:clamp(35px,6.3vw,55px)}.hero-copy .hero-description{max-width:520px;font-size:15px}}
-@media(max-width:540px){.hero-copy h1,html[lang=zh-CN] .hero-copy h1{font-size:clamp(30px,7.9vw,43px)}.hero-copy .hero-description{font-size:13px;max-width:none}.cli-home{margin-top:23px;padding:0}.cli-home .cli-tabs{gap:18px;padding:0 15px;scrollbar-width:none}.cli-home .cli-command{padding:12px 8px 12px 15px;gap:6px}.cli-home .cli-command code{font-size:11px}.cli-home .cli-method-note{padding:0 15px 12px}.cli-home-footer{font-size:10px}.hero-copy .hero-actions{gap:18px}}
+@media(max-width:1100px){.hero-copy{width:65%}}
+@media(max-width:800px){.hero-copy{width:100%;max-width:640px}#product #constellation{width:49%}}
+@media(max-width:540px){#product{min-height:0;padding:40px 0 36px}#product #constellation{height:260px;top:20px;width:75%}.cli-home{margin:0;padding:0}.cli-home .cli-tabs{gap:18px;padding:0 15px;scrollbar-width:none}.cli-home .cli-command{padding:12px 8px 12px 15px;gap:6px}.cli-home .cli-command code{font-size:11px}.cli-home-footer{font-size:10px}.hero-copy .hero-actions{gap:18px}}
