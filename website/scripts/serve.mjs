@@ -35,8 +35,8 @@ http.createServer(async (req, res) => {
         res.end(req.method === 'HEAD' ? undefined : body);
         return;
       }
-      if (!/^\/(assets\/[^?]+|install\/(install\.sh|PKGBUILD|kissopen\.rb)|style\.css|main\.js|download\.css|download\.js|robots\.txt|sitemap\.xml)$/.test(pathname)) throw Error('not found');
-      const file = resolve(base, !built && ['/style.css', '/main.js', '/download.css', '/download.js'].includes(pathname) ? 'src' + pathname : '.' + pathname);
+      if (!/^\/(assets\/[^?]+|install\/(install\.sh|PKGBUILD|kissopen\.rb)|style\.css|main\.js|download\.css|download\.js|cli\.js|robots\.txt|sitemap\.xml)$/.test(pathname)) throw Error('not found');
+      const file = resolve(base, !built && ['/style.css', '/main.js', '/download.css', '/download.js', '/cli.js'].includes(pathname) ? 'src' + pathname : '.' + pathname);
       if (!file.startsWith(base + sep)) throw Error('not found');
       body = await readFile(file); type = pathname.startsWith('/install/') ? 'text/plain; charset=utf-8' : types[extname(file)] || 'application/octet-stream';
     }

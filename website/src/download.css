@@ -37,40 +37,6 @@
 .pending-badge{font-size:10px;color:var(--muted);flex:none}
 .download-guide .section-heading{margin-bottom:0}
 .download-guide .section-heading h2{font-size:39px}
-.cli-install{margin-bottom:40px;padding:30px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
-.cli-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:25px}
-.cli-heading .eyebrow{margin-bottom:12px}
-.cli-heading h2{font-size:28px;font-weight:600}
-.cli-heading p:not(.eyebrow){font-size:12px;color:var(--muted);margin-top:12px}
-.cli-heading .underlink{flex:none;font-size:12px}
-.cli-terminal{border:1px solid var(--border);border-radius:7px;background:var(--bg)}
-.cli-tabs{display:flex;gap:28px;padding:0 24px;border-bottom:1px solid var(--border);overflow-x:auto}
-.cli-tabs [role=tab]{padding:15px 0 12px;border-bottom:2px solid transparent;font:15px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted)}
-.cli-tabs [aria-selected=true]{color:var(--text);border-bottom-color:var(--accent)}
-.cli-tabs [role=tab]:focus-visible{outline-offset:-3px}
-.cli-command{display:flex;align-items:center;gap:16px;padding:21px 24px;min-width:0}
-.cli-command code{font:14px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1;user-select:all}
-.cli-copy{display:flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;color:var(--muted);border-radius:5px}
-.cli-copy[hidden]{display:none}
-.cli-copy:hover{background:var(--surface);color:var(--accent)}
-.cli-copy .icon{width:18px;height:18px}
-.cli-requirements,.cli-platforms{font-size:11px;line-height:1.8;color:var(--muted)}
-.cli-requirements{margin-top:14px}
-.cli-method-note{padding:0 24px 18px;font-size:11px;line-height:1.8;color:var(--muted)}
-.cli-platforms{margin-top:3px}
-.cli-launch{display:flex;align-items:center;gap:24px;margin-top:22px}
-.cli-launch>p{font-size:12px;color:var(--muted);flex:none}
-.cli-launch .cli-command{padding:6px 12px 6px 18px;border:1px solid var(--border);border-radius:7px;max-width:380px;flex:1;background:var(--bg)}
-.cli-feedback{font-size:11px;color:var(--accent);min-height:22px;margin-top:8px}
-.cli-reference{border-top:1px solid var(--border);padding-top:14px;font-size:12px;color:var(--muted)}
-.cli-reference summary{cursor:pointer;width:fit-content}
-.cli-reference summary:hover{color:var(--accent)}
-.cli-reference dl{margin:20px 0 0}
-.cli-reference dl>div{display:grid;grid-template-columns:minmax(240px,1fr) 1fr;gap:12px;padding:9px 0}
-.cli-reference code{font:12px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--text);overflow-wrap:anywhere}
-.cli-reference dd{margin:0}
-@media(max-width:800px){.cli-heading{align-items:flex-start;flex-direction:column;gap:16px}.cli-reference dl>div{grid-template-columns:1fr;gap:2px}}
-@media(max-width:540px){.cli-install{padding:23px 18px;margin-bottom:24px}.cli-heading h2{font-size:24px}.cli-tabs{padding:0 16px;gap:28px}.cli-command{padding:15px 12px 15px 16px;gap:6px}.cli-command code{font-size:12px}.cli-launch{flex-direction:column;align-items:stretch;gap:10px}.cli-launch .cli-command{max-width:none}.cli-reference code{font-size:11px}}
 @media(max-width:1100px){.download-intro{gap:24px;align-items:flex-start}.release-stamp{margin-top:6px}.download-grid{gap:16px}.download-card{padding:24px 20px}.other-platforms article{flex-wrap:wrap}.other-platforms .underlink,.pending-badge{margin-left:42px}}
 @media(max-width:800px){.download-intro{padding:55px 0;flex-direction:column;gap:25px}.download-grid{grid-template-columns:1fr 1fr}.download-card:last-child{grid-column:1/-1}.platform-description{min-height:0}.platform-downloads{min-height:0}.platform-note{min-height:0}.other-platforms{grid-template-columns:1fr}.other-platforms article{flex-wrap:nowrap}.other-platforms .underlink,.pending-badge{margin-left:0}.download-guide .section-heading h2{font-size:32px}}
 @media(max-width:540px){.download-intro{padding:49px 0 37px}.download-tagline{max-width:none}.download-description{font-size:12px}.download-grid{grid-template-columns:1fr;gap:16px}.download-card:last-child{grid-column:auto}.download-card{padding:23px 22px}.platform-heading{margin-bottom:20px}.download-card h2{font-size:24px}.platform-downloads{margin-top:21px}.download-button{min-height:61px}.other-platforms{gap:16px;margin-top:16px}.other-platforms article{padding:23px 22px;flex-wrap:wrap;gap:14px}.other-platforms .underlink,.pending-badge{margin-left:38px}.download-guide .section-heading h2{font-size:29px}}
