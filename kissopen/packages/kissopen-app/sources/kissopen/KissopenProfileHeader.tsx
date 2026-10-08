@@ -150,7 +150,7 @@ function ProfileEditor({ user, onSaved, onClose }: { user: ProfileUser; onSaved:
                 editable={false}
             />
         </View>
-        <Text style={styles.hint}>Change your sign-in username under Security.</Text>
+        <Text style={styles.hint}>{t('kissopen.security.usernameHint')}</Text>
         <Text style={[styles.hint, !!error && { color: theme.colors.textDestructive }]}>{error || t('kissopen.profile.hint')}</Text>
         <Pressable
             accessibilityRole="button"

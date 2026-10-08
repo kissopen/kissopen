@@ -19,6 +19,13 @@ import { ItemList } from "@/components/ItemList";
 import { RoundButton } from "@/components/RoundButton";
 import { QRCode } from "@/components/qr";
 import { Modal } from "@/modal";
+import { t } from "@/text";
+
+const PROVIDER_NAMES: Record<CommunityProvider, string> = {
+    github: "GitHub",
+    google: "Google",
+    nodeloc: "NodeLoc",
+};
 
 export function AccountSecurityScreen() {
     const auth = React.useMemo(() => new CommunityAuthClient(getServerUrl()), []);
@@ -28,7 +35,7 @@ export function AccountSecurityScreen() {
                 const result = await request(path, body ? "POST" : "GET", body);
                 const value = JSON.parse(result.text);
                 if (result.status !== 200)
-                    throw new Error(value.error || "Security service is unavailable.");
+                    throw new Error(value.error || t('kissopen.security.serviceUnavailable'));
                 return value;
             }),
         [auth],
@@ -84,7 +91,7 @@ export function AccountSecurityScreen() {
             }
         } catch (e) {
             if (current())
-                setError(e instanceof Error ? e.message : "This change could not be saved.");
+                setError(e instanceof Error ? e.message : t('kissopen.security.saveFailed'));
         } finally {
             running.current = false;
             if (alive.current) setBusy(false);
@@ -96,21 +103,21 @@ export function AccountSecurityScreen() {
         proof.current = undefined;
         if (cached && cached.expires > Date.now()) return cached.value;
         const password = data?.passwordEnabled
-            ? await Modal.prompt("Verify identity", "Enter your current password.", {
+            ? await Modal.prompt(t('kissopen.security.verifyIdentityTitle'), t('kissopen.security.verifyIdentityMessage'), {
                   inputType: "secure-text",
               })
             : undefined;
         if (password === null || !alive.current || generation.current !== epoch)
-            throw new Error("Verification cancelled.");
+            throw new Error(t('kissopen.security.verificationCancelled'));
         const code = data?.totpEnabled
             ? await Modal.prompt(
-                  "Two-factor authentication",
-                  "Enter a fresh authenticator or unused recovery code.",
+                  t('kissopen.security.twoFactorTitle'),
+                  t('kissopen.security.twoFactorFreshCode'),
                   { inputType: "secure-text" },
               )
             : undefined;
         if (code === null || !alive.current || generation.current !== epoch)
-            throw new Error("Verification cancelled.");
+            throw new Error(t('kissopen.security.verificationCancelled'));
         return client.verify(password, code);
     };
     const prompt = async (title: string, note: string, secure = false) => {
@@ -124,7 +131,7 @@ export function AccountSecurityScreen() {
         if (running.current) return;
         const popup = Platform.OS === "web" ? window.open("about:blank", "_blank") : null;
         if (Platform.OS === "web" && !popup) {
-            setError("Allow pop-ups for KissOpen, then try again.");
+            setError(t('kissopen.security.allowPopups'));
             return;
         }
         if (popup) popup.opener = null;
@@ -157,8 +164,8 @@ export function AccountSecurityScreen() {
                                 nativeOpened = false;
                             }
                             const code = await prompt(
-                                "Two-factor authentication",
-                                "Enter a fresh authenticator or recovery code.",
+                                t('kissopen.security.twoFactorTitle'),
+                                t('kissopen.security.twoFactorFreshOrRecovery'),
                                 true,
                             );
                             if (code === null) return false;
@@ -166,8 +173,8 @@ export function AccountSecurityScreen() {
                                 await auth.factor(login, code, active.signal);
                             } catch (e) {
                                 await Modal.alert(
-                                    "Code not accepted",
-                                    e instanceof Error ? e.message : "Try another code.",
+                                    t('kissopen.security.codeNotAccepted'),
+                                    e instanceof Error ? e.message : t('kissopen.security.tryAnotherCode'),
                                 );
                             }
                         } else if (status.status === "authorized") {
@@ -178,7 +185,7 @@ export function AccountSecurityScreen() {
                         }
                         await communityAuthorizationWait(1500, active.signal);
                     }
-                    throw new Error("Authorization expired or cancelled. Please start again.");
+                    throw new Error(t('kissopen.security.authorizationExpired'));
                 } finally {
                     void auth.cancel(login).catch(() => undefined);
                     if (nativeOpened && Platform.OS === "ios") WebBrowser.dismissBrowser();
@@ -187,18 +194,18 @@ export function AccountSecurityScreen() {
                 }
             },
             intent === "link"
-                ? "Provider linked to this account."
-                : "Identity verified for one security change.",
+                ? t('kissopen.security.providerLinked')
+                : t('kissopen.security.identityVerified'),
         );
         popup?.close();
     };
     return (
         <>
-            <Stack.Screen options={{ title: "Security" }} />
+            <Stack.Screen options={{ title: t('kissopen.security.title') }} />
             <ItemList keyboardShouldPersistTaps="handled">
                 {!!error && (
                     <ItemGroup>
-                        <Item title="Security" subtitle={error} showChevron={false} />
+                        <Item title={t('kissopen.security.title')} subtitle={error} showChevron={false} />
                     </ItemGroup>
                 )}
                 {!!message && (
@@ -209,51 +216,51 @@ export function AccountSecurityScreen() {
                 {!data ? (
                     <ItemGroup>
                         <Item
-                            title="Load account security"
+                            title={t('kissopen.security.loadSecurity')}
                             loading={busy}
                             onPress={() => void run(async () => undefined)}
                         />
                     </ItemGroup>
                 ) : (
                     <>
-                        <ItemGroup title="Sign-in">
+                        <ItemGroup title={t('kissopen.security.signInGroup')}>
                             <Item
-                                title="Username"
+                                title={t('kissopen.security.username')}
                                 subtitle={
                                     data.username
                                         ? "@" + data.username
-                                        : "Set a username before adding a password"
+                                        : t('kissopen.security.usernameMissing')
                                 }
                                 disabled={busy}
                                 onPress={() =>
                                     void run(async () => {
                                         const username = await prompt(
-                                            "Username",
-                                            "3–20 letters, digits or underscores.",
+                                            t('kissopen.security.username'),
+                                            t('kissopen.security.usernameRule'),
                                         );
                                         if (username === null) return false;
                                         await client.username(
                                             await verified(),
                                             username.trim().toLowerCase(),
                                         );
-                                    }, "Username saved.")
+                                    }, t('kissopen.security.usernameSaved'))
                                 }
                             />
                             <Item
-                                title={data.passwordEnabled ? "Change password" : "Set password"}
-                                subtitle="12–128 characters. Other account sessions will be signed out."
+                                title={data.passwordEnabled ? t('kissopen.security.changePassword') : t('kissopen.security.setPassword')}
+                                subtitle={t('kissopen.security.passwordSubtitle')}
                                 disabled={busy || !data.username}
                                 onPress={() =>
                                     void run(async () => {
                                         const password = await prompt(
-                                            "New password",
-                                            "Use a unique password of 12–128 characters.",
+                                            t('kissopen.security.newPassword'),
+                                            t('kissopen.security.newPasswordHint'),
                                             true,
                                         );
                                         if (password === null) return false;
                                         const repeat = await prompt(
-                                            "Repeat password",
-                                            "Enter the same new password again.",
+                                            t('kissopen.security.repeatPassword'),
+                                            t('kissopen.security.repeatPasswordHint'),
                                             true,
                                         );
                                         if (repeat === null) return false;
@@ -263,27 +270,27 @@ export function AccountSecurityScreen() {
                                             password.length > 128
                                         )
                                             throw new Error(
-                                                "Passwords must match and contain 12–128 characters.",
+                                                t('kissopen.security.passwordInvalid'),
                                             );
                                         await client.password(await verified(), password);
-                                    }, "Password saved. Other account sessions signed out.")
+                                    }, t('kissopen.security.passwordSaved'))
                                 }
                             />
                         </ItemGroup>
                         <ItemGroup
-                            title="Two-factor authentication"
-                            footer="Applies to password and all provider sign-ins. Keep recovery codes somewhere safe."
+                            title={t('kissopen.security.twoFactorTitle')}
+                            footer={t('kissopen.security.twoFactorFooter')}
                         >
                             <Item
                                 title={
                                     data.totpEnabled
-                                        ? "Disable two-factor authentication"
-                                        : "Set up authenticator"
+                                        ? t('kissopen.security.disableTwoFactor')
+                                        : t('kissopen.security.setUpAuthenticator')
                                 }
                                 subtitle={
                                     data.totpEnabled
-                                        ? `${data.recoveryCodesRemaining} recovery codes remain`
-                                        : "Six-digit authenticator codes"
+                                        ? t('kissopen.security.recoveryCodesRemaining', { count: data.recoveryCodesRemaining })
+                                        : t('kissopen.security.sixDigitCodes')
                                 }
                                 disabled={busy}
                                 onPress={() =>
@@ -303,8 +310,8 @@ export function AccountSecurityScreen() {
                             />
                             {data.totpEnabled && (
                                 <Item
-                                    title="Replace recovery codes"
-                                    subtitle="Your old codes will stop working"
+                                    title={t('kissopen.security.replaceRecoveryCodes')}
+                                    subtitle={t('kissopen.security.oldCodesStopWorking')}
                                     disabled={busy}
                                     onPress={() =>
                                         void run(async (current) => {
@@ -316,23 +323,23 @@ export function AccountSecurityScreen() {
                             )}
                         </ItemGroup>
                         {setup && (
-                            <ItemGroup title="Add to your authenticator">
+                            <ItemGroup title={t('kissopen.security.addToAuthenticator')}>
                                 <View style={styles.secret}>
                                     <QRCode data={setup.uri} size={192} />
                                 </View>
                                 <View style={styles.secret}>
                                     <Text selectable style={styles.text}>
-                                        KissOpen · 6 digits · 30 seconds{"\n" + setup.secret}
+                                        {t('kissopen.security.authenticatorDetails') + "\n" + setup.secret}
                                     </Text>
                                 </View>
                                 <Item
-                                    title="Verify and enable 2FA"
+                                    title={t('kissopen.security.verifyAndEnable')}
                                     disabled={busy}
                                     onPress={() =>
                                         void run(async (current) => {
                                             const code = await prompt(
-                                                "Authenticator code",
-                                                "Enter the six-digit code from your authenticator.",
+                                                t('kissopen.security.authenticatorCode'),
+                                                t('kissopen.security.authenticatorCodeHint'),
                                             );
                                             if (code === null) return false;
                                             const next = await client.totpConfirm(
@@ -343,16 +350,16 @@ export function AccountSecurityScreen() {
                                                 setSetup(undefined);
                                                 setCodes(next);
                                             }
-                                        }, "2FA enabled. Save your recovery codes.")
+                                        }, t('kissopen.security.twoFactorEnabled'))
                                     }
                                 />
-                                <Item title="Cancel setup" onPress={() => setSetup(undefined)} />
+                                <Item title={t('kissopen.security.cancelSetup')} onPress={() => setSetup(undefined)} />
                             </ItemGroup>
                         )}
                         {codes && (
                             <ItemGroup
-                                title="Save recovery codes privately"
-                                footer="Shown only once. Each works once. Do not share them."
+                                title={t('kissopen.security.saveRecoveryCodes')}
+                                footer={t('kissopen.security.recoveryCodesFooter')}
                             >
                                 <View style={styles.secret}>
                                     <Text selectable style={styles.text}>
@@ -360,31 +367,25 @@ export function AccountSecurityScreen() {
                                     </Text>
                                 </View>
                                 <Item
-                                    title="I saved these codes"
+                                    title={t('kissopen.security.savedCodes')}
                                     onPress={() => setCodes(undefined)}
                                 />
                             </ItemGroup>
                         )}
                         <ItemGroup
-                            title="Third-party sign-in"
-                            footer="Providers link to this same account. Email addresses never merge accounts."
+                            title={t('kissopen.security.thirdPartyTitle')}
+                            footer={t('kissopen.security.thirdPartyFooter')}
                         >
                             {data.providers.map((item) => (
                                 <React.Fragment key={item.provider}>
                                     <Item
-                                        title={
-                                            {
-                                                github: "GitHub",
-                                                google: "Google",
-                                                nodeloc: "NodeLoc",
-                                            }[item.provider]
-                                        }
+                                        title={PROVIDER_NAMES[item.provider]}
                                         subtitle={
                                             item.linked
-                                                ? "Linked · tap to verify your identity"
+                                                ? t('kissopen.security.providerLinkedStatus')
                                                 : item.configured
-                                                  ? "Not linked · tap to link"
-                                                  : "Not configured"
+                                                  ? t('kissopen.security.providerNotLinked')
+                                                  : t('kissopen.security.providerNotConfigured')
                                         }
                                         disabled={busy || !item.configured}
                                         onPress={() =>
@@ -396,7 +397,7 @@ export function AccountSecurityScreen() {
                                     />
                                     {item.linked && (
                                         <Item
-                                            title={`Unlink ${item.provider}`}
+                                            title={t('kissopen.security.unlinkProvider', { provider: PROVIDER_NAMES[item.provider] })}
                                             disabled={
                                                 busy ||
                                                 (!data.providers.some(
@@ -413,7 +414,7 @@ export function AccountSecurityScreen() {
                                                         await verified(),
                                                         item.provider,
                                                     );
-                                                }, "Provider unlinked.")
+                                                }, t('kissopen.security.providerUnlinked'))
                                             }
                                         />
                                     )}
@@ -424,7 +425,7 @@ export function AccountSecurityScreen() {
                 )}
                 {busy && (
                     <RoundButton
-                        title="Cancel browser verification"
+                        title={t('kissopen.security.cancelBrowserVerification')}
                         onPress={() => flow.current?.abort()}
                     />
                 )}

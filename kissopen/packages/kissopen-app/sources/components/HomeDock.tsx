@@ -839,17 +839,17 @@ export const HomeDock = React.memo(({
         if (!supportsWorktree && !picksWorkspaces) {
             return [{
                 key: '__none__',
-                name: 'No worktree',
-                description: `Not supported by ${getHarnessName(agentType)}`,
+                name: t('newSession.noWorktreeTitle'),
+                description: t('newSession.notSupportedBy', { harness: getHarnessName(agentType) }),
             }];
         }
         const options: ModeOption[] = [
             ...(canCreateWorktree
-                ? [{ key: '__new__', name: picksWorkspaces ? 'Create New' : 'Create new worktree' }]
+                ? [{ key: '__new__', name: picksWorkspaces ? t('newSession.createNewWorkspace') : t('newSession.createNewWorktree') }]
                 : []),
             // Starting in no workspace means starting in the project's own
             // checkout, which is a place with a name rather than an absence.
-            { key: '__none__', name: picksWorkspaces ? 'Main' : 'No worktree' },
+            { key: '__none__', name: picksWorkspaces ? t('newSession.mainWorkspace') : t('newSession.noWorktreeTitle') },
             ...existingWorktrees,
         ];
         if (
@@ -1179,18 +1179,18 @@ export const HomeDock = React.memo(({
     // machine/project/worktree because all four say where and with what the
     // session runs, and all four are settled before anything is typed.
     const environmentRows: SettingsRow[] = [
-        { page: 'machine', label: 'MACHINE', value: currentMachine?.name ?? 'Select machine', icon: 'desktop-outline' },
-        { page: 'project', label: 'PROJECT', value: currentProject?.name ?? '~', icon: 'folder-outline' },
+        { page: 'machine', label: t('newSession.pickerMachine').toUpperCase(), value: currentMachine?.name ?? t('newSession.selectMachine'), icon: 'desktop-outline' },
+        { page: 'project', label: t('newSession.pickerProject').toUpperCase(), value: currentProject?.name ?? '~', icon: 'folder-outline' },
         {
             page: 'worktree',
-            label: picksWorkspaces ? 'WORKSPACE' : 'WORKTREE',
-            value: currentWorktree?.name ?? (picksWorkspaces ? 'Main' : 'No worktree'),
+            label: (picksWorkspaces ? t('newSession.pickerWorkspace') : t('newSession.pickerWorktree')).toUpperCase(),
+            value: currentWorktree?.name ?? (picksWorkspaces ? t('newSession.mainWorkspace') : t('newSession.noWorktreeTitle')),
             icon: 'git-branch-outline',
         },
         {
             page: 'agent',
-            label: 'HARNESS',
-            value: hasAvailableHarness ? currentAgent.name : 'Help',
+            label: t('newSession.pickerHarness').toUpperCase(),
+            value: hasAvailableHarness ? currentAgent.name : t('newSession.harnessHelp'),
             icon: hasAvailableHarness ? 'hardware-chip-outline' : 'help-circle-outline',
         },
     ];
@@ -1236,11 +1236,11 @@ export const HomeDock = React.memo(({
 
     const getEnvironmentPickerConfig = (setting: EnvironmentSetting): PickerConfig => {
         if (setting === 'machine') {
-            return { title: 'Machine', options: machineOptions, selectedKey: selectedMachineId, onSelect: setMachineId };
+            return { title: t('newSession.pickerMachine'), options: machineOptions, selectedKey: selectedMachineId, onSelect: setMachineId };
         }
         if (setting === 'project') {
             return {
-                title: 'Project',
+                title: t('newSession.pickerProject'),
                 options: [
                     ...projectOptions,
                     {
@@ -1259,7 +1259,7 @@ export const HomeDock = React.memo(({
             };
         }
         return {
-            title: picksWorkspaces ? 'Workspace' : 'Worktree',
+            title: picksWorkspaces ? t('newSession.pickerWorkspace') : t('newSession.pickerWorktree'),
             options: worktreeOptions,
             selectedKey: selectedWorktreeKey,
             onSelect: (key) => {
@@ -1271,7 +1271,7 @@ export const HomeDock = React.memo(({
 
     const getAgentPickerConfig = (setting: AgentSetting): PickerConfig => {
         if (setting === 'agent') {
-            return { title: 'Harness', options: availableAgents, selectedKey: agentType, onSelect: (key) => selectAgent(key as NewSessionAgentType) };
+            return { title: t('newSession.pickerHarness'), options: availableAgents, selectedKey: agentType, onSelect: (key) => selectAgent(key as NewSessionAgentType) };
         }
         if (setting === 'model') {
             return { title: t('agentInput.model.title'), options: modelOptions, selectedKey: currentModel?.key, onSelect: setModelMode };
@@ -1381,7 +1381,7 @@ export const HomeDock = React.memo(({
                     key={row.page}
                     onPress={openHarnessSetupHelp}
                     accessibilityRole="link"
-                    accessibilityLabel="Harness setup help"
+                    accessibilityLabel={t('newSession.harnessSetupHelp')}
                 >
                     {renderPickerRowContent(row, compact)}
                 </Pressable>
@@ -1607,7 +1607,7 @@ export const HomeDock = React.memo(({
                                 style={[styles.inputEntryText, !prompt && styles.inputEntryPlaceholder]}
                                 numberOfLines={1}
                             >
-                                {prompt || 'Plan, ask, build…'}
+                                {prompt || t('newSession.dockPlaceholder')}
                             </Text>
                         </Pressable>
                     ) : (
@@ -1618,7 +1618,7 @@ export const HomeDock = React.memo(({
                             onSubmitEditing={() => canSubmit && onSend()}
                             onFocus={onFocus}
                             onBlur={onBlur}
-                            placeholder="Plan, ask, build…"
+                            placeholder={t('newSession.dockPlaceholder')}
                             placeholderTextColor={theme.colors.textSecondary}
                             selectionColor={theme.colors.text}
                             returnKeyType="send"
@@ -1631,7 +1631,7 @@ export const HomeDock = React.memo(({
                         disabled={!canSubmit}
                         style={[styles.sendButton, canSubmit && styles.sendButtonActive]}
                         accessibilityRole="button"
-                        accessibilityLabel="Send"
+                        accessibilityLabel={t('newSession.send')}
                     >
                         {isSubmitting ? (
                             <ActivityIndicator size="small" color={theme.colors.textSecondary} />
@@ -1742,7 +1742,7 @@ export const HomeDock = React.memo(({
                                 onPress={() => void pickImages()}
                                 style={styles.sideButton}
                                 accessibilityRole="button"
-                                accessibilityLabel="Add image"
+                                accessibilityLabel={t('newSession.addImage')}
                             >
                                 <Ionicons
                                     name="add"
@@ -1838,7 +1838,7 @@ export const HomeDock = React.memo(({
                                 disabled={primaryAction !== 'send' && primaryAction !== 'stop'}
                                 style={[styles.sendButton, primaryActionFilled && styles.sendButtonActive]}
                                 accessibilityRole="button"
-                                accessibilityLabel={primaryAction === 'stop' ? 'Stop' : 'Send'}
+                                accessibilityLabel={primaryAction === 'stop' ? t('newSession.stop') : t('newSession.send')}
                             >
                                 {primaryAction === 'stop' && (
                                     <Animated.View

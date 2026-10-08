@@ -1,6 +1,21 @@
 import type { MachineChoice } from '@/sync/machineChoices';
 import type { SessionListItem } from '@/sync/storage';
 
+/** The person-facing lines of the guide; the AI prompt itself stays in English. */
+export type OfflineMachineTroubleshootingText = {
+    steps: readonly string[];
+    aiPromptLabel: string;
+};
+
+const DEFAULT_TEXT: OfflineMachineTroubleshootingText = {
+    steps: [
+        '1. Wake the machine and check internet.',
+        '2. Run `kissopen` again.',
+        '3. Reopen KissOpen.',
+    ],
+    aiPromptLabel: 'AI prompt:',
+};
+
 export type OfflineMachineTroubleshooting = {
     machineName: string;
     projectName: string;
@@ -23,6 +38,7 @@ function projectNameFromPath(path: string | null | undefined): string | null {
 export function buildOfflineMachineTroubleshooting(
     choices: readonly MachineChoice[],
     sessions: readonly SessionListItem[] | null,
+    text: OfflineMachineTroubleshootingText = DEFAULT_TEXT,
 ): OfflineMachineTroubleshooting {
     const sortedSessions = (sessions ?? [])
         .filter((item): item is Exclude<SessionListItem, string> => typeof item !== 'string')
@@ -55,11 +71,9 @@ export function buildOfflineMachineTroubleshooting(
         kissopenHomeDir,
         aiPrompt,
         message: [
-            '1. Wake the machine and check internet.',
-            '2. Run `kissopen` again.',
-            '3. Reopen KissOpen.',
+            ...text.steps,
             '',
-            'AI prompt:',
+            text.aiPromptLabel,
             aiPrompt,
         ].join('\n'),
     };

@@ -191,23 +191,23 @@ export function EmptyMainScreen({
             return (
                 <View style={styles.container}>
                     <Ionicons name="terminal-outline" size={56} color={theme.colors.textSecondary} style={styles.stateIcon} />
-                    <Text style={styles.stateTitle}>No sessions yet</Text>
-                    <Text style={styles.stateDescription}>Start one on a connected machine.</Text>
-                    <RoundButton title="Start New Session" size="large" onPress={() => router.navigate('/new')} />
+                    <Text style={styles.stateTitle}>{t('components.emptyMainScreen.noSessions')}</Text>
+                    <Text style={styles.stateDescription}>{t('components.emptyMainScreen.startOnConnectedMachine')}</Text>
+                    <RoundButton title={t('newSession.title')} size="large" onPress={() => router.navigate('/new')} />
                     {showArchivedAction}
                 </View>
             );
         }
 
         const title = machineChoices.length === 1
-            ? `${machineChoices[0].name} is unreachable`
-            : 'No machines are reachable';
+            ? t('components.emptyMainScreen.machineUnreachable', { name: machineChoices[0].name })
+            : t('components.emptyMainScreen.noMachinesReachable');
         return (
             <View style={styles.container}>
                 <Ionicons name="cloud-offline-outline" size={56} color={theme.colors.textSecondary} style={styles.stateIcon} />
                 <Text style={styles.stateTitle}>{title}</Text>
-                <Text style={styles.stateDescription}>Bring a machine online to start a session.</Text>
-                <RoundButton title="Troubleshoot" size="large" onPress={troubleshoot} />
+                <Text style={styles.stateDescription}>{t('components.emptyMainScreen.bringMachineOnline')}</Text>
+                <RoundButton title={t('components.emptyMainScreen.troubleshoot')} size="large" onPress={troubleshoot} />
                 {showArchivedAction}
             </View>
         );

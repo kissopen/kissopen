@@ -7,6 +7,7 @@ import { useAllMachines } from '@/sync/storage';
 import { useRouter } from 'expo-router';
 import { collectMachineChoices } from '@/sync/machineChoices';
 import { useOfflineMachineTroubleshooting } from '@/hooks/useOfflineMachineTroubleshooting';
+import { t } from '@/text';
 
 const stylesheet = StyleSheet.create((theme) => ({
     container: {
@@ -81,15 +82,15 @@ export function EmptySessionsTablet() {
             <Text style={styles.titleText}>
                 {hasOfflineMachines
                     ? machineChoices.length === 1
-                        ? `${machineChoices[0].name} is unreachable`
-                        : 'No machines are reachable'
-                    : 'No sessions yet'}
+                        ? t('components.emptyMainScreen.machineUnreachable', { name: machineChoices[0].name })
+                        : t('components.emptyMainScreen.noMachinesReachable')
+                    : t('components.emptyMainScreen.noSessions')}
             </Text>
             
             {hasOnlineMachines ? (
                 <>
                     <Text style={styles.descriptionText}>
-                        Start a new session on any of your connected machines.
+                        {t('components.emptyMainScreen.startOnAnyConnectedMachine')}
                     </Text>
                     <Pressable
                         style={styles.button}
@@ -102,14 +103,14 @@ export function EmptySessionsTablet() {
                             style={styles.buttonIcon}
                         />
                         <Text style={styles.buttonText}>
-                            Start New Session
+                            {t('newSession.title')}
                         </Text>
                     </Pressable>
                 </>
             ) : hasOfflineMachines ? (
                 <>
                     <Text style={styles.descriptionText}>
-                        Bring a machine online to start a session.
+                        {t('components.emptyMainScreen.bringMachineOnline')}
                     </Text>
                     <Pressable style={styles.button} onPress={troubleshoot}>
                         <Ionicons
@@ -118,12 +119,12 @@ export function EmptySessionsTablet() {
                             color={theme.colors.button.primary.tint}
                             style={styles.buttonIcon}
                         />
-                        <Text style={styles.buttonText}>Troubleshoot</Text>
+                        <Text style={styles.buttonText}>{t('components.emptyMainScreen.troubleshoot')}</Text>
                     </Pressable>
                 </>
             ) : (
                 <Text style={styles.descriptionText}>
-                    Install and run KissOpen on your computer to connect it.
+                    {t('components.emptyMainScreen.installAndRun')}
                 </Text>
             )}
         </View>

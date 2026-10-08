@@ -584,7 +584,7 @@ function PathPickerContent({
                                 { opacity: pressed ? 0.82 : 1 },
                             ]}
                             accessibilityRole="button"
-                            accessibilityLabel="Done"
+                            accessibilityLabel={t('newSession.done')}
                         >
                             <GlassView
                                 glassEffectStyle="regular"
@@ -624,7 +624,7 @@ function PathPickerContent({
                         onChangeText={onChangeValue}
                         onSelectionChange={handleSelectionChange}
                         selection={selection}
-                        placeholder="Enter project path"
+                        placeholder={t('newSession.enterProjectPath')}
                         placeholderTextColor={theme.colors.textSecondary}
                         style={[
                             pickerStyles.pathTextInput,
@@ -1006,9 +1006,9 @@ function NewSessionScreen() {
 
     const worktreeFixedItems = React.useMemo<PickerItem[]>(() => [
         ...(canCreateWorktree
-            ? [{ key: '__new__', label: picksWorkspaces ? 'Create New' : 'new worktree' }]
+            ? [{ key: '__new__', label: picksWorkspaces ? t('newSession.createNewWorkspace') : t('newSession.newWorktree') }]
             : []),
-        { key: '__none__', label: picksWorkspaces ? 'Main' : 'no worktree' },
+        { key: '__none__', label: picksWorkspaces ? t('newSession.mainWorkspace') : t('newSession.noWorktree') },
     ], [canCreateWorktree, picksWorkspaces]);
 
     // Filter available agents based on the daemon that actually runs each harness on this
@@ -1175,7 +1175,7 @@ function NewSessionScreen() {
 
     const isOffline = selectedMachine ? !isMachineOnline(selectedMachine) : false;
     const offlineHelp = selectedAgent === 'rig'
-        ? 'KissOpen Agent is offline on this computer'
+        ? t('newSession.kissopenAgentOffline')
         : t('machine.offlineHelp');
     const agent = availableAgents.find(a => a.key === selectedAgent)
         ?? ALL_AGENTS.find((candidate) => candidate.key === selectedAgent)
@@ -1224,14 +1224,14 @@ function NewSessionScreen() {
     }, [currentEffort, currentModel, currentPermission, permissionStyle?.icon, selectedAgent, showEffort, showModel, showPermission]);
 
     // Display values
-    const machineName = selectedChoice?.name ?? 'Select machine';
+    const machineName = selectedChoice?.name ?? t('newSession.selectMachine');
     const pathName = trimPathInput(selectedPath)
         ? formatPathRelativeToHome(trimPathInput(selectedPath), selectedHomeDir)
         : '~';
     const worktreeLabel = worktreeKey === '__none__'
-        ? picksWorkspaces ? 'Main' : 'no worktree'
+        ? picksWorkspaces ? t('newSession.mainWorkspace') : t('newSession.noWorktree')
         : worktreeKey === '__new__'
-            ? picksWorkspaces ? 'Create New' : 'new worktree'
+            ? picksWorkspaces ? t('newSession.createNewWorkspace') : t('newSession.newWorktree')
             : worktreeItems.find(wt => wt.key === worktreeKey)?.label || worktreeKey;
     const selectedMachineKey = selectedChoice?.id ?? selectedMachineId;
 
@@ -1239,17 +1239,17 @@ function NewSessionScreen() {
     const pickerData = React.useMemo(() => {
         switch (activePicker) {
             case 'machine':
-                return { title: 'Machine', items: machineItems, selectedKey: selectedMachineKey, searchPlaceholder: 'search machines...' };
+                return { title: t('newSession.pickerMachine'), items: machineItems, selectedKey: selectedMachineKey, searchPlaceholder: t('newSession.searchMachines') };
             case 'worktree':
-                return { title: picksWorkspaces ? 'Workspace' : 'Worktree', fixedItems: worktreeFixedItems, items: worktreeItems, selectedKey: worktreeKey, searchPlaceholder: picksWorkspaces ? 'search workspaces...' : 'search worktrees...' };
+                return { title: picksWorkspaces ? t('newSession.pickerWorkspace') : t('newSession.pickerWorktree'), fixedItems: worktreeFixedItems, items: worktreeItems, selectedKey: worktreeKey, searchPlaceholder: picksWorkspaces ? t('newSession.searchWorkspaces') : t('newSession.searchWorktrees') };
             case 'agent':
-                return { title: 'Agent', items: getAgentPickerItems(availableAgents), selectedKey: selectedAgent, searchPlaceholder: 'search agents...' };
+                return { title: t('newSession.pickerAgent'), items: getAgentPickerItems(availableAgents), selectedKey: selectedAgent, searchPlaceholder: t('newSession.searchAgents') };
             case 'model':
-                return { title: 'Model', items: getModePickerItems(modelModes), selectedKey: currentModelKey, searchPlaceholder: 'search models...' };
+                return { title: t('newSession.pickerModel'), items: getModePickerItems(modelModes), selectedKey: currentModelKey, searchPlaceholder: t('newSession.searchModels') };
             case 'effort':
-                return { title: 'Effort', items: getModePickerItems(effortLevels), selectedKey: currentEffort?.key ?? null, searchPlaceholder: 'search efforts...' };
+                return { title: t('newSession.pickerEffort'), items: getModePickerItems(effortLevels), selectedKey: currentEffort?.key ?? null, searchPlaceholder: t('newSession.searchEfforts') };
             case 'permission':
-                return { title: 'Permissions', items: getModePickerItems(permissionModes), selectedKey: currentPermission?.key ?? null, searchPlaceholder: 'search permissions...' };
+                return { title: t('newSession.pickerPermissions'), items: getModePickerItems(permissionModes), selectedKey: currentPermission?.key ?? null, searchPlaceholder: t('newSession.searchPermissions') };
             default:
                 return null;
         }
@@ -1398,7 +1398,7 @@ function NewSessionScreen() {
         };
         const choice = findMachineChoice(collectMachineChoices(allMachines), selectedMachineId);
         if (!choice) {
-            Modal.alert(t('common.error'), 'Please select a machine');
+            Modal.alert(t('common.error'), t('newSession.selectMachineFirst'));
             return;
         }
         // Resolve again at the moment of use: the draft can outlive a daemon restart, a machine
@@ -1409,8 +1409,8 @@ function NewSessionScreen() {
             Modal.alert(
                 t('common.error'),
                 agentType === 'rig'
-                    ? 'KissOpen Agent is not running on this computer'
-                    : 'KissOpen CLI is not available on your computer. Run `kissopen daemon start` on your computer, then try again.',
+                    ? t('newSession.kissopenAgentNotRunning')
+                    : t('newSession.cliUnavailable'),
             );
             return;
         }
@@ -1418,8 +1418,8 @@ function NewSessionScreen() {
             Modal.alert(
                 t('common.error'),
                 agentType === 'rig'
-                    ? 'Machine is offline'
-                    : 'KissOpen CLI is offline on your computer. Run `kissopen daemon start` on your computer, then try again.',
+                    ? t('newSession.machineOffline')
+                    : t('newSession.cliOffline'),
             );
             return;
         }
@@ -1427,7 +1427,7 @@ function NewSessionScreen() {
             ? getRigMachineSessionCreation(machine.metadata)
             : null;
         if (agentType === 'rig' && !spawnRigCreation) {
-            Modal.alert(t('common.error'), 'This machine cannot start KissOpen agent sessions');
+            Modal.alert(t('common.error'), t('newSession.cannotStartAgentSessions'));
             return;
         }
         const agentSupportsWorktree = spawnRigCreation?.supportsWorktrees
@@ -1445,7 +1445,7 @@ function NewSessionScreen() {
         } catch (error) {
             Modal.alert(
                 t('common.error'),
-                error instanceof Error ? error.message : 'The selected workspace is unavailable',
+                error instanceof Error ? error.message : t('newSession.workspaceUnavailable'),
             );
             return;
         }
@@ -1490,13 +1490,13 @@ function NewSessionScreen() {
             if (!existingSessionId && worktreeSelection === '__new__' && !kissopenAgentTarget) {
                 if (!creationMachine) {
                     Modal.alert(t('common.error'), picksWorkspaces
-                        ? 'This computer cannot create a new workspace'
-                        : 'This computer cannot create a new worktree');
+                        ? t('newSession.cannotCreateWorkspace')
+                        : t('newSession.cannotCreateWorktree'));
                     return;
                 }
                 const worktreeResult = await createWorktree(creationMachine.id, absolutePath);
                 if (!worktreeResult.success) {
-                    Modal.alert(t('common.error'), worktreeResult.error || 'Failed to create worktree');
+                    Modal.alert(t('common.error'), worktreeResult.error || t('newSession.failedToCreateWorktree'));
                     return;
                 }
                 spawnDirectory = worktreeResult.worktreePath;
@@ -1614,8 +1614,8 @@ function NewSessionScreen() {
                     break;
                 case 'requestToApproveDirectoryCreation': {
                     const approved = await Modal.confirm(
-                        'Create Directory?',
-                        `The directory '${result.directory}' does not exist. Would you like to create it?`,
+                        t('newSession.createDirectoryTitle'),
+                        t('newSession.createDirectoryMessage', { directory: result.directory }),
                         { cancelText: t('common.cancel'), confirmText: t('common.create') },
                     );
                     if (approved) {
@@ -1632,14 +1632,14 @@ function NewSessionScreen() {
                 case 'pending':
                     Modal.alert(
                         t('common.error'),
-                        'Rig created the session, but it is still syncing with KissOpen. It should appear shortly.',
+                        t('newSession.stillSyncing'),
                     );
                     break;
             }
         } catch (error) {
             const errorMessage = error instanceof Error
                 ? error.message
-                : 'Failed to start session';
+                : t('newSession.failedToStart');
             Modal.alert(t('common.error'), errorMessage);
         } finally {
             if (sendingRef.current === controller) sendingRef.current = null;
@@ -1710,7 +1710,7 @@ function NewSessionScreen() {
 
         const content = type === 'path' ? (
             <PathPickerContent
-                title="Project"
+                title={t('newSession.pickerProject')}
                 items={pathItems}
                 value={selectedPath}
                 homeDir={selectedHomeDir}
@@ -1770,7 +1770,7 @@ function NewSessionScreen() {
         )
     ) : activePicker === 'path' ? (
         <PathPickerContent
-            title="Project"
+            title={t('newSession.pickerProject')}
             items={pathItems}
             value={selectedPath}
             homeDir={selectedHomeDir}
@@ -2099,7 +2099,7 @@ function NewSessionScreen() {
         </>
     );
 
-    const composerPlaceholder = selectedAgent === 'codex' ? 'Ask Codex' : `Ask ${agent.label}`;
+    const composerPlaceholder = t('newSession.askAgent', { agent: selectedAgent === 'codex' ? 'Codex' : agent.label });
     const sendButtonIconColor = isNativeMobile
         ? theme.colors.text
         : theme.colors.button.primary.tint;
@@ -2125,7 +2125,7 @@ function NewSessionScreen() {
                 disabled={!canSend}
                 onPress={() => handleSend()}
                 accessibilityRole="button"
-                accessibilityLabel="Send"
+                accessibilityLabel={t('newSession.send')}
             >
                 {isSpawning ? (
                     <ActivityIndicator size="small" color={sendButtonIconColor} />
@@ -2164,7 +2164,7 @@ function NewSessionScreen() {
                 <PromptInput
                     ref={composerInputRef}
                     compact={isNativeMobile}
-                    placeholder={isNativeMobile ? composerPlaceholder : 'What would you like to work on?'}
+                    placeholder={isNativeMobile ? composerPlaceholder : t('newSession.composerPlaceholder')}
                     onKeyPress={handleKeyPress}
                 />
             </View>
@@ -2229,7 +2229,7 @@ function NewSessionScreen() {
                             pressedState.pressed && styles.configRowPressed,
                         ]}
                         accessibilityRole="button"
-                        accessibilityLabel="Voice input"
+                        accessibilityLabel={t('newSession.voiceInput')}
                     >
                         <Ionicons name="mic-outline" size={21} color={theme.colors.textSecondary} />
                     </BubblePressable>
@@ -2411,7 +2411,7 @@ function NewSessionScreen() {
                 >
                     {activePicker === 'path' ? (
                         <PathPickerContent
-                            title="Project"
+                            title={t('newSession.pickerProject')}
                             items={pathItems}
                             value={selectedPath}
                             homeDir={selectedHomeDir}
