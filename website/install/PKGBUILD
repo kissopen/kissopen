@@ -1,6 +1,6 @@
 # Maintainer: KissOpen <https://github.com/kissopen>
 pkgname=kissopen-cli
-pkgver=0.3.7
+pkgver=0.3.8
 pkgrel=1
 pkgdesc='KissOpen command-line coding assistant'
 arch=('x86_64' 'aarch64')
@@ -10,7 +10,7 @@ depends=('nodejs>=24')
 makedepends=('npm')
 source=("kissopen-terminal-$pkgver.tgz::https://registry.npmjs.org/@kissopen/kissopen-terminal/-/kissopen-terminal-$pkgver.tgz")
 noextract=("kissopen-terminal-$pkgver.tgz")
-sha256sums=('a8bdf5182526b55d009f0f13ce32f4e7589ac19a93d0bd8c06f5c55034effb03')
+sha256sums=('b776ed619683e7aae5c0a84f4aee9d10b654d3a8914417e4c83fb38bfb1129f8')
 options=('!strip')
 
 package() {

@@ -1,8 +1,8 @@
 class Kissopen < Formula
   desc "Command-line coding assistant for KissOpen"
   homepage "https://kissopen.com"
-  url "https://registry.npmjs.org/@kissopen/kissopen-terminal/-/kissopen-terminal-0.3.7.tgz"
-  sha256 "a8bdf5182526b55d009f0f13ce32f4e7589ac19a93d0bd8c06f5c55034effb03"
+  url "https://registry.npmjs.org/@kissopen/kissopen-terminal/-/kissopen-terminal-0.3.8.tgz"
+  sha256 "b776ed619683e7aae5c0a84f4aee9d10b654d3a8914417e4c83fb38bfb1129f8"
   license "MIT"
 
   depends_on "node@24"

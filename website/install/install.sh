@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Install the same published CLI as npm, without requiring a system-wide write.
-version=0.3.7
+version=0.3.8
 prefix="${KISSOPEN_INSTALL_PREFIX:-$HOME/.local}"
 case "${1:-}" in
   --help|-h)
