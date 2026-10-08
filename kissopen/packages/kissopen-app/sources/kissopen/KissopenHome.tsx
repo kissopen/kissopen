@@ -168,6 +168,9 @@ export function KissopenHome({ settingsSection }: { settingsSection?: 'files' | 
     const keyboardShown = useKeyboardShown();
     const topBarHeight = useHomeTopBarHeight();
     const [headerBackdropVisible, setHeaderBackdropVisible] = React.useState(false);
+    // Height of the error/notice banners floating under the top bar, so the
+    // content below can start after them instead of underneath them.
+    const [bannerHeight, setBannerHeight] = React.useState(0);
     const input = React.useRef<MultiTextInputHandle>(null);
     const drafts = React.useRef<Record<string, { text: string; files: string[]; images: CloudImage[] }>>({});
     const attachmentDestination = React.useRef('new');
@@ -676,7 +679,7 @@ export function KissopenHome({ settingsSection }: { settingsSection?: 'files' | 
     // this is the second wait in the same startup, so it shows the same screen
     // rather than a differently-styled one with a caption under it.
     if (!ready && !settingsSection) return <><Stack.Screen options={{ headerShown: false }} /><KissopenBoot /></>;
-    if (ready && !user && settingsSection) return <ItemList><ItemGroup><Item title="Sign in to your KissOpen account" subtitle="Use Google, GitHub or NodeLoc to restore your profile and files. Your encrypted workspace is kept separately." showChevron={false} /></ItemGroup><CommunityLoginButtons /></ItemList>;
+    if (ready && !user && settingsSection) return <ItemList><ItemGroup><Item title={t('kissopen.security.signedOutTitle')} subtitle={t('kissopen.security.signedOutSubtitle')} showChevron={false} /></ItemGroup><CommunityLoginButtons /></ItemList>;
     if (!user && !settingsSection) return <><Stack.Screen options={{ headerShown: false }} />{banners}<CommunityLoginButtons /></>;
     const auxiliary = !PRIMARY_TABS.includes(tab);
     // Home, work and the account page draw their own top. The tab bar runs
@@ -691,7 +694,11 @@ export function KissopenHome({ settingsSection }: { settingsSection?: 'files' | 
     // Temporary chat still says so, because nothing else on the page does.
     const headerTitle = tab === 'chat' ? (temporary ? t('kissopen.home.temporaryChat') : undefined) : titles[tab];
     const topInset = settingsSection ? 0 : topBarHeight;
-    const paneInsets = { paddingTop: topInset, paddingBottom: tabBarVisible ? 0 : insets.bottom };
+    // The banners float over the content, so the content steps down by their
+    // height while they show; otherwise they cover the first rows of the page.
+    const bannersVisible = !settingsSection && !ownTop && (!!error || !!notice);
+    const contentTop = topInset + (bannersVisible ? bannerHeight : 0);
+    const paneInsets = { paddingTop: contentTop, paddingBottom: tabBarVisible ? 0 : insets.bottom };
     const openProject = projectId === undefined ? undefined : workProjects.find(project => project.id === projectId);
     const openProjectFile = (sessionId: string, path: string) => router.push(`/session/${sessionId}/file?path=${encodeURIComponent(sessionFilePathEncode(path))}`);
     // Beside the projects' files in the library, the cloud chat's are one group of several.
@@ -733,7 +740,7 @@ export function KissopenHome({ settingsSection }: { settingsSection?: 'files' | 
         />}
         {/* The bar below already clears the home indicator, so the composer
             must not leave that space again above it. */}
-        {tab === 'chat' && <SafeAreaInsetsContext.Provider value={tabBarVisible ? { ...insets, bottom: 0 } : insets}><CloudConversation prefill={chatPrefill} composerSessionId={cloudComposerSession} onSubmit={startCloudSession} topInset={topInset} onHeaderBackdropVisibilityChange={setHeaderBackdropVisible} temporary={temporary} conversation={conversation} job={job?.kind === 'chat' && job.target === conversation?.id ? job : undefined} drawing={drawing} liveText={job?.target === conversation?.id ? liveText : ''}
+        {tab === 'chat' && <SafeAreaInsetsContext.Provider value={tabBarVisible ? { ...insets, bottom: 0 } : insets}><CloudConversation prefill={chatPrefill} composerSessionId={cloudComposerSession} onSubmit={startCloudSession} topInset={contentTop} onHeaderBackdropVisibilityChange={setHeaderBackdropVisible} temporary={temporary} conversation={conversation} job={job?.kind === 'chat' && job.target === conversation?.id ? job : undefined} drawing={drawing} liveText={job?.target === conversation?.id ? liveText : ''}
             attachments={attachments} files={files}
             reasoningEffort={reasoningEffort} onReasoningEffort={setReasoningEffort}
             onCamera={() => void attachImages('camera')} onPhotos={() => void attachImages('library')} onAttach={() => void attach()} onPlugins={() => navigate('plugins')}
@@ -810,7 +817,7 @@ export function KissopenHome({ settingsSection }: { settingsSection?: 'files' | 
                 />}
         </View>}
         {tab === 'projects' && <View style={[styles.pane, paneInsets]}><WorkspaceLibrary section={tab} ready={workspace.ready} error={workspace.error} onWork={() => navigate('work')} /></View>}
-        {(tab === 'history' || tab === 'files') && <ItemList keyboardShouldPersistTaps="handled" containerStyle={{ paddingTop: topInset }} contentInsetAdjustmentBehavior="never" style={{ marginBottom: tabBarVisible ? 0 : insets.bottom }}>
+        {(tab === 'history' || tab === 'files') && <ItemList keyboardShouldPersistTaps="handled" containerStyle={{ paddingTop: contentTop }} contentInsetAdjustmentBehavior="never" style={{ marginBottom: tabBarVisible ? 0 : insets.bottom }}>
             {tab === 'history' && <ItemGroup><Item title={t('kissopen.home.startNewChat')} onPress={() => void perform(() => openConversation())} />{conversations.map(item => <Item key={item.id} title={item.title} subtitle={new Date(item.updated).toLocaleString()} selected={item.id === conversation?.id} onPress={() => void perform(() => openConversation(item.id))} />)}{!conversations.length && <Item title={t('kissopen.home.noChatsTitle')} subtitle={t('kissopen.home.noChatsDescription')} />}</ItemGroup>}
             {/* The library: every project's uploaded and generated files, then the cloud chat's own. */}
             {!settingsSection && tab === 'files' && <LibraryPage projects={workProjects} chatFiles={files} ready={ready && !!user} onProjectFile={openProjectFile} onChatFile={openChatFile} onUpload={upload} searching={librarySearching} query={libraryQuery} onQuery={setLibraryQuery} />}
@@ -898,7 +905,7 @@ export function KissopenHome({ settingsSection }: { settingsSection?: 'files' | 
                     backdropVisible={tab === 'chat' && headerBackdropVisible}
                 />
             </View>
-            {(!!error || !!notice) && <View style={[styles.bannerOverlay, { top: topInset }]}>{banners}</View>}
+            {bannersVisible && <View style={[styles.bannerOverlay, { top: topInset }]} onLayout={event => setBannerHeight(event.nativeEvent.layout.height + 8)}>{banners}</View>}
         </>}
     </View>
     {!settingsSection && <ConversationMenu conversation={conversation} open={menuOpen} top={topBarHeight} onClose={() => setMenuOpen(false)}
