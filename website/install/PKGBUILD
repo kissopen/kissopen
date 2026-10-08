@@ -1,0 +1,23 @@
+# Maintainer: KissOpen <https://github.com/kissopen>
+pkgname=kissopen-cli
+pkgver=0.3.6
+pkgrel=1
+pkgdesc='KissOpen command-line coding assistant'
+arch=('x86_64' 'aarch64')
+url='https://kissopen.com'
+license=('MIT')
+depends=('nodejs>=24')
+makedepends=('npm')
+source=("kissopen-terminal-$pkgver.tgz::https://registry.npmjs.org/@kissopen/kissopen-terminal/-/kissopen-terminal-$pkgver.tgz")
+noextract=("kissopen-terminal-$pkgver.tgz")
+sha256sums=('b6b74b869f6bdf267d23f22a38579dbc5321dece3f4990de20f1af94e617f08f')
+options=('!strip')
+
+package() {
+  npm install --global --prefix "$pkgdir/usr" --cache "$srcdir/npm-cache" \
+    --registry=https://registry.npmjs.org --no-audit --no-fund --omit=dev \
+    "$srcdir/kissopen-terminal-$pkgver.tgz"
+  install -Dm644 "$pkgdir/usr/lib/node_modules/@kissopen/kissopen-terminal/LICENSE-KISSOPEN" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  chmod -R u=rwX,go=rX "$pkgdir/usr"
+}

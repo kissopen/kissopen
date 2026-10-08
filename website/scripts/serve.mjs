@@ -29,10 +29,16 @@ http.createServer(async (req, res) => {
       body = built ? await readFile(resolve(base, '.' + locale.path + 'index.html')) : render(locale.id, JSON.parse(await readFile(root + 'releases.json', 'utf8')));
       type = types['.html'];
     } else {
-      if (!/^\/(assets\/[^?]+|style\.css|main\.js|download\.css|download\.js|robots\.txt|sitemap\.xml)$/.test(pathname)) throw Error('not found');
+      if (pathname === '/install') {
+        body = await readFile(resolve(base, 'install/install.sh'));
+        res.writeHead(200, {'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-cache'});
+        res.end(req.method === 'HEAD' ? undefined : body);
+        return;
+      }
+      if (!/^\/(assets\/[^?]+|install\/(install\.sh|PKGBUILD|kissopen\.rb)|style\.css|main\.js|download\.css|download\.js|robots\.txt|sitemap\.xml)$/.test(pathname)) throw Error('not found');
       const file = resolve(base, !built && ['/style.css', '/main.js', '/download.css', '/download.js'].includes(pathname) ? 'src' + pathname : '.' + pathname);
       if (!file.startsWith(base + sep)) throw Error('not found');
-      body = await readFile(file); type = types[extname(file)] || 'application/octet-stream';
+      body = await readFile(file); type = pathname.startsWith('/install/') ? 'text/plain; charset=utf-8' : types[extname(file)] || 'application/octet-stream';
     }
     res.writeHead(200, {'Content-Type':type, 'Cache-Control':'no-cache', 'X-Content-Type-Options':'nosniff'});
     res.end(req.method === 'HEAD' ? undefined : body);
