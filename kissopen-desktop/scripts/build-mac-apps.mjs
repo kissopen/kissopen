@@ -61,7 +61,24 @@ for (const selectedFlavorName of flavors) {
     ]);
     await stagedPackagePrepare(join(desktopDirectory, staging, "package.json"), selectedFlavor);
     const output = join("release", selectedFlavor.output);
-    await rm(join(desktopDirectory, output), { force: true, recursive: true });
+    // A single-architecture build must retain the other architecture's verified
+    // assets so sequential builds can produce one complete update manifest.
+    for (const selectedArchitecture of architectures) {
+        await rm(
+            join(desktopDirectory, output, selectedArchitecture === "arm64" ? "mac-arm64" : "mac"),
+            { force: true, recursive: true },
+        );
+        for (const extension of ["dmg", "zip", "dmg.blockmap", "zip.blockmap"]) {
+            await rm(
+                join(
+                    desktopDirectory,
+                    output,
+                    `${selectedFlavor.artifactPrefix}-${releaseVersion}-${selectedArchitecture}.${extension}`,
+                ),
+                { force: true },
+            );
+        }
+    }
     await mkdir(join(desktopDirectory, output), { recursive: true });
     const config = builderConfiguration(
         packageJson.build,
@@ -109,7 +126,13 @@ function builderConfiguration(base, output, app, flavorName, selectedFlavor) {
         artifactName: `${selectedFlavor.artifactPrefix}-\${version}-\${arch}.\${ext}`,
         forceCodeSigning: true,
         beforeBuild: () => false,
-        afterPack: (context) => bundledAgentSign(context, selectedFlavor, entitlements),
+        afterPack: async (context) => {
+            await packagedAgentClientVerify(
+                join(context.appOutDir, `${selectedFlavor.productName}.app`),
+                selectedFlavor,
+            );
+            await bundledAgentSign(context, selectedFlavor, entitlements);
+        },
         electronVersion: packageJson.devDependencies.electron.replace(/^\D+/u, ""),
         directories: {
             buildResources,
@@ -141,8 +164,9 @@ function builderConfiguration(base, output, app, flavorName, selectedFlavor) {
                     "!.modules.yaml",
                     "!.pnpm-workspace-state-v1.json",
                     "!.bin{,/**/*}",
-                    // These linked workspace libraries are already bundled by Vite.
-                    "!@kissopen{,/**/*}",
+                    // Only the linked sync library is bundled by Vite. The Agent
+                    // client remains an external dependency of dist/main.js.
+                    "!@kissopen/kissopen-sync{,/**/*}",
                 ],
             },
         ],
@@ -187,6 +211,31 @@ async function bundledAgentVerify(directory, architecture) {
             `Bundled agent platform, architecture, or checksum mismatch in ${directory}.`,
         );
     return { manifest, binary };
+}
+
+async function packagedAgentClientVerify(application, selectedFlavor) {
+    // Resolve from the actual ASAR entry point so both packaged node_modules
+    // locations and the SDK's transitive dependencies are exercised by Electron.
+    const script = `
+        import { createRequire } from "node:module";
+        import { pathToFileURL } from "node:url";
+        const require = createRequire(process.argv[1]);
+        const client = await import(pathToFileURL(require.resolve("@kissopen/kissopen-agent-client")));
+        if (typeof client.KissopenAgentClient !== "function")
+            throw new Error("The packaged Agent client export is missing.");
+        console.log("Packaged Agent client loaded successfully.");
+    `;
+    const result = await commandOutput(
+        join(application, "Contents", "MacOS", selectedFlavor.productName),
+        [
+            "--input-type=module",
+            "--eval",
+            script,
+            join(application, "Contents", "Resources", "app.asar", "dist", "main.js"),
+        ],
+        { env: { ...process.env, ELECTRON_RUN_AS_NODE: "1" }, timeout: 30_000 },
+    );
+    console.log(result.trim());
 }
 
 async function bundledAgentSign(context, selectedFlavor, entitlements) {
@@ -303,7 +352,6 @@ async function releaseVerify(selectedFlavor, output) {
 async function stagedPackagePrepare(path, selectedFlavor) {
     const metadata = JSON.parse(await readFile(path, "utf8"));
     metadata.version = releaseVersion;
-    delete metadata.dependencies["@kissopen/kissopen-agent-client"];
     delete metadata.dependencies["@kissopen/kissopen-sync"];
     delete metadata.build;
     delete metadata.devDependencies;
@@ -340,9 +388,9 @@ async function stagedPackagePrepare(path, selectedFlavor) {
     );
 }
 
-function commandOutput(command, arguments_) {
+function commandOutput(command, arguments_, options = {}) {
     return new Promise((resolvePromise, reject) => {
-        execFile(command, arguments_, { encoding: "utf8" }, (error, stdout) =>
+        execFile(command, arguments_, { encoding: "utf8", ...options }, (error, stdout) =>
             error ? reject(error) : resolvePromise(stdout),
         );
     });
