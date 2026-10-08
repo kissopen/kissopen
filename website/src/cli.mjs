@@ -13,7 +13,7 @@ export function renderCli(lang, compact = false) {
     ...['paru','yay'].map(helper=>[helper, `build_dir=$(mktemp -d) &&\ncurl -fsSL https://kissopen.com/install/PKGBUILD -o "$build_dir/PKGBUILD" &&\n${helper} -Bi "$build_dir"`])
   ];
   const notes = {curl:t.curlNote,brew:t.brewNote,paru:t.archNote,yay:t.archNote};
-  const copyIcon = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg>';
+  const copyIcon = '<svg class="icon cli-copy-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg><svg class="icon cli-check-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
   const command = (id, text) => `<div class="cli-command"><code id="${id}">${esc(text)}</code><button type="button" class="cli-copy" data-copy-command="${id}" aria-label="${esc(t.copy)}" title="${esc(t.copy)}" hidden>${copyIcon}</button></div>`;
   const commands = [['--help',t.help],['--version',t.version],['resume --last',t.resume],['daemon status',t.status],['upgrade',t.upgrade]];
   return `<section class="cli-install${compact ? ' cli-home' : ''}" id="cli" aria-label="${t.title}">

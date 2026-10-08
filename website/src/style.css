@@ -58,6 +58,10 @@ html[lang=ru] h1{font-size:clamp(38px,4.5vw,66px)}
 .cli-copy[hidden]{display:none}
 .cli-copy:hover{background:var(--surface);color:var(--accent)}
 .cli-copy .icon{width:18px;height:18px}
+.cli-copy .cli-check-icon,.cli-copy.is-copied .cli-copy-icon{display:none}
+.cli-copy.is-copied .cli-check-icon{display:block;stroke-width:2.2}
+.cli-copy.is-copied{color:#4ade80}
+[data-appearance=light] .cli-copy.is-copied{color:#15803d}
 .cli-requirements,.cli-platforms{font-size:11px;line-height:1.8;color:var(--muted)}
 .cli-requirements{margin-top:14px}
 .cli-method-note{padding:0 24px 18px;font-size:11px;line-height:1.8;color:var(--muted)}
@@ -65,7 +69,8 @@ html[lang=ru] h1{font-size:clamp(38px,4.5vw,66px)}
 .cli-launch{display:flex;align-items:center;gap:24px;margin-top:22px}
 .cli-launch>p{font-size:12px;color:var(--muted);flex:none}
 .cli-launch .cli-command{padding:6px 12px 6px 18px;border:1px solid var(--border);border-radius:7px;max-width:380px;flex:1;background:var(--bg)}
-.cli-feedback{font-size:11px;color:var(--accent);min-height:22px;margin-top:8px}
+.cli-feedback{font-size:11px;color:var(--accent);margin-top:8px}
+.cli-feedback:empty{display:none}
 .cli-reference{border-top:1px solid var(--border);padding-top:14px;font-size:12px;color:var(--muted)}
 .cli-reference summary{cursor:pointer;width:fit-content}
 .cli-reference summary:hover{color:var(--accent)}

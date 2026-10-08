@@ -3,7 +3,18 @@ const platform = navigator.userAgentData?.platform || navigator.userAgent;
 const device = /Windows|Win32/i.test(platform) ? 'windows' : null;
 const installTabs = [...document.querySelectorAll('.cli-tabs [role="tab"]')];
 const cliFeedback = document.querySelector('.cli-feedback');
+const copyStates = new Map([...document.querySelectorAll('[data-copy-command]')].map(button => [button, {
+  label: button.getAttribute('aria-label'), title: button.title, timer: null
+}]));
+function resetCopyButton(button) {
+  const state = copyStates.get(button);
+  clearTimeout(state.timer);
+  button.classList.remove('is-copied');
+  button.setAttribute('aria-label', state.label);
+  button.title = state.title;
+}
 function selectInstallTab(selected) {
+  for (const button of copyStates.keys()) resetCopyButton(button);
   for (const tab of installTabs) {
     const active = tab === selected;
     tab.setAttribute('aria-selected', String(active));
@@ -26,14 +37,20 @@ for (const tab of installTabs) {
     installTabs[next].focus();
   });
 }
-for (const copyButton of document.querySelectorAll('[data-copy-command]')) {
+for (const copyButton of copyStates.keys()) {
   copyButton.hidden = false;
   copyButton.addEventListener('click', async () => {
     const code = document.getElementById(copyButton.dataset.copyCommand);
     try {
       await navigator.clipboard.writeText(code.textContent);
-      cliFeedback.textContent = copy.cliCopied;
+      resetCopyButton(copyButton);
+      cliFeedback.textContent = '';
+      copyButton.classList.add('is-copied');
+      copyButton.setAttribute('aria-label', copy.cliCopied);
+      copyButton.title = copy.cliCopied;
+      copyStates.get(copyButton).timer = setTimeout(() => resetCopyButton(copyButton), 2000);
     } catch {
+      resetCopyButton(copyButton);
       const range = document.createRange();
       range.selectNodeContents(code);
       const selection = window.getSelection();
