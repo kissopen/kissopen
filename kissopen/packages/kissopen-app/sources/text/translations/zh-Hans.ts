@@ -5,7 +5,7 @@
  * - Functions with typed object parameters for dynamic text
  */
 
-import { en, type TranslationStructure } from "../_default";
+import type { TranslationStructure } from "../_default";
 
 /**
  * Chinese plural helper function
@@ -442,13 +442,13 @@ export const zhHans: TranslationStructure = {
         viewMachineSubtitle: '查看设备详情和会话',
         viewChanges: '查看更改',
         viewChangesSubtitle: '所有未提交文件的差异',
-        resumeSession: 'Resume Session',
-        resumeSessionSubtitle: 'Resume this session on the same machine',
-        resumeSessionSameMachineOnly: 'This session can only be resumed on the same machine it started on.',
-        resumeSessionMachineOffline: 'This machine is offline. Resume is only available while it is online.',
-        resumeSessionMissingMachine: 'This session is missing its machine metadata, so it cannot be resumed.',
-        resumeSessionMissingBackendId: 'This session does not have a resumable Claude or Codex identifier.',
-        resumeSessionUnexpectedDirectoryPrompt: 'Resume cannot create directories. Start the session manually from its original path.',
+        resumeSession: '恢复会话',
+        resumeSessionSubtitle: '在同一台设备上恢复此会话',
+        resumeSessionSameMachineOnly: '此会话只能在启动它的那台设备上恢复。',
+        resumeSessionMachineOffline: '这台设备已离线，只有在线时才能恢复。',
+        resumeSessionMissingMachine: '此会话缺少设备信息，无法恢复。',
+        resumeSessionMissingBackendId: '此会话没有可用于恢复的 Claude 或 Codex 标识。',
+        resumeSessionUnexpectedDirectoryPrompt: '恢复会话时不能创建目录。请从原始路径手动启动会话。',
         killSessionSubtitle: '立即终止会话',
         archiveSessionSubtitle: '归档此会话并停止它',
         metadata: '元数据',
@@ -564,7 +564,7 @@ export const zhHans: TranslationStructure = {
             badgeYolo: 'YOLO',
         },
         codexModel: {
-            title: 'CODEX MODEL',
+            title: 'CODEX 模型',
             gpt5CodexLow: 'gpt-5-codex low',
             gpt5CodexMedium: 'gpt-5-codex medium',
             gpt5CodexHigh: 'gpt-5-codex high',
@@ -645,7 +645,7 @@ export const zhHans: TranslationStructure = {
         searched: '已搜索',
         fetched: '已获取',
         ranTask: '已执行任务',
-        workedFor: ({ duration }: { duration: string }) => `Worked ${duration}`,
+        workedFor: ({ duration }: { duration: string }) => `工作了 ${duration}`,
         hide: '隐藏',
     },
 
@@ -807,7 +807,7 @@ export const zhHans: TranslationStructure = {
         customAgentId: 'ElevenLabs Agent ID',
         customAgentIdNotSet: '未配置',
         customAgentIdDescription: '输入您的 ElevenLabs 智能体 ID。留空则使用KissOpen默认代理。',
-        customAgentIdPlaceholder: 'e.g. abc123def456',
+        customAgentIdPlaceholder: '例如 abc123def456',
         bypassToken: '直接连接',
         bypassTokenSubtitle: '跳过KissOpen服务器，直接连接到 ElevenLabs',
         promptGuideTitle: '代理提示词指南',
@@ -1039,9 +1039,9 @@ export const zhHans: TranslationStructure = {
         switchedToMode: ({ mode }: { mode: string }) => `已切换到 ${mode} 模式`,
         unknownEvent: '未知事件',
         usageLimitUntil: ({ time }: { time: string }) => `使用限制到 ${time}`,
-        sentAsGoal: 'Sent as goal',
-        sendsAfterThisTurn: 'Sends after this turn',
-        sending: 'Sending…',
+        sentAsGoal: '已作为目标发送',
+        sendsAfterThisTurn: '将在本轮结束后发送',
+        sending: '正在发送…',
         sendFailed: ({ reason }: { reason: string }) => `未发送：${reason}`,
         unknownTime: '未知时间',
     },
@@ -1686,7 +1686,7 @@ export const zhHans: TranslationStructure = {
             changePhoto: '更换头像',
             name: '昵称',
             username: '用户名',
-            usernamePlaceholder: 'username',
+            usernamePlaceholder: '用户名',
             hint: '你的资料能让别人认出你。',
             save: '保存资料',
             saveFailed: '资料没有保存成功',
