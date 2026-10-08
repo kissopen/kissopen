@@ -49,7 +49,8 @@ await build({
     publish: "never",
     targets: Platform.WINDOWS.createTarget(["nsis"], Arch.x64),
     config: {
-        ...structuredClone(metadata.build),
+        // electron-builder already loads package.json's build configuration.
+        // Repeating its object arrays schedules duplicate resource copies on Windows.
         appId: flavor.appId,
         productName: flavor.productName,
         artifactName: `${flavor.artifactPrefix}-\${version}-\${arch}.\${ext}`,
