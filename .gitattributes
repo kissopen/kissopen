@@ -1,0 +1,3 @@
+website/install/install.sh text eol=lf
+website/install/PKGBUILD text eol=lf
+Formula/*.rb text eol=lf
