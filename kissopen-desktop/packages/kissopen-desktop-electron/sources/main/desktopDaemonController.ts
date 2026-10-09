@@ -53,6 +53,7 @@ export class DesktopDaemonController {
     /** Present only while a restart is running, so it can be cut short. */
     private killController?: AbortController;
     private latestRelease?: KissopenAgentRelease;
+    private runtimeConnectionId?: number;
     private readonly listeners = new Set<(snapshot: DesktopDaemonSnapshot) => void>();
     private operation = Promise.resolve();
     private publishedCatalog: readonly KissopenAgentRelease[] = [];
@@ -112,7 +113,17 @@ export class DesktopDaemonController {
 
     checkForUpdate(): Promise<void> {
         return this.serial(async () => {
-            if (!this.managed || !this.updatesEnabled) return;
+            if (!this.managed) return;
+            if (!this.updatesEnabled) {
+                await this.installationRefresh();
+                this.publish({
+                    ...this.snapshotValue,
+                    error: "Online Agent updates are disabled in this KissOpen build.",
+                    message: undefined,
+                    operation: "idle",
+                });
+                return;
+            }
             const selected = await kissopenAgentBinarySelected(this.paths);
             this.publish({
                 ...installationProject(this.snapshotValue, selected),
@@ -655,8 +666,33 @@ export class DesktopDaemonController {
                 : runtime.phase === "starting"
                   ? "starting"
                   : "stopped";
-        if (this.snapshotValue.runtime === state) return;
-        this.publish({ ...this.snapshotValue, runtime: state });
+        const connectionId = runtime.phase === "ready" ? runtime.connectionId : undefined;
+        const connected = connectionId !== undefined && connectionId !== this.runtimeConnectionId;
+        this.runtimeConnectionId = connectionId;
+        if (this.snapshotValue.runtime !== state)
+            this.publish({ ...this.snapshotValue, runtime: state });
+        // CLI upgrades change the shared selection outside this controller.
+        // Reconcile it after reconnecting, without interrupting the daemon.
+        if (connected)
+            void this.serial(() => this.installationRefresh()).catch((error: unknown) => {
+                this.publish({ ...this.snapshotValue, error: displayError(error) });
+            });
+    }
+
+    private async installationRefresh(): Promise<void> {
+        const selected = await kissopenAgentBinarySelected(this.paths);
+        const versions = await this.versionsProject();
+        const ready = await this.readyVersionRead();
+        const availableVersion = this.snapshotValue.availableVersion;
+        this.publish({
+            ...installationProject(this.snapshotValue, selected),
+            ...ready,
+            updateAvailable:
+                selected !== undefined && availableVersion !== undefined
+                    ? versionNewer(availableVersion, selected.version)
+                    : false,
+            versions,
+        });
     }
 
     /**

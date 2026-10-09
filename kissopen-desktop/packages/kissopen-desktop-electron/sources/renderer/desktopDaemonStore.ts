@@ -21,8 +21,10 @@ export function desktopDaemonStoreCreate(
     let snapshot = initial;
     let unsubscribe: (() => void) | undefined;
     let eventReceived = false;
+    let revision = 0;
 
     const publish = (next: AppKissopenAgentDaemonSnapshot): void => {
+        revision += 1;
         snapshot = next;
         for (const listener of listeners) listener();
     };
@@ -37,7 +39,16 @@ export function desktopDaemonStoreCreate(
         daemonCheck() {
             if (busy() || snapshot.operation === "checking") return;
             publish({ ...snapshot, error: undefined, operation: "checking" });
-            void bridge.daemonCheck().catch(fail);
+            // A disabled check can complete without emitting a native event.
+            // Read its final state, preserving events received during the read.
+            void bridge
+                .daemonCheck()
+                .then(async () => {
+                    const readRevision = revision;
+                    const next = await bridge.daemonGet();
+                    if (revision === readRevision) set(next);
+                })
+                .catch(fail);
         },
         daemonInstall() {
             if (busy() || snapshot.install.phase !== "idle" || !snapshot.readyVersion) return;
