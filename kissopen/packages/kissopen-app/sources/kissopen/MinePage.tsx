@@ -30,7 +30,7 @@ export const MinePage = React.memo(function MinePage(props: {
             <KissopenProfileHeader />
             <ItemGroup>
                 <KissopenAccountRows />
-                <Item title="Security" subtitle="Password, two-factor authentication and third-party sign-in" icon={icon('shield-checkmark-outline')} onPress={() => props.onOpen('security')} />
+                <Item title={t('kissopen.security.title')} subtitle={t('kissopen.security.mineSubtitle')} icon={icon('shield-checkmark-outline')} onPress={() => props.onOpen('security')} />
                 <Item title={t('kissopen.persona.mineEntry')} icon={icon('id-card-outline')} onPress={() => props.onOpen('persona')} />
             </ItemGroup>
             <ItemGroup>

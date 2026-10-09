@@ -55,7 +55,7 @@ AppState.addEventListener('change', state => {
 
 export async function request(path: string, method = 'GET', body?: unknown) {
     if (!path.startsWith('/') || path.startsWith('//')) throw new Error(t('kissopen.errors.invalidPath'));
-    if (!origin) throw new TransportError('社区账号服务尚未配置。请先配置独立的社区服务，不要使用商业版手机号登录。');
+    if (!origin) throw new TransportError(t('kissopen.errors.communityNotConfigured'));
     const token = await readSession();
     const controller = new AbortController();
     // A document is converted while the request waits, which a large deck takes a while to do.

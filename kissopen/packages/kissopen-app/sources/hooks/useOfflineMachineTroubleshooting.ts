@@ -9,18 +9,25 @@ import { buildOfflineMachineTroubleshooting } from '@/utils/offlineMachineTroubl
 export function useOfflineMachineTroubleshooting(choices: readonly MachineChoice[]): () => void {
     const sessions = useSessions();
     const guide = React.useMemo(
-        () => buildOfflineMachineTroubleshooting(choices, sessions),
+        () => buildOfflineMachineTroubleshooting(choices, sessions, {
+            steps: [
+                t('components.emptyMainScreen.troubleshootStepWake'),
+                t('components.emptyMainScreen.troubleshootStepRun'),
+                t('components.emptyMainScreen.troubleshootStepReopen'),
+            ],
+            aiPromptLabel: t('components.emptyMainScreen.troubleshootAiPromptLabel'),
+        }),
         [choices, sessions],
     );
 
     return React.useCallback(() => {
-        Modal.alert('Troubleshoot connection', guide.message, [
+        Modal.alert(t('components.emptyMainScreen.troubleshootTitle'), guide.message, [
             { text: t('common.cancel'), style: 'cancel' },
             {
-                text: 'Copy AI prompt',
+                text: t('components.emptyMainScreen.copyAiPrompt'),
                 onPress: () => {
                     void Clipboard.setStringAsync(guide.aiPrompt).catch(() => {
-                        Modal.alert(t('common.error'), 'Could not copy the AI prompt.');
+                        Modal.alert(t('common.error'), t('components.emptyMainScreen.copyAiPromptFailed'));
                     });
                 },
             },

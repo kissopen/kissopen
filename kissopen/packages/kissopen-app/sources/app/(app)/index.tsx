@@ -91,8 +91,11 @@ function NotAuthenticated() {
       }
     } catch (error) {
       Modal.alert(
-        "社区服务未连接",
-        "请先通过右上角配置独立的同步服务器。社区版不会连接商业版账号，也不会自动创建收费云端工作区。",
+        copy("Community server not connected", "社区服务未连接"),
+        copy(
+          "Configure your own sync server from the top-right corner first. The community edition never connects to commercial accounts or creates paid cloud workspaces.",
+          "请先通过右上角配置独立的同步服务器。社区版不会连接商业版账号，也不会自动创建收费云端工作区。",
+        ),
       );
     }
   };
