@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-08",
+  "date": "2026-10-09",
   "windows": {
     "version": "0.3.0",
     "bytes": 243899082,
@@ -7,15 +7,15 @@
     "checksum": "https://kissopen.com/downloads/desktop/stable/kissopen-0.3.0-x64.exe.sha256"
   },
   "macArm64": {
-    "version": "0.3.1",
-    "bytes": 282207247,
-    "sha256": "f14187e2bf71d5e2a6092b45eb6dc2901358f61c9f8c771a7562ef38e180bd28",
+    "version": "0.3.2",
+    "bytes": 282121789,
+    "sha256": "c01885d55a8930b8930b3548a450424c8d4b1f0b8a19018deb7652f512f3858d",
     "checksum": "https://kissopen.com/downloads/desktop/stable/SHA256SUMS"
   },
   "macIntel": {
-    "version": "0.3.1",
-    "bytes": 296660733,
-    "sha256": "add8b86e71502e2485df3cf65a88d8de3af911b77333a412ea3ec6d2bd083fd3",
+    "version": "0.3.2",
+    "bytes": 296855578,
+    "sha256": "59e5b1056f8f327d43ccc862fe7d6ad8df1d559404e9d687cd9fc41ef40a766d",
     "checksum": "https://kissopen.com/downloads/desktop/stable/SHA256SUMS"
   },
   "android": {
