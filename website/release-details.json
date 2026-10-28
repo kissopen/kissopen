@@ -1,10 +1,10 @@
 {
-  "date": "2026-10-09",
+  "date": "2026-10-29",
   "windows": {
-    "version": "0.3.0",
-    "bytes": 243899082,
-    "sha256": "66c188583806d3c1e5c8000468caab109380441da0125bcfa44081115c9486d0",
-    "checksum": "https://kissopen.com/downloads/desktop/stable/kissopen-0.3.0-x64.exe.sha256"
+    "version": "0.3.3",
+    "bytes": 243914904,
+    "sha256": "0126e17d4aa7b4cd5b508ac2139f9f817622cf0975bc70432c63bd9d3f2a1c08",
+    "checksum": "https://kissopen.com/downloads/desktop/stable/kissopen-0.3.3-x64.exe.sha256"
   },
   "macArm64": {
     "version": "0.3.2",
