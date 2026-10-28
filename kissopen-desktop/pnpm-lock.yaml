@@ -144,8 +144,8 @@ importers:
   packages/kissopen-desktop-electron:
     dependencies:
       '@kissopen/kissopen-agent-client':
-        specifier: file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
-        version: file:vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
+        specifier: file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz
+        version: file:vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz
       '@kissopen/kissopen-sync':
         specifier: link:../../../kissopen/packages/kissopen-sync
         version: link:../../../kissopen/packages/kissopen-sync
@@ -250,8 +250,8 @@ importers:
   packages/kissopen-desktop-gym:
     dependencies:
       '@kissopen/kissopen-agent-client':
-        specifier: file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
-        version: file:vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
+        specifier: file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz
+        version: file:vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz
     devDependencies:
       '@fontsource-variable/jetbrains-mono':
         specifier: ^5.2.8
@@ -284,8 +284,8 @@ importers:
   packages/kissopen-desktop-state:
     dependencies:
       '@kissopen/kissopen-agent-client':
-        specifier: file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
-        version: file:vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz
+        specifier: file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz
+        version: file:vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz
       '@kissopen/kissopen-sync':
         specifier: link:../../../kissopen/packages/kissopen-sync
         version: link:../../../kissopen/packages/kissopen-sync
@@ -1345,9 +1345,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kissopen/kissopen-agent-client@file:vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz':
-    resolution: {integrity: sha512-B3qCGvR8RiYhfH//DjMNVfmqqD+uuDSNZaNgV/dY3A6jbOzcwtUp67N14XyOyaBELohya3/DOpRC4A1Eg1FtdA==, tarball: file:vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz}
-    version: 0.0.66-preview.11
+  '@kissopen/kissopen-agent-client@file:vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz':
+    resolution: {integrity: sha512-Pi8CxKXebIJObka5e48okoZ4cLWUUakB7Po4vndKvDclm744CW53QcbqwXn/q3nVs/csHg4NL4wtK4whvXUgsg==, tarball: file:vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz}
+    version: 0.0.68
     engines: {node: '>=20'}
 
   '@lezer/common@1.5.2':
@@ -6841,7 +6841,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@kissopen/kissopen-agent-client@file:vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz':
+  '@kissopen/kissopen-agent-client@file:vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz':
     dependencies:
       '@sinclair/typebox': 0.34.52
 

@@ -315,6 +315,19 @@ function contextGaugeDerive(
     context: KissopenAgentSessionUsage["context"],
     selection?: { readonly modelId: string; readonly providerId: string },
 ): KissopenAgentContextGauge | undefined {
+    const preferences = (modelId: string | undefined) => {
+        const compaction = catalog.contextCompaction;
+        return modelId === undefined || compaction === undefined
+            ? {}
+            : {
+                  modelId,
+                  compactionSupported: true,
+                  compactionDefaultPercent: compaction.defaultPercent,
+                  ...(Object.hasOwn(compaction.modelPercents, modelId)
+                      ? { compactionOverridePercent: compaction.modelPercents[modelId] }
+                      : {}),
+              };
+    };
     const catalogModel = (providerId: string, modelId: string) =>
         catalog.providers
             .find((provider) => provider.id === providerId)
@@ -337,6 +350,8 @@ function contextGaugeDerive(
         const total = model?.contextWindow;
         if (total === undefined || total <= 0) return undefined;
         return {
+            modelName: model?.name ?? selection.modelId,
+            ...preferences(selection.modelId),
             usedTokens: 0,
             remainingTokens: total,
             totalTokens: total,
@@ -355,6 +370,10 @@ function contextGaugeDerive(
     const usedTokens = Math.max(0, Math.min(context.totalTokens, total));
     const remainingTokens = total - usedTokens;
     return {
+        ...preferences(context.modelId),
+        ...(model?.name === undefined && context.modelId === undefined
+            ? {}
+            : { modelName: model?.name ?? context.modelId }),
         usedTokens,
         remainingTokens,
         totalTokens: total,

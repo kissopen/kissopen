@@ -41,6 +41,14 @@ function modelProject(
 /** Projects Kissopen Agent's `/v0/config` model catalog into the product model vocabulary. */
 export function kissopenAgentModelCatalogProject(config: DaemonConfig): KissopenAgentModelCatalog {
     return {
+        ...(config.contextCompaction === undefined
+            ? {}
+            : {
+                  contextCompaction: {
+                      defaultPercent: config.contextCompaction.defaultPercent,
+                      modelPercents: { ...config.contextCompaction.modelPercents },
+                  },
+              }),
         defaultModelId: config.defaults.modelId,
         defaultProviderId: config.defaults.providerId,
         models: Object.keys(config.models).flatMap((modelId) => {

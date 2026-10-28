@@ -5258,6 +5258,27 @@ function KissopenAgentConversationSurface(props: {
                                 approximate={conversation.contextGauge.approximate}
                                 compactTokens={conversation.contextGauge.compactTokens}
                                 measured={conversation.contextGauge.measured}
+                                modelName={conversation.contextGauge.modelName}
+                                compaction={
+                                    conversation.contextGauge.compactionSupported &&
+                                    conversation.contextGauge.modelId
+                                        ? {
+                                              modelId: conversation.contextGauge.modelId,
+                                              overridePercent:
+                                                  conversation.contextGauge
+                                                      .compactionOverridePercent,
+                                              defaultPercent:
+                                                  conversation.contextGauge
+                                                      .compactionDefaultPercent ?? null,
+                                              disabled: !props.kissopenAgentOnline(),
+                                              onChange: (percent) =>
+                                                  workspace.contextCompactionUpdate(
+                                                      conversation.contextGauge!.modelId!,
+                                                      percent,
+                                                  ),
+                                          }
+                                        : undefined
+                                }
                                 totalTokens={conversation.contextGauge.totalTokens}
                                 usedTokens={conversation.contextGauge.usedTokens}
                             />

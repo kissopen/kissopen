@@ -1,6 +1,6 @@
 {
     "name": "kissopen-desktop-electron",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "private": true,
     "description": "KissOpen · Local open-source Agent workspace",
     "author": "KissOpen",
@@ -44,7 +44,7 @@
         "clean": "rm -rf dist release"
     },
     "dependencies": {
-        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz",
+        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz",
         "@kissopen/kissopen-sync": "link:../../../kissopen/packages/kissopen-sync",
         "electron-updater": "^6.8.9",
         "libsodium-wrappers": "^0.7.15",

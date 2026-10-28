@@ -24,7 +24,7 @@
         "lint": "oxlint ."
     },
     "dependencies": {
-        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz"
+        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz"
     },
     "devDependencies": {
         "@fontsource-variable/jetbrains-mono": "^5.2.8",

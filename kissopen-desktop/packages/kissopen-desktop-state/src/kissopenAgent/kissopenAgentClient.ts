@@ -455,6 +455,14 @@ export function kissopenAgentWorkspaceClientCreate(
     const models = kissopenAgentModelStoreCreate({
         catalogRead: async () =>
             kissopenAgentModelCatalogProject((await deps.client.getConfig()).config),
+        compactionSave: async (modelId, percent) =>
+            kissopenAgentModelCatalogProject(
+                (
+                    await deps.client.patchConfig({
+                        contextCompaction: { modelPercents: { [modelId]: percent } },
+                    })
+                ).config,
+            ),
         ...(deps.modelPreferencePersistence
             ? { preferencePersistence: deps.modelPreferencePersistence }
             : {}),

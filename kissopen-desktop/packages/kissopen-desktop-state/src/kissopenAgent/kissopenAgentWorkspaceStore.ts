@@ -1296,6 +1296,7 @@ export interface KissopenAgentWorkspaceStore {
      * They are local and synchronous, so choosing is instant and cannot fail.
      */
     sessionModelUpdate(input: KissopenAgentModelSelection): void;
+    contextCompactionUpdate(modelId: string, percent: number | null): Promise<void>;
     sessionEffortUpdate(effort?: KissopenAgentThinkingLevel): void;
     customModelReasoningUpdate(
         providerId: string,
@@ -5555,6 +5556,8 @@ export function kissopenAgentWorkspaceStoreCreate(
             if (groupDraft) groupDraft.modelUpdate(input);
             else chatStore?.modelUpdate(input);
         },
+        contextCompactionUpdate: (modelId, percent) =>
+            client.models.contextCompactionUpdate(modelId, percent),
         sessionEffortUpdate(effort) {
             if (groupDraft) groupDraft.effortUpdate(effort);
             else chatStore?.effortUpdate(effort);

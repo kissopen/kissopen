@@ -1,57 +1,56 @@
-/*
- * ContextMeter — the spent share of the context window, at the end of the
- * composer's control row. At rest it is only the bar: the row beside it is full
- * of controls the reader uses constantly, and a running token count sitting
- * there permanently is noise. Pointing at it is the question being asked, so the
- * numbers appear then, sliding out to the left of the bar.
- */
+.kissopen-context-meter,
+.kissopen-context-meter * {
+    box-sizing: border-box;
+}
+
 .kissopen-context-meter {
-    display: inline-flex;
+    position: relative;
+    display: flex;
     flex: none;
-    align-items: center;
+    color: var(--brand-accent);
     font-family: var(--kissopen-font-ui);
-    font-size: 11px;
     font-variant-numeric: tabular-nums;
-    line-height: 1;
-    color: var(--text-secondary);
+    font-synthesis: none;
+}
+
+.kissopen-context-meter__trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: var(--kissopen-radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.kissopen-context-meter__trigger:hover,
+.kissopen-context-meter[data-open] .kissopen-context-meter__trigger {
+    background: var(--surface-ripple);
+}
+
+.kissopen-context-meter__trigger:focus-visible {
+    outline: 2px solid var(--brand-accent);
+    outline-offset: 2px;
 }
 
 .kissopen-context-meter__readout {
-    display: inline-flex;
+    display: flex;
     align-items: baseline;
     gap: 4px;
-    max-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    opacity: 0;
-    margin-inline-end: 0;
-    transition:
-        max-width 140ms ease-out,
-        margin-inline-end 140ms ease-out,
-        opacity 140ms ease-out;
 }
 
-.kissopen-context-meter:hover .kissopen-context-meter__readout {
-    max-width: 140px;
-    margin-inline-end: 6px;
-    opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .kissopen-context-meter__readout {
-        transition: none;
-    }
-}
-
-/* The counts are the same fact as the percentage, spelled out; they sit a shade
-   back so the percentage is what is read first. */
 .kissopen-context-meter__tokens {
-    opacity: 0.72;
+    display: none;
 }
 
 .kissopen-context-meter__track {
     position: relative;
-    display: inline-flex;
+    display: flex;
     flex: none;
     width: 64px;
     height: 4px;
@@ -59,20 +58,6 @@
     background: var(--divider);
     overflow: hidden;
     transform-origin: center;
-    transition:
-        height 140ms ease-out,
-        transform 140ms ease-out;
-}
-
-.kissopen-context-meter:hover .kissopen-context-meter__track {
-    height: 6px;
-    transform: scaleX(1.0625);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .kissopen-context-meter__track {
-        transition: none;
-    }
 }
 
 .kissopen-context-meter__fill {
@@ -80,59 +65,244 @@
     height: 100%;
     border-radius: var(--kissopen-radius-pill);
     background: currentColor;
-    /* The window only ever moves by a report at a time; the ease keeps a jump
-       from reading as a glitch without animating anything on its own. */
     transition: width 240ms ease-out;
 }
 
-/*
- * A narrow specular streak crosses the whole track only when the occupied
- * fraction grows. Its movement is started by the component's ref callback so
- * repeated reports can replay it without remounting any meter element.
- */
+/* A transient highlight overlays the track when the reported count increases. */
 .kissopen-context-meter__shine {
     position: absolute;
     inset-block: 0;
     left: 0;
     width: 32%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        color-mix(in srgb, var(--surface) 88%, transparent),
-        transparent
-    );
+    background: var(--surface);
     opacity: 0;
     pointer-events: none;
 }
 
-/* The compaction mark: a notch in the track, not a line over the fill, so the
-   fill passing it covers it rather than being cut by it. Three pixels, because
-   a one-pixel gap in a four-pixel track was invisible at a glance, and the whole
-   point of the notch is to be seen before the colour changes. */
+/* The notch marks the daemon's actual compaction boundary along the track. */
 .kissopen-context-meter__threshold {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    inset-block: 0;
     width: 3px;
     background: var(--surface);
-    opacity: 0.9;
 }
 
-/* Plenty of room left is unremarkable and stays in the row's own voice; the two
-   states that ask for something earn their colour. */
-.kissopen-context-meter[data-tone="ample"] {
-    color: var(--text-secondary);
-    opacity: 0.72;
-}
-
-.kissopen-context-meter[data-tone="ample"] .kissopen-context-meter__fill {
-    background: var(--text-secondary);
-}
-
-.kissopen-context-meter[data-tone="compact"] {
+.kissopen-context-meter[data-tone="compact"] .kissopen-context-meter__trigger {
     color: var(--box-warning-text);
 }
 
-.kissopen-context-meter[data-tone="critical"] {
+.kissopen-context-meter[data-tone="critical"] .kissopen-context-meter__trigger {
     color: var(--status-error);
+}
+
+/* The backdrop dismisses a pinned card without adding a second modal surface. */
+.kissopen-context-meter__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--kissopen-z-overlay) - 1);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
+/* This panel overlays the composer; bottom padding bridges the hover gap. */
+.kissopen-context-meter__popover {
+    position: absolute;
+    z-index: var(--kissopen-z-overlay);
+    bottom: 100%;
+    right: 0;
+    display: flex;
+    padding-bottom: 8px;
+}
+
+.kissopen-context-meter__card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 312px;
+    max-width: calc(100vw - 32px);
+    padding: 18px;
+    border: 1px solid var(--modal-border);
+    border-radius: 24px;
+    background: var(--surface);
+    box-shadow: 0 8px 24px var(--shadow-color);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.kissopen-context-meter__heading,
+.kissopen-context-meter__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+}
+
+.kissopen-context-meter__heading {
+    font-size: 16px;
+}
+
+.kissopen-context-meter__heading strong,
+.kissopen-context-meter__compaction strong {
+    font-weight: 650;
+}
+
+.kissopen-context-meter__accent {
+    color: var(--brand-accent);
+}
+
+.kissopen-context-meter__stats,
+.kissopen-context-meter__model {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    font-family: var(--kissopen-font-mono);
+}
+
+.kissopen-context-meter__row dt,
+.kissopen-context-meter__compaction > .kissopen-context-meter__row > span {
+    flex: none;
+    color: var(--text-secondary);
+}
+
+.kissopen-context-meter__row dd {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kissopen-context-meter__model {
+    padding-block: 12px;
+    border-block: 1px solid var(--divider);
+}
+
+.kissopen-context-meter__compaction {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kissopen-context-meter__compact-track {
+    display: flex;
+    height: 6px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--divider);
+    overflow: hidden;
+}
+
+.kissopen-context-meter__compact-track > span {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--brand-accent);
+}
+
+.kissopen-context-meter__note {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kissopen-context-meter__fill {
+        transition: none;
+    }
+}
+
+.kissopen-context-meter__slider {
+    appearance: none;
+    width: 100%;
+    height: 24px;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.kissopen-context-meter__slider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: var(--kissopen-radius-pill);
+    background-color: var(--divider);
+    background-image: linear-gradient(var(--brand-accent), var(--brand-accent));
+    background-size: var(--context-compact-fill) 100%;
+    background-repeat: no-repeat;
+}
+
+.kissopen-context-meter__slider::-moz-range-track {
+    height: 6px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--divider);
+}
+
+.kissopen-context-meter__slider::-moz-range-progress {
+    height: 6px;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--brand-accent);
+}
+
+.kissopen-context-meter__slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-top: -9px;
+    border: 0;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--text);
+    box-shadow: 0 1px 4px var(--shadow-color);
+}
+
+.kissopen-context-meter__slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: var(--kissopen-radius-pill);
+    background: var(--text);
+    box-shadow: 0 1px 4px var(--shadow-color);
+}
+
+.kissopen-context-meter__slider:focus-visible,
+.kissopen-context-meter__reset:focus-visible {
+    outline: 2px solid var(--brand-accent);
+    outline-offset: 3px;
+    border-radius: var(--kissopen-radius-sm);
+}
+
+.kissopen-context-meter__slider:disabled,
+.kissopen-context-meter__reset:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.kissopen-context-meter__preference {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.kissopen-context-meter__reset {
+    flex: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--brand-accent);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.kissopen-context-meter__reset:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+.kissopen-context-meter__error {
+    color: var(--status-error);
+    font-size: 12px;
+    line-height: 18px;
 }

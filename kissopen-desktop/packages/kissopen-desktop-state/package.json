@@ -21,7 +21,7 @@
         "clean": "rm -rf coverage"
     },
     "dependencies": {
-        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.66-preview.11.tgz",
+        "@kissopen/kissopen-agent-client": "file:../../vendor/agent/kissopen-kissopen-agent-client-0.0.68.tgz",
         "yjs": "^13.6.31",
         "zustand": "5.0.14",
         "@kissopen/kissopen-sync": "link:../../../kissopen/packages/kissopen-sync"

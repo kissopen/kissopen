@@ -92,6 +92,7 @@ export interface KissopenAgentModelStore {
      * and re-derives the defaults from it without touching what was last used.
      */
     catalogChanged(catalog: KissopenAgentModelCatalog): void;
+    contextCompactionUpdate(modelId: string, percent: number | null): Promise<void>;
     /** Records a user-selected model/effort/access/tier as the next-session default. */
     selectionUsed(selection: KissopenAgentSelection): void;
     /** Selects a model with that model's last locally remembered effort and speed. */
@@ -103,6 +104,10 @@ export interface KissopenAgentModelStore {
 }
 
 export interface KissopenAgentModelStoreOptions {
+    readonly compactionSave?: (
+        modelId: string,
+        percent: number | null,
+    ) => Promise<KissopenAgentModelCatalog>;
     readonly catalogRead: () => Promise<KissopenAgentModelCatalog>;
     readonly preferencePersistence?: KissopenAgentModelPreferencePersistence;
 }
@@ -205,6 +210,17 @@ export function kissopenAgentModelStoreCreate(
                 ...selections,
                 menus: kissopenAgentMenusDerive(catalog, selections.lastUsedSelection),
             });
+        },
+        async contextCompactionUpdate(modelId, percent) {
+            if (options.compactionSave === undefined)
+                throw new UserError(
+                    t("This Agent does not support editing compaction preferences."),
+                );
+            try {
+                this.catalogChanged(await options.compactionSave(modelId, percent));
+            } catch (error) {
+                throw modelError(error);
+            }
         },
         selectionUsed(selection) {
             if (snapshot.type !== "ready") return;

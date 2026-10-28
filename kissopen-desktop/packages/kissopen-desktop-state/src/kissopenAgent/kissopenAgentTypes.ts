@@ -209,6 +209,10 @@ export interface KissopenAgentModelProvider {
 }
 
 export interface KissopenAgentModelCatalog {
+    readonly contextCompaction?: {
+        readonly defaultPercent: number | null;
+        readonly modelPercents: Readonly<Record<string, number>>;
+    };
     readonly defaultModelId: string;
     readonly defaultProviderId: string;
     readonly models: readonly KissopenAgentModel[];
@@ -338,6 +342,12 @@ export interface KissopenAgentUsageContext {
  * reported as full, or as empty, but not reported at all.
  */
 export interface KissopenAgentContextGauge {
+    readonly modelId?: string;
+    readonly compactionSupported?: boolean;
+    readonly compactionOverridePercent?: number;
+    readonly compactionDefaultPercent?: number | null;
+    /** Model whose last measurement supplies this gauge, or the selected model before first use. */
+    readonly modelName?: string;
     readonly usedTokens: number;
     readonly remainingTokens: number;
     readonly totalTokens: number;

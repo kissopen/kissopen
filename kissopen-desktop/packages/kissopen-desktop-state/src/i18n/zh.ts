@@ -1,5 +1,22 @@
 /** Chinese for every string first written in English. Keyed by the English. */
 export const zh: Readonly<Record<string, string>> = {
+    "This Agent does not support editing compaction preferences.":
+        "此 Agent 暂不支持修改自动压缩设置。",
+    "Could not save compaction preferences.": "无法保存自动压缩设置。",
+    "{percent}% of the context window": "上下文窗口的 {percent}%",
+    "Release to save": "松开后保存",
+    "Model override": "当前模型的自定义阈值",
+    "Using model default": "使用模型默认阈值",
+    "Following global ({percent}%)": "跟随全局设置（{percent}%）",
+    "Use default": "恢复默认",
+    "Context window": "上下文窗口",
+    "Close context details": "关闭上下文详情",
+    Used: "已用",
+    Remaining: "剩余",
+    "Auto-compact at": "自动压缩阈值",
+    "Compacts at {tokens} tokens": "达到 {tokens} tokens 时压缩",
+    "Automatic compaction threshold unavailable": "暂无自动压缩阈值",
+    "Waiting for the first context measurement": "等待首次上下文用量统计",
     "Edit provider": "编辑服务商",
     "Delete provider": "删除服务商",
     "Leave blank to keep your saved API Key. Enter a new key when changing the URL.":

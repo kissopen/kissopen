@@ -1,33 +1,26 @@
 {
   "schemaVersion": 1,
-  "agentVersion": "0.4.73",
+  "agentVersion": "0.4.76",
   "sdk": {
     "name": "@kissopen/kissopen-agent-client",
-    "version": "0.0.66-preview.11",
-    "file": "kissopen-kissopen-agent-client-0.0.66-preview.11.tgz",
-    "size": 155304,
-    "sha256": "0a7d1628c6d93998a41540dd77e56c1122e463de1c1ae8d9956b9d9165b43762"
+    "version": "0.0.68",
+    "file": "kissopen-kissopen-agent-client-0.0.68.tgz",
+    "size": 150991,
+    "sha256": "ca3ba128cb8b44f59218debc8a0c62af6c9ef944e61fb1786fb0d180c6a0312a"
   },
   "binaries": [
     {
-      "platform": "darwin",
-      "arch": "arm64",
-      "file": "kissopen-agent-darwin-arm64",
-      "size": 335226592,
-      "sha256": "3fb259b168a4abb64d1070499f9060abb780bbe88f6242c1199f07bb2d1b4de1"
-    },
-    {
-      "platform": "darwin",
+      "platform": "win32",
       "arch": "x64",
-      "file": "kissopen-agent-darwin-x64",
-      "size": 356824432,
-      "sha256": "5149a16b096c8c291139f887afe339f83d45794b53e7a75f2cad790a8a090283"
+      "file": "kissopen-agent-win32-x64.exe",
+      "size": 415012864,
+      "sha256": "195bea5d37b1ff2753ba3c8aecf7e304ba38b22bc5d71dd6804d629c7ea5546b"
     }
   ],
   "licenses": {
     "file": "UPSTREAM_LICENSES.txt",
-    "size": 65085,
-    "sha256": "e0c429ee64b8073b2f3d3338ea98d46be058936227e6e8c9ab988d51caea5370"
+    "size": 66279,
+    "sha256": "71164626c49a80db7e639f6565c072fd356218306b6ae9c3c68c76d957683d94"
   },
-  "manifestSha256": "47d5fa8dad8ee3c59005932c281f1a0a224f7abc83a3d41e9f97cc9fbc3731a5"
+  "manifestSha256": "7c44cec3f9d5027cc63dc2b82a81afd76c03c3e2c65c6faef545e522e7a0e3e5"
 }
